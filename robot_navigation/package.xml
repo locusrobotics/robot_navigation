@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>robot_navigation</name>
+  <version>0.0.0</version>
+  <description>The robot_navigation package</description>
+
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>costmap_queue</exec_depend>
+  <exec_depend>dwb_critics</exec_depend>
+  <exec_depend>dwb_local_planner</exec_depend>
+  <exec_depend>dwb_msgs</exec_depend>
+  <exec_depend>dwb_plugins</exec_depend>
+  <exec_depend>nav_2d_msgs</exec_depend>
+  <exec_depend>nav_2d_utils</exec_depend>
+  <exec_depend>nav_core2</exec_depend>
+  <exec_depend>nav_core_adapter</exec_depend>
+  <export>
+   <metapackage/>
+ </export>
+</package>

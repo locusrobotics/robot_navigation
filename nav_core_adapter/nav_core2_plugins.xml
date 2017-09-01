@@ -1,0 +1,5 @@
+<library path="lib/libglobal_planner_adapter2">
+  <class type="nav_core_adapter::GlobalPlannerAdapter2" base_class_type="nav_core2::GlobalPlanner">
+    <description></description>
+  </class>
+</library>

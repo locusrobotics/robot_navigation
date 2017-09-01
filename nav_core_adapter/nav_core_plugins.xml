@@ -1,0 +1,12 @@
+<class_libraries>
+  <library path="lib/liblocal_planner_adapter">
+    <class type="nav_core_adapter::LocalPlannerAdapter" base_class_type="nav_core::BaseLocalPlanner">
+      <description></description>
+    </class>
+  </library>
+  <library path="lib/libglobal_planner_adapter">
+    <class type="nav_core_adapter::GlobalPlannerAdapter" base_class_type="nav_core::BaseGlobalPlanner">
+      <description></description>
+    </class>
+  </library>
+</class_libraries>
