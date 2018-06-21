@@ -36,6 +36,7 @@
 #include <costmap_queue/limited_costmap_queue.h>
 #include <ros/ros.h>
 #include <memory>
+#include <algorithm>
 
 costmap_2d::Costmap2D costmap(5, 5, 1.0, 0.0, 0.0);
 
@@ -81,6 +82,34 @@ TEST(CostmapQueue, linearQueue)
   {
     costmap_queue::CellData cell = q.getNextCell();
     EXPECT_EQ(cell.distance_, cell.x_);
+    count++;
+  }
+  EXPECT_EQ(count, 25);
+}
+
+TEST(CostmapQueue, crossQueue)
+{
+  costmap_queue::CostmapQueue q(costmap);
+  int count = 0;
+  int xs[] = {1, 2, 2, 3};
+  int ys[] = {2, 1, 3, 2};
+  int N = 4;
+  for (int i = 0; i < N; i++)
+  {
+    q.enqueueCell(xs[i], ys[i]);
+  }
+
+  while (!q.isEmpty())
+  {
+    costmap_queue::CellData cell = q.getNextCell();
+    double min_d = 1000;
+
+    for (int i = 0; i < N; i++)
+    {
+      double dd = hypot(xs[i] - static_cast<float>(cell.x_), ys[i] - static_cast<float>(cell.y_));
+      min_d = std::min(min_d, dd);
+    }
+    EXPECT_EQ(cell.distance_, min_d);
     count++;
   }
   EXPECT_EQ(count, 25);

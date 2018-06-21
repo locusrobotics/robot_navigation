@@ -153,7 +153,7 @@ protected:
   std::vector<bool> seen_;
   int max_distance_;
   bool manhattan_;
-private:
+protected:
   /**
    * @brief  Lookup pre-computed distances
    * @param cur_x The x coordinate of the current cell

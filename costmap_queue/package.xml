@@ -11,6 +11,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>costmap_2d</depend>
   <depend>roscpp</depend>
+  <test_depend>roslint</test_depend>
   <test_depend>rosunit</test_depend>
 
 </package>
