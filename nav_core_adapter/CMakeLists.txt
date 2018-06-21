@@ -28,6 +28,7 @@ target_link_libraries(global_planner_adapter ${catkin_LIBRARIES})
 add_library(global_planner_adapter2 src/global_planner_adapter2.cpp)
 add_dependencies(global_planner_adapter2 ${catkin_EXPORTED_TARGETS})
 target_link_libraries(global_planner_adapter2 ${catkin_LIBRARIES})
+
 if(CATKIN_ENABLE_TESTING)
   find_package(catkin REQUIRED COMPONENTS roslint)
   roslint_cpp()
@@ -35,9 +36,13 @@ if(CATKIN_ENABLE_TESTING)
 endif()
 
 install(TARGETS local_planner_adapter global_planner_adapter global_planner_adapter2
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 )
-install(DIRECTORY include/${PROJECT_NAME}/ DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
-install(FILES nav_core2_plugins.xml nav_core_plugins.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+install(FILES nav_core2_plugins.xml nav_core_plugins.xml
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

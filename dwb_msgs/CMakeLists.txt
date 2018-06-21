@@ -21,7 +21,5 @@ add_service_files(FILES
 generate_messages(DEPENDENCIES geometry_msgs nav_2d_msgs nav_msgs)
 
 catkin_package(
-    CATKIN_DEPENDS geometry_msgs nav_2d_msgs message_generation nav_msgs
+    CATKIN_DEPENDS geometry_msgs message_runtime nav_2d_msgs nav_msgs
 )
-
-include_directories()

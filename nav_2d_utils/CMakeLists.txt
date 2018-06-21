@@ -19,6 +19,17 @@ include_directories(
 
 add_library(conversions src/conversions.cpp)
 target_link_libraries(conversions ${catkin_LIBRARIES})
+add_dependencies(conversions ${catkin_EXPORTED_TARGETS})
 
 add_library(path_ops src/path_ops.cpp)
 target_link_libraries(path_ops ${catkin_LIBRARIES})
+add_dependencies(path_ops ${catkin_EXPORTED_TARGETS})
+
+install(TARGETS conversions path_ops
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)

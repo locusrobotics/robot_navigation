@@ -27,8 +27,8 @@ catkin_package(
 )
 
 include_directories(
-  ${catkin_INCLUDE_DIRS}
   include
+  ${catkin_INCLUDE_DIRS}
 )
 
 add_library(dwb_local_planner src/dwb_local_planner.cpp
@@ -37,15 +37,37 @@ add_library(dwb_local_planner src/dwb_local_planner.cpp
                               src/illegal_trajectory_tracker.cpp
 )
 target_link_libraries(dwb_local_planner ${catkin_LIBRARIES})
+add_dependencies(dwb_local_planner ${catkin_EXPORTED_TARGETS})
 
 add_library(debug_dwb_local_planner src/debug_dwb_local_planner.cpp)
 target_link_libraries(debug_dwb_local_planner ${catkin_LIBRARIES} dwb_local_planner)
+add_dependencies(debug_dwb_local_planner ${catkin_EXPORTED_TARGETS})
 
 add_executable(planner_node src/planner_node.cpp)
 target_link_libraries(planner_node ${catkin_LIBRARIES} debug_dwb_local_planner)
+add_dependencies(planner_node ${catkin_EXPORTED_TARGETS})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(catkin REQUIRED COMPONENTS roslint)
   roslint_cpp()
   roslint_add_test()
 endif()
+
+install(TARGETS planner_node
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+install(TARGETS dwb_local_planner debug_dwb_local_planner
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+install(FILES plugins.xml
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+install(DIRECTORY launch/
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+        FILES_MATCHING PATTERN "*.launch"
+)

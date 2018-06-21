@@ -15,13 +15,14 @@ catkin_package(
 )
 
 include_directories(
-  ${catkin_INCLUDE_DIRS} include
+  include ${catkin_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}
   src/costmap_queue.cpp
   src/limited_costmap_queue.cpp
 )
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(utest test/utest.cpp)

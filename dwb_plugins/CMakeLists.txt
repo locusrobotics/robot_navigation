@@ -14,14 +14,16 @@ catkin_package(
 )
 
 include_directories(
-  ${catkin_INCLUDE_DIRS} include
+  include ${catkin_INCLUDE_DIRS}
 )
 
 add_library(simple_goal_checker src/simple_goal_checker.cpp)
 target_link_libraries(simple_goal_checker ${catkin_LIBRARIES})
+add_dependencies(simple_goal_checker ${catkin_EXPORTED_TARGETS} ${dwb_plugins_EXPORTED_TARGETS})
 
 add_library(stopped_goal_checker src/stopped_goal_checker.cpp)
 target_link_libraries(stopped_goal_checker simple_goal_checker ${catkin_LIBRARIES})
+add_dependencies(stopped_goal_checker ${catkin_EXPORTED_TARGETS} ${dwb_plugins_EXPORTED_TARGETS})
 
 add_library(standard_traj_generator
             src/standard_traj_generator.cpp
@@ -37,11 +39,11 @@ if (CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_executable(goal_checker test/goal_checker.cpp)
   target_link_libraries(goal_checker simple_goal_checker stopped_goal_checker ${GTEST_LIBRARIES})
-  add_rostest(test/goal_checker.launch)
+  add_rostest(test/goal_checker.launch DEPENDENCIES goal_checker)
 
   add_executable(twist_gen_test test/twist_gen.cpp)
   target_link_libraries(twist_gen_test standard_traj_generator ${GTEST_LIBRARIES})
-  add_rostest(test/twist_gen.launch)
+  add_rostest(test/twist_gen.launch DEPENDENCIES twist_gen_test)
 
   find_package(catkin REQUIRED COMPONENTS roslint)
   roslint_cpp()
@@ -49,8 +51,13 @@ if (CATKIN_ENABLE_TESTING)
 endif (CATKIN_ENABLE_TESTING)
 
 install(TARGETS simple_goal_checker stopped_goal_checker standard_traj_generator
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
-install(DIRECTORY include/${PROJECT_NAME}/ DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
-install(FILES plugins.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+install(DIRECTORY include/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+install(FILES plugins.xml
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
