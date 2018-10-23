@@ -2,7 +2,7 @@
 <package format="2">
   <name>nav_2d_utils</name>
   <version>0.1.0</version>
-  <description>A handful of useful utility functions for nav_2d packages.</description>
+  <description>A handful of useful utility functions for nav_core2 packages.</description>
 
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
 
@@ -12,6 +12,7 @@
   <depend>geometry_msgs</depend>
   <depend>nav_2d_msgs</depend>
   <depend>nav_core2</depend>
+  <depend>nav_grid</depend>
   <depend>nav_msgs</depend>
   <depend>roscpp</depend>
   <depend>tf</depend>
