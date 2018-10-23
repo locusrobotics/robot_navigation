@@ -18,6 +18,7 @@ add_message_files(FILES
     Twist2D.msg
     Twist2D32.msg
     Twist2DStamped.msg
+    UIntBounds.msg
 )
 
 generate_messages(DEPENDENCIES geometry_msgs std_msgs)
