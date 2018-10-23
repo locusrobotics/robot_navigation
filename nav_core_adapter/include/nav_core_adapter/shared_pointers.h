@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,42 +32,35 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NAV_CORE_ADAPTER_GLOBAL_PLANNER_ADAPTER2_H
-#define NAV_CORE_ADAPTER_GLOBAL_PLANNER_ADAPTER2_H
+#ifndef NAV_CORE_ADAPTER_SHARED_POINTERS_H
+#define NAV_CORE_ADAPTER_SHARED_POINTERS_H
 
-#include <nav_core/base_global_planner.h>
-#include <nav_core2/global_planner.h>
-#include <pluginlib/class_loader.h>
-#include <string>
-#include <vector>
+#include <nav_core2/common.h>
 
 namespace nav_core_adapter
 {
 
+template <typename T>
+void null_deleter(T* raw_ptr) {}
+
 /**
- * @class GlobalPlannerAdapter2
- * @brief used for employing a `nav_core` global planner (such as `navfn`) as a `nav_core2` plugin, like in `locomotor`.
+ * @brief Custom Constructor for creating a shared pointer to an existing object that doesn't delete the ptr when done
+ *
+ * @note This is considered bad form, and is only done here for backwards compatibility purposes. The nav_core2
+ *       interfaces require shared pointers, but the creation of the shared pointer from a raw pointer takes ownership
+ *       of the object such that when the object containing the shared pointer is freed, the object pointed at by the
+ *       shared pointer is also freed. This presents a problem, for instance, when switching from one planner to another
+ *       if the costmap is freed by one planner.
+ *
+ * @param raw_ptr The raw pointer to an object
+ * @return A Shared pointer pointing at the raw_ptr, but when it is freed, the raw_ptr remains valid
  */
-class GlobalPlannerAdapter2: public nav_core2::GlobalPlanner
+template <typename T>
+std::shared_ptr<T> createSharedPointerWithNoDelete(T* raw_ptr)
 {
-public:
-  GlobalPlannerAdapter2();
-
-  // Nav Core 2 Global Planner Interface
-  void initialize(const ros::NodeHandle& parent, const std::string& name,
-                  TFListenerPtr tf, nav_core2::Costmap::Ptr costmap) override;
-  nav_2d_msgs::Path2D makePlan(const nav_2d_msgs::Pose2DStamped& start,
-                               const nav_2d_msgs::Pose2DStamped& goal) override;
-
-protected:
-  // Plugin handling
-  pluginlib::ClassLoader<nav_core::BaseGlobalPlanner> planner_loader_;
-  boost::shared_ptr<nav_core::BaseGlobalPlanner> planner_;
-
-  costmap_2d::Costmap2DROS* costmap_ros_;
-  nav_core2::Costmap::Ptr costmap_;
-};
+  return std::shared_ptr<T>(raw_ptr, null_deleter<T>);
+}
 
 }  // namespace nav_core_adapter
 
-#endif  // NAV_CORE_ADAPTER_GLOBAL_PLANNER_ADAPTER2_H
+#endif  // NAV_CORE_ADAPTER_SHARED_POINTERS_H

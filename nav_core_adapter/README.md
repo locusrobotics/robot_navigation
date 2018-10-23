@@ -1,35 +1,26 @@
 # nav_core_adapter
-This package contains adapters for using `nav_core` plugins as `nav_core2` plugins and vice versa (more or less).
-The `nav_core2` interfaces are designed to require additional information in the `local_planner` interface than its
-`nav_core` counterpart. Therefore, it is impossible to use a `nav_core` local planner like `base_local_planner` or
-`dwa_local_planner` as `nav_core2` plugins in `locomotor`.
-
-In general, the adaptation process involves
+This package contains adapters for using `nav_core` plugins as `nav_core2` plugins and vice versa (more or less). In general, the adaptation process involves
  * Converting between 2d and 3d datatypes.
  * Converting between returning false and throwing exceptions on failure.
 
+We also provide an adapter for using a `costmap_2d::Costmap2DROS` as a plugin for the `nav_core2::Costmap` interface.
 
-## Global Planner Adapters
-### global_planner_adapter
-`global_planner_adapter` is used for employing a `nav_core2` global planner interface as a `nav_core` plugin,
-like in `move_base`.
-
-### global_planner_adapter2
-`global_planner_adapter2` is used for employing a `nav_core` global planner interface (such as `navfn`)
+## Adapter Classes
+ * Global Planner Adapters
+   * `GlobalPlannerAdapter` is used for employing a `nav_core2` global planner interface (such as `dlux_global_planner`) as a `nav_core` plugin, like in `move_base`.
+   * `GlobalPlannerAdapter2` is used for employing a `nav_core` global planner interface (such as `navfn`)
 as a `nav_core2` plugin, like in `locomotor`.
-
-## Local Planner Adapter
-### local_planner_adapter
-`local_planner_adapter` is used for employing a `nav_core2` local planner interface (such as `dwb_local_planner`)
-as a `nav_core` plugin, like in `move_base`.
-
-In addition to the standard conversions listed above, the local planner adapter also uses the costmap to grab the
-global pose and subscribes to the odometry in order to get the current velocity.
+ * Local Planner Adapter
+   * `LocalPlannerAdapter` is used for employing a `nav_core2` local planner interface (such as `dwb_local_planner`) as a `nav_core` plugin, like in `move_base`. In addition to the standard adaptation steps listed above, the local planner adapter also uses the costmap to grab the global pose and subscribes to the odometry in order to get the current velocity.
+   * There is no `LocalPlannerAdapter2`. The `nav_core2` interfaces use additional information (like velocity) in the `local_planner` interface than its `nav_core` counterpart. This information would be ignored by a `nav_core` planner, so no adapter is provided.
+ * `CostmapAdapter` provides most of the functionality from `nav_core2::Costmap` and also provides a raw pointer to the `Costmap2DROS` object. It is not a perfect adaptation, because
+   * `Costmap2DROS` starts its own update thread and updates on its own schedule, so calling `update()` does not actually cause the costmap to update. It does update some of the metadata though.
+   * `setInfo` is not implemented.
 
 ## Parameter Setup
 Let's look at a practical example of how to use `dwb_local_planner` in `move_base`.
 
-If you were using `dwa` you would probably have parameters set up like this:
+If you were using `DWA` you would probably have parameters set up like this:
 ```
 base_local_planner: dwa_local_planner/DWALocalPlanner
 DWALocalPlanner:

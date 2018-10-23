@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,43 +31,38 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+#include <gtest/gtest.h>
+#include <nav_core_adapter/local_planner_adapter.h>
 
-#ifndef NAV_CORE_ADAPTER_GLOBAL_PLANNER_ADAPTER2_H
-#define NAV_CORE_ADAPTER_GLOBAL_PLANNER_ADAPTER2_H
 
-#include <nav_core/base_global_planner.h>
-#include <nav_core2/global_planner.h>
-#include <pluginlib/class_loader.h>
-#include <string>
-#include <vector>
-
-namespace nav_core_adapter
+TEST(LocalPlannerAdapter, unload_local_planner)
 {
+  tf::TransformListener tf(ros::Duration(10));
+  // This empty transform is added to satisfy the constructor of
+  // Costmap2DROS, which waits for the transform from map to base_link
+  // to become available.
+  tf::StampedTransform base_rel_map;
+  base_rel_map.child_frame_id_ = "/base_link";
+  base_rel_map.frame_id_ = "/map";
+  base_rel_map.stamp_ = ros::Time::now();
+  base_rel_map.setIdentity();
+  tf.setTransform(base_rel_map);
 
-/**
- * @class GlobalPlannerAdapter2
- * @brief used for employing a `nav_core` global planner (such as `navfn`) as a `nav_core2` plugin, like in `locomotor`.
- */
-class GlobalPlannerAdapter2: public nav_core2::GlobalPlanner
+  nav_core_adapter::LocalPlannerAdapter* lpa = new nav_core_adapter::LocalPlannerAdapter();
+
+  costmap_2d::Costmap2DROS costmap_ros("local_costmap", tf);
+  lpa->initialize("lpa", &tf, &costmap_ros);
+
+  delete lpa;
+
+  // Simple test to make sure costmap hasn't been deleted
+  EXPECT_EQ("local_costmap", costmap_ros.getName());
+}
+
+
+int main(int argc, char** argv)
 {
-public:
-  GlobalPlannerAdapter2();
-
-  // Nav Core 2 Global Planner Interface
-  void initialize(const ros::NodeHandle& parent, const std::string& name,
-                  TFListenerPtr tf, nav_core2::Costmap::Ptr costmap) override;
-  nav_2d_msgs::Path2D makePlan(const nav_2d_msgs::Pose2DStamped& start,
-                               const nav_2d_msgs::Pose2DStamped& goal) override;
-
-protected:
-  // Plugin handling
-  pluginlib::ClassLoader<nav_core::BaseGlobalPlanner> planner_loader_;
-  boost::shared_ptr<nav_core::BaseGlobalPlanner> planner_;
-
-  costmap_2d::Costmap2DROS* costmap_ros_;
-  nav_core2::Costmap::Ptr costmap_;
-};
-
-}  // namespace nav_core_adapter
-
-#endif  // NAV_CORE_ADAPTER_GLOBAL_PLANNER_ADAPTER2_H
+  ros::init(argc, argv, "unload_test");
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}

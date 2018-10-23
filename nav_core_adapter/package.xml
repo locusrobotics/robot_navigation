@@ -12,17 +12,19 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>dwb_msgs</depend>
+  <depend>costmap_2d</depend>
   <depend>geometry_msgs</depend>
   <depend>nav_2d_msgs</depend>
   <depend>nav_2d_utils</depend>
   <depend>nav_core</depend>
   <depend>nav_core2</depend>
+  <depend>nav_grid</depend>
   <depend>nav_msgs</depend>
   <depend>pluginlib</depend>
   <depend>tf</depend>
   <depend>visualization_msgs</depend>
   <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
 
   <export>
     <nav_core plugin="${prefix}/nav_core_plugins.xml"/>

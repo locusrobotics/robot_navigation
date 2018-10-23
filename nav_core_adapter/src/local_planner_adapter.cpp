@@ -33,6 +33,8 @@
  */
 
 #include <nav_core_adapter/local_planner_adapter.h>
+#include <nav_core_adapter/costmap_adapter.h>
+#include <nav_core_adapter/shared_pointers.h>
 #include <nav_2d_utils/conversions.h>
 #include <nav_2d_utils/tf_help.h>
 #include <nav_core2/exceptions.h>
@@ -53,8 +55,10 @@ LocalPlannerAdapter::LocalPlannerAdapter() :
  */
 void LocalPlannerAdapter::initialize(std::string name, tf::TransformListener* tf, costmap_2d::Costmap2DROS* costmap_ros)
 {
-  tf_ = TFListenerPtr(tf);
-  costmap_ros_ = CostmapROSPtr(costmap_ros);
+  tf_ = createSharedPointerWithNoDelete<tf::TransformListener>(tf);
+  costmap_ros_ = costmap_ros;
+  costmap_adapter_ = std::make_shared<CostmapAdapter>();
+  costmap_adapter_->initialize(costmap_ros);
 
   ros::NodeHandle nh;
   ros::NodeHandle private_nh("~/" + name);
@@ -62,7 +66,8 @@ void LocalPlannerAdapter::initialize(std::string name, tf::TransformListener* tf
   private_nh.param("planner_name", planner_name, std::string("dwb_local_planner::DWBLocalPlanner"));
   ROS_INFO_NAMED("LocalPlannerAdapter", "Loading plugin %s", planner_name.c_str());
   planner_ = planner_loader_.createInstance(planner_name);
-  planner_->initialize(planner_loader_.getName(planner_name), tf_, costmap_ros_);
+  planner_->initialize(private_nh, planner_loader_.getName(planner_name), tf_, costmap_adapter_);
+  has_active_goal_ = false;
 
   odom_sub_ = std::make_shared<nav_2d_utils::OdomSubscriber>(nh);
 }
@@ -72,6 +77,11 @@ void LocalPlannerAdapter::initialize(std::string name, tf::TransformListener* tf
  */
 bool LocalPlannerAdapter::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
 {
+  if (!has_active_goal_)
+  {
+    return false;
+  }
+
   // Get the Pose
   nav_2d_msgs::Pose2DStamped pose2d;
   if (!getRobotPose(pose2d))
@@ -107,7 +117,12 @@ bool LocalPlannerAdapter::isGoalReached()
     return false;
 
   nav_2d_msgs::Twist2D velocity = odom_sub_->getTwist();
-  return planner_->isGoalReached(pose2d, velocity);
+  bool ret = planner_->isGoalReached(pose2d, velocity);
+  if (ret)
+  {
+    has_active_goal_ = false;
+  }
+  return ret;
 }
 
 /**
@@ -118,6 +133,20 @@ bool LocalPlannerAdapter::setPlan(const std::vector<geometry_msgs::PoseStamped>&
   nav_2d_msgs::Path2D path = nav_2d_utils::posesToPath2D(orig_global_plan);
   try
   {
+    if (path.poses.size() > 0)
+    {
+      nav_2d_msgs::Pose2DStamped goal_pose;
+      goal_pose.header = path.header;
+      goal_pose.pose = path.poses.back();
+
+      if (!has_active_goal_ || hasGoalChanged(goal_pose))
+      {
+        last_goal_ = goal_pose;
+        has_active_goal_ = true;
+        planner_->setGoalPose(goal_pose);
+      }
+    }
+
     planner_->setPlan(path);
     return true;
   }
@@ -126,6 +155,17 @@ bool LocalPlannerAdapter::setPlan(const std::vector<geometry_msgs::PoseStamped>&
     ROS_ERROR_NAMED("LocalPlannerAdapter", "setPlan Exception: %s", e.what());
     return false;
   }
+}
+
+bool LocalPlannerAdapter::hasGoalChanged(const nav_2d_msgs::Pose2DStamped& new_goal)
+{
+  if (last_goal_.header.frame_id != new_goal.header.frame_id)
+  {
+    return true;
+  }
+
+  return last_goal_.pose.x != new_goal.pose.x || last_goal_.pose.y != new_goal.pose.y ||
+         last_goal_.pose.theta != new_goal.pose.theta;
 }
 
 bool LocalPlannerAdapter::getRobotPose(nav_2d_msgs::Pose2DStamped& pose2d)

@@ -33,6 +33,7 @@
  */
 
 #include <nav_core_adapter/global_planner_adapter2.h>
+#include <nav_core_adapter/costmap_adapter.h>
 #include <nav_2d_utils/conversions.h>
 #include <nav_2d_utils/tf_help.h>
 #include <nav_core2/exceptions.h>
@@ -51,16 +52,26 @@ GlobalPlannerAdapter2::GlobalPlannerAdapter2() :
 /**
  * @brief Load the nav_core global planner and initialize it
  */
-void GlobalPlannerAdapter2::initialize(std::string name, CostmapROSPtr costmap_ros)
+void GlobalPlannerAdapter2::initialize(const ros::NodeHandle& parent, const std::string& name,
+                                       TFListenerPtr tf, nav_core2::Costmap::Ptr costmap)
 {
-  costmap_ros_ = costmap_ros;
+  costmap_ = costmap;
+  std::shared_ptr<CostmapAdapter> ptr = std::static_pointer_cast<CostmapAdapter>(costmap);
 
-  ros::NodeHandle private_nh("~/" + name);
+  if (!ptr)
+  {
+    ROS_FATAL_NAMED("GlobalPlannerAdapter2",
+                    "GlobalPlannerAdapter2 can only be used with the CostmapAdapter, not other Costmaps!");
+    exit(EXIT_FAILURE);
+  }
+  costmap_ros_ = ptr->getCostmap2DROS();
+
+  ros::NodeHandle planner_nh(parent, name);
   std::string planner_name;
-  private_nh.param("planner_name", planner_name, std::string("global_planner::GlobalPlanner"));
+  planner_nh.param("planner_name", planner_name, std::string("global_planner::GlobalPlanner"));
   ROS_INFO_NAMED("GlobalPlannerAdapter2", "Loading plugin %s", planner_name.c_str());
   planner_ = planner_loader_.createInstance(planner_name);
-  planner_->initialize(planner_loader_.getName(planner_name), costmap_ros_.get());
+  planner_->initialize(planner_loader_.getName(planner_name), costmap_ros_);
 }
 
 nav_2d_msgs::Path2D GlobalPlannerAdapter2::makePlan(const nav_2d_msgs::Pose2DStamped& start,
