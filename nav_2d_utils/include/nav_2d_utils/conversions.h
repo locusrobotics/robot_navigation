@@ -39,6 +39,7 @@
 #include <nav_2d_msgs/Twist2D.h>
 #include <nav_2d_msgs/Path2D.h>
 #include <nav_2d_msgs/Pose2DStamped.h>
+#include <nav_2d_msgs/NavGridInfo.h>
 #include <nav_msgs/MapMetaData.h>
 #include <nav_msgs/Path.h>
 #include <nav_grid/nav_grid.h>
@@ -63,6 +64,9 @@ nav_msgs::Path poses2DToPath(const std::vector<geometry_msgs::Pose2D>& poses,
 nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d);
 
 // Info Transformations
+nav_2d_msgs::NavGridInfo toMsg(const nav_grid::NavGridInfo& info);
+nav_grid::NavGridInfo fromMsg(const nav_2d_msgs::NavGridInfo& msg);
+nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata);
 nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info);
 }  // namespace nav_2d_utils
 
