@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,38 +32,16 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NAV_2D_UTILS_CONVERSIONS_H
-#define NAV_2D_UTILS_CONVERSIONS_H
+#ifndef NAV_GRID_ITERATORS_ITERATORS_H
+#define NAV_GRID_ITERATORS_ITERATORS_H
 
-#include <geometry_msgs/Pose.h>
-#include <nav_2d_msgs/Twist2D.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Pose2DStamped.h>
-#include <nav_msgs/MapMetaData.h>
-#include <nav_msgs/Path.h>
-#include <nav_grid/nav_grid.h>
-#include <tf/tf.h>
-#include <vector>
-#include <string>
+#include <nav_grid_iterators/whole_grid.h>
+#include <nav_grid_iterators/sub_grid.h>
+#include <nav_grid_iterators/circle_fill.h>
+#include <nav_grid_iterators/circle_outline.h>
+#include <nav_grid_iterators/spiral.h>
+#include <nav_grid_iterators/line.h>
+#include <nav_grid_iterators/polygon_outline.h>
+#include <nav_grid_iterators/polygon_fill.h>
 
-namespace nav_2d_utils
-{
-
-geometry_msgs::Twist twist2Dto3D(const nav_2d_msgs::Twist2D& cmd_vel_2d);
-nav_2d_msgs::Pose2DStamped stampedPoseToPose2D(const tf::Stamped<tf::Pose>& pose);
-nav_2d_msgs::Pose2DStamped poseStampedToPose2D(const geometry_msgs::PoseStamped& pose);
-geometry_msgs::Pose pose2DToPose(const geometry_msgs::Pose2D& pose2d);
-geometry_msgs::PoseStamped pose2DToPoseStamped(const nav_2d_msgs::Pose2DStamped& pose2d);
-geometry_msgs::PoseStamped pose2DToPoseStamped(const geometry_msgs::Pose2D& pose2d,
-                                               const std::string& frame, const ros::Time& stamp);
-nav_msgs::Path posesToPath(const std::vector<geometry_msgs::PoseStamped>& poses);
-nav_2d_msgs::Path2D posesToPath2D(const std::vector<geometry_msgs::PoseStamped>& poses);
-nav_msgs::Path poses2DToPath(const std::vector<geometry_msgs::Pose2D>& poses,
-                             const std::string& frame, const ros::Time& stamp);
-nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d);
-
-// Info Transformations
-nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info);
-}  // namespace nav_2d_utils
-
-#endif  // NAV_2D_UTILS_CONVERSIONS_H
+#endif  // NAV_GRID_ITERATORS_ITERATORS_H

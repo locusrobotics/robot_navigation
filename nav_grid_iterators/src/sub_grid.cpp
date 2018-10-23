@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,38 +32,33 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NAV_2D_UTILS_CONVERSIONS_H
-#define NAV_2D_UTILS_CONVERSIONS_H
+#include <nav_grid_iterators/sub_grid.h>
 
-#include <geometry_msgs/Pose.h>
-#include <nav_2d_msgs/Twist2D.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Pose2DStamped.h>
-#include <nav_msgs/MapMetaData.h>
-#include <nav_msgs/Path.h>
-#include <nav_grid/nav_grid.h>
-#include <tf/tf.h>
-#include <vector>
-#include <string>
-
-namespace nav_2d_utils
+namespace nav_grid_iterators
 {
+SubGrid SubGrid::begin() const
+{
+  return SubGrid(info_, min_x_, min_y_, width_, height_);
+}
 
-geometry_msgs::Twist twist2Dto3D(const nav_2d_msgs::Twist2D& cmd_vel_2d);
-nav_2d_msgs::Pose2DStamped stampedPoseToPose2D(const tf::Stamped<tf::Pose>& pose);
-nav_2d_msgs::Pose2DStamped poseStampedToPose2D(const geometry_msgs::PoseStamped& pose);
-geometry_msgs::Pose pose2DToPose(const geometry_msgs::Pose2D& pose2d);
-geometry_msgs::PoseStamped pose2DToPoseStamped(const nav_2d_msgs::Pose2DStamped& pose2d);
-geometry_msgs::PoseStamped pose2DToPoseStamped(const geometry_msgs::Pose2D& pose2d,
-                                               const std::string& frame, const ros::Time& stamp);
-nav_msgs::Path posesToPath(const std::vector<geometry_msgs::PoseStamped>& poses);
-nav_2d_msgs::Path2D posesToPath2D(const std::vector<geometry_msgs::PoseStamped>& poses);
-nav_msgs::Path poses2DToPath(const std::vector<geometry_msgs::Pose2D>& poses,
-                             const std::string& frame, const ros::Time& stamp);
-nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d);
+SubGrid SubGrid::end() const
+{
+  return SubGrid(info_, nav_grid::Index(min_x_, min_y_ + height_), min_x_, min_y_, width_, height_);
+}
 
-// Info Transformations
-nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info);
-}  // namespace nav_2d_utils
+void SubGrid::increment()
+{
+  ++index_.x;
+  if (index_.x >= min_x_ + width_)
+  {
+    index_.x = min_x_;
+    ++index_.y;
+  }
+}
 
-#endif  // NAV_2D_UTILS_CONVERSIONS_H
+bool SubGrid::fieldsEqual(const SubGrid& other)
+{
+  return min_x_ == other.min_x_ && min_y_ == other.min_y_ && width_ == other.width_ && height_ == other.height_;
+}
+
+}  // namespace nav_grid_iterators
