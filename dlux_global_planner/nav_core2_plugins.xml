@@ -1,0 +1,5 @@
+<library path="lib/libdgp">
+  <class type="dlux_global_planner::DluxGlobalPlanner" base_class_type="nav_core2::GlobalPlanner">
+    <description>Plugin-based global wavefront planner that conforms to the `nav_core2` interface</description>
+  </class>
+</library>
