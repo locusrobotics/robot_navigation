@@ -67,7 +67,14 @@ public:
    * @param tf TFListener pointer
    * @param costmap_ros Costmap pointer
    */
-  void initialize(std::string name, TFListenerPtr tf, CostmapROSPtr costmap_ros) override;
+  void initialize(const ros::NodeHandle& parent, const std::string& name,
+                  TFListenerPtr tf, nav_core2::Costmap::Ptr costmap) override;
+
+  /**
+   * @brief nav_core2 setGoalPose - Sets the global goal pose
+   * @param goal_pose The Goal Pose
+   */
+  void setGoalPose(const nav_2d_msgs::Pose2DStamped& goal_pose) override;
 
   /**
    * @brief nav_core2 setPlan - Sets the global plan
@@ -100,7 +107,7 @@ public:
    * @param velocity Current velocity
    * @return True if the robot should be considered as having reached the goal.
    */
-  bool isGoalReached(const nav_2d_msgs::Pose2DStamped& pose, const nav_2d_msgs::Twist2D& velocity);
+  bool isGoalReached(const nav_2d_msgs::Pose2DStamped& pose, const nav_2d_msgs::Twist2D& velocity) override;
 
   /**
    * @brief Score a given command. Can be used for testing.
@@ -134,14 +141,11 @@ public:
 
 protected:
   /**
-   * @brief Helper method for two common operations for the operating on the global_plan
+   * @brief Helper method for preparing for the core scoring algorithm
    *
-   * Transforms the global plan (stored in global_plan_) relative to the pose and saves it in
-   * transformed_plan and possibly publishes it. Then it takes the last pose and transforms it
-   * to match the local costmap's frame
+   * Runs the prepare method on all the critics with freshly transformed data
    */
-  void prepareGlobalPlan(const nav_2d_msgs::Pose2DStamped& pose, nav_2d_msgs::Path2D& transformed_plan,
-                         nav_2d_msgs::Pose2DStamped& goal_pose, bool publish_plan = true);
+  virtual void prepare(const nav_2d_msgs::Pose2DStamped& pose, const nav_2d_msgs::Twist2D& velocity);
 
   /**
    * @brief Iterate through all the twists and find the best one
@@ -161,7 +165,14 @@ protected:
    *     of the robot and erases all poses before that.
    */
   nav_2d_msgs::Path2D transformGlobalPlan(const nav_2d_msgs::Pose2DStamped& pose);
+
+  /**
+   * @brief Helper method to transform a given pose to the local costmap frame.
+   */
+  geometry_msgs::Pose2D transformPoseToLocal(const nav_2d_msgs::Pose2DStamped& pose);
+
   nav_2d_msgs::Path2D global_plan_;  ///< Saved Global Plan
+  nav_2d_msgs::Pose2DStamped goal_pose_;  ///< Saved Goal Pose
   bool prune_plan_;
   double prune_distance_;
   bool debug_trajectory_details_;
@@ -190,9 +201,12 @@ protected:
 
   std::vector<std::string> default_critic_namespaces_;
 
-  CostmapROSPtr costmap_ros_;
+  nav_core2::Costmap::Ptr costmap_;
+  bool update_costmap_before_planning_;
   TFListenerPtr tf_;
   DWBPublisher pub_;
+
+  ros::NodeHandle planner_nh_;
 };
 
 }  // namespace dwb_local_planner

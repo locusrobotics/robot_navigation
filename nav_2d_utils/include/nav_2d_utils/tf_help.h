@@ -99,6 +99,14 @@ bool transformPose(const TFListenerPtr tf, const std::string frame,
   return ret;
 }
 
+geometry_msgs::Pose2D transformStampedPose(const TFListenerPtr tf, const nav_2d_msgs::Pose2DStamped& pose,
+                                           const std::string& frame_id)
+{
+  nav_2d_msgs::Pose2DStamped local_pose;
+  nav_2d_utils::transformPose(tf, frame_id, pose, local_pose);
+  return local_pose.pose;
+}
+
 }  // namespace nav_2d_utils
 
 #endif  // NAV_2D_UTILS_TF_HELP_H

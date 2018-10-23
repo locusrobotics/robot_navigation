@@ -43,10 +43,10 @@ namespace dwb_critics
 
 void PreferForwardCritic::onInit()
 {
-  nh_->param("penalty", penalty_, 1.0);
-  nh_->param("strafe_x", strafe_x_, 0.1);
-  nh_->param("strafe_theta", strafe_theta_, 0.2);
-  nh_->param("theta_scale", theta_scale_, 10.0);
+  critic_nh_.param("penalty", penalty_, 1.0);
+  critic_nh_.param("strafe_x", strafe_x_, 0.1);
+  critic_nh_.param("strafe_theta", strafe_theta_, 0.2);
+  critic_nh_.param("theta_scale", theta_scale_, 10.0);
 }
 
 double PreferForwardCritic::scoreTrajectory(const dwb_msgs::Trajectory2D& traj)

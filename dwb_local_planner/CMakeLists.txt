@@ -4,7 +4,6 @@ project(dwb_local_planner)
 set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED COMPONENTS
-  costmap_2d
   dwb_msgs
   geometry_msgs
   nav_2d_msgs
@@ -22,7 +21,7 @@ catkin_package(
     INCLUDE_DIRS include
     LIBRARIES dwb_local_planner debug_dwb_local_planner
     CATKIN_DEPENDS
-        costmap_2d dwb_msgs geometry_msgs nav_2d_msgs nav_2d_utils nav_core2
+        dwb_msgs geometry_msgs nav_2d_msgs nav_2d_utils nav_core2
         nav_msgs pluginlib roscpp sensor_msgs tf visualization_msgs
 )
 

@@ -33,6 +33,7 @@
  */
 
 #include <dwb_critics/map_grid.h>
+#include <nav_grid/coordinate_conversion.h>
 #include <nav_core2/exceptions.h>
 #include <string>
 #include <algorithm>
@@ -43,11 +44,12 @@ namespace dwb_critics
 // Customization of the CostmapQueue validCellToQueue method
 bool MapGridCritic::MapGridQueue::validCellToQueue(const costmap_queue::CellData& cell)
 {
-  unsigned char cost = costmap_.getCost(cell.x_, cell.y_);
-  if (cost == costmap_2d::LETHAL_OBSTACLE || cost == costmap_2d::INSCRIBED_INFLATED_OBSTACLE ||
-      cost == costmap_2d::NO_INFORMATION)
+  unsigned char cost = costmap_(cell.x_, cell.y_);
+  if (cost == costmap_.LETHAL_OBSTACLE ||
+      cost == costmap_.INSCRIBED_INFLATED_OBSTACLE ||
+      cost == costmap_.NO_INFORMATION)
   {
-    parent_.setAsObstacle(cell.index_);
+    parent_.setAsObstacle(cell.x_, cell.y_);
     return false;
   }
 
@@ -56,14 +58,13 @@ bool MapGridCritic::MapGridQueue::validCellToQueue(const costmap_queue::CellData
 
 void MapGridCritic::onInit()
 {
-  costmap_ = costmap_ros_->getCostmap();
   queue_ = std::make_shared<MapGridQueue>(*costmap_, *this);
 
   // Always set to true, but can be overriden by subclasses
   stop_on_failure_ = true;
 
   std::string aggro_str;
-  nh_->param("aggregation_type", aggro_str, std::string("last"));
+  critic_nh_.param("aggregation_type", aggro_str, std::string("last"));
   std::transform(aggro_str.begin(), aggro_str.end(), aggro_str.begin(), ::tolower);
   if (aggro_str == "last")
   {
@@ -84,18 +85,25 @@ void MapGridCritic::onInit()
   }
 }
 
-void MapGridCritic::setAsObstacle(unsigned int index)
+void MapGridCritic::setAsObstacle(unsigned int x, unsigned int y)
 {
-  cell_values_[index] = obstacle_score_;
+  cell_values_.setValue(x, y, obstacle_score_);
 }
 
 void MapGridCritic::reset()
 {
   queue_->reset();
-  cell_values_.resize(costmap_->getSizeInCellsX() * costmap_->getSizeInCellsY());
-  obstacle_score_ = static_cast<double>(cell_values_.size());
-  unreachable_score_ = obstacle_score_ + 1.0;
-  std::fill(cell_values_.begin(), cell_values_.end(), unreachable_score_);
+  if (costmap_->getInfo() == cell_values_.getInfo())
+  {
+    cell_values_.reset();
+  }
+  else
+  {
+    obstacle_score_ = static_cast<double>(costmap_->getWidth() * costmap_->getHeight());
+    unreachable_score_ = obstacle_score_ + 1.0;
+    cell_values_.setDefaultValue(unreachable_score_);
+    cell_values_.setInfo(costmap_->getInfo());
+  }
 }
 
 void MapGridCritic::propogateManhattanDistances()
@@ -103,7 +111,7 @@ void MapGridCritic::propogateManhattanDistances()
   while (!queue_->isEmpty())
   {
     costmap_queue::CellData cell = queue_->getNextCell();
-    cell_values_[cell.index_] = abs(cell.src_x_ - cell.x_) + abs(cell.src_y_ - cell.y_);
+    cell_values_.setValue(cell.x_, cell.y_, abs(cell.src_x_ - cell.x_) + abs(cell.src_y_ - cell.y_));
   }
 }
 
@@ -160,7 +168,7 @@ double MapGridCritic::scorePose(const geometry_msgs::Pose2D& pose)
 {
   unsigned int cell_x, cell_y;
   // we won't allow trajectories that go off the map... shouldn't happen that often anyways
-  if (!costmap_->worldToMap(pose.x, pose.y, cell_x, cell_y))
+  if (!worldToGridBounded(costmap_->getInfo(), pose.x, pose.y, cell_x, cell_y))
   {
     throw nav_core2::IllegalTrajectoryException(name_, "Trajectory Goes Off Grid.");
   }
@@ -172,9 +180,9 @@ void MapGridCritic::addGridScores(sensor_msgs::PointCloud& pc)
   sensor_msgs::ChannelFloat32 grid_scores;
   grid_scores.name = name_;
 
-  costmap_2d::Costmap2D* costmap = costmap_ros_->getCostmap();
-  unsigned int size_x = costmap->getSizeInCellsX();
-  unsigned int size_y = costmap->getSizeInCellsY();
+  const nav_core2::Costmap& costmap = *costmap_;
+  unsigned int size_x = costmap.getWidth();
+  unsigned int size_y = costmap.getHeight();
   grid_scores.values.resize(size_x * size_y);
   unsigned int i = 0;
   for (unsigned int cy = 0; cy < size_y; cy++)

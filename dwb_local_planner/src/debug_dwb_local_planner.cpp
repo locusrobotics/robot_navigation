@@ -41,21 +41,21 @@
 namespace dwb_local_planner
 {
 
-void DebugDWBLocalPlanner::initialize(std::string name, TFListenerPtr tf, CostmapROSPtr costmap_ros)
+void DebugDWBLocalPlanner::initialize(const ros::NodeHandle& parent, const std::string& name,
+                                      TFListenerPtr tf, nav_core2::Costmap::Ptr costmap)
 {
-  DWBLocalPlanner::initialize(name, tf, costmap_ros);
-  ros::NodeHandle private_nh("~/" + name);
+  DWBLocalPlanner::initialize(parent, name, tf, costmap);
 
-  debug_service_ = private_nh.advertiseService("debug_local_plan",
-                                               &DebugDWBLocalPlanner::debugLocalPlanService, this);
-  twist_gen_service_ = private_nh.advertiseService("generate_twists",
-                                                   &DebugDWBLocalPlanner::generateTwistsService, this);
-  score_service_ = private_nh.advertiseService("score_trajectory",
-                                               &DebugDWBLocalPlanner::scoreTrajectoryService, this);
-  critic_service_ = private_nh.advertiseService("get_critic_score",
-                                                &DebugDWBLocalPlanner::getCriticScoreService, this);
-  generate_traj_service_ = private_nh.advertiseService("generate_traj",
-                                                       &DebugDWBLocalPlanner::generateTrajectoryService, this);
+  debug_service_ = planner_nh_.advertiseService("debug_local_plan",
+                                                &DebugDWBLocalPlanner::debugLocalPlanService, this);
+  twist_gen_service_ = planner_nh_.advertiseService("generate_twists",
+                                                    &DebugDWBLocalPlanner::generateTwistsService, this);
+  score_service_ = planner_nh_.advertiseService("score_trajectory",
+                                                &DebugDWBLocalPlanner::scoreTrajectoryService, this);
+  critic_service_ = planner_nh_.advertiseService("get_critic_score",
+                                                 &DebugDWBLocalPlanner::getCriticScoreService, this);
+  generate_traj_service_ = planner_nh_.advertiseService("generate_traj",
+                                                        &DebugDWBLocalPlanner::generateTrajectoryService, this);
 }
 
 bool DebugDWBLocalPlanner::generateTwistsService(dwb_msgs::GenerateTwists::Request  &req,
@@ -75,20 +75,12 @@ bool DebugDWBLocalPlanner::generateTrajectoryService(dwb_msgs::GenerateTrajector
 bool DebugDWBLocalPlanner::scoreTrajectoryService(dwb_msgs::ScoreTrajectory::Request  &req,
                                                   dwb_msgs::ScoreTrajectory::Response &res)
 {
+  if (req.goal.header.frame_id != "")
+    setGoalPose(req.goal);
   if (req.global_plan.poses.size() > 0)
     setPlan(req.global_plan);
 
-  nav_2d_msgs::Path2D transformed_plan;
-  nav_2d_msgs::Pose2DStamped goal_pose;
-  prepareGlobalPlan(req.pose, transformed_plan, goal_pose);
-
-  for (TrajectoryCritic::Ptr critic : critics_)
-  {
-    if (critic->prepare(req.pose.pose, req.velocity, goal_pose.pose, transformed_plan) == false)
-    {
-      ROS_WARN_NAMED("DebugDWBLocalPlanner", "A scoring function failed to prepare");
-    }
-  }
+  prepare(req.pose, req.velocity);
   res.score = scoreTrajectory(req.traj);
   return true;
 }
@@ -112,15 +104,13 @@ bool DebugDWBLocalPlanner::getCriticScoreService(dwb_msgs::GetCriticScore::Reque
     ROS_WARN_NAMED("DebugDWBLocalPlanner", "Critic %s not found!", req.critic_name.c_str());
     return false;
   }
-
+  if (req.goal.header.frame_id != "")
+    setGoalPose(req.goal);
   if (req.global_plan.poses.size() > 0)
     setPlan(req.global_plan);
 
-  nav_2d_msgs::Path2D transformed_plan;
-  nav_2d_msgs::Pose2DStamped goal_pose;
-  prepareGlobalPlan(req.pose, transformed_plan, goal_pose);
-
-  critic->prepare(req.pose.pose, req.velocity, goal_pose.pose, transformed_plan);
+  // This prepares all the critics, even though we only need to prepare the one
+  prepare(req.pose, req.velocity);
 
   res.score.raw_score = critic->scoreTrajectory(req.traj);
   res.score.scale = critic->getScale();
@@ -132,6 +122,8 @@ bool DebugDWBLocalPlanner::getCriticScoreService(dwb_msgs::GetCriticScore::Reque
 bool DebugDWBLocalPlanner::debugLocalPlanService(dwb_msgs::DebugLocalPlan::Request &req,
                                                  dwb_msgs::DebugLocalPlan::Response &res)
 {
+  if (req.goal.header.frame_id != "")
+    setGoalPose(req.goal);
   if (req.global_plan.poses.size() > 0)
     setPlan(req.global_plan);
   std::shared_ptr<dwb_msgs::LocalPlanEvaluation> results = std::make_shared<dwb_msgs::LocalPlanEvaluation>();
