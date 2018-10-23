@@ -63,24 +63,6 @@ public:
                            const nav_2d_msgs::Polygon2D& oriented_footprint);
   double getScale() const override { return costmap_->getResolution() * scale_; }
 protected:
-  /**
-   * @brief Rasterizes a line in the costmap grid and checks for collisions
-   * @param x0 The x position of the first cell in grid coordinates
-   * @param y0 The y position of the first cell in grid coordinates
-   * @param x1 The x position of the second cell in grid coordinates
-   * @param y1 The y position of the second cell in grid coordinates
-   * @return A positive cost for a legal line... negative otherwise
-   */
-  double lineCost(int x0, int x1, int y0, int y1);
-
-  /**
-   * @brief Checks the cost of a point in the costmap
-   * @param x The x position of the point in cell coordinates
-   * @param y The y position of the point in cell coordinates
-   * @return A positive cost for a legal point... negative otherwise
-   */
-  double pointCost(int x, int y);
-
   nav_2d_msgs::Polygon2D footprint_spec_;
 };
 }  // namespace dwb_critics

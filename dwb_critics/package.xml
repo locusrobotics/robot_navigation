@@ -18,6 +18,7 @@
   <depend>nav_2d_msgs</depend>
   <depend>nav_2d_utils</depend>
   <depend>nav_core2</depend>
+  <depend>nav_grid_iterators</depend>
   <depend>pluginlib</depend>
   <depend>roscpp</depend>
   <depend>sensor_msgs</depend>
