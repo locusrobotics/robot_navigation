@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,39 +32,16 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef DWB_CRITICS_OBSTACLE_FOOTPRINT_H
-#define DWB_CRITICS_OBSTACLE_FOOTPRINT_H
+#ifndef NAV_GRID_ITERATORS_ITERATORS_H
+#define NAV_GRID_ITERATORS_ITERATORS_H
 
-#include <dwb_critics/base_obstacle.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <vector>
+#include <nav_grid_iterators/whole_grid.h>
+#include <nav_grid_iterators/sub_grid.h>
+#include <nav_grid_iterators/circle_fill.h>
+#include <nav_grid_iterators/circle_outline.h>
+#include <nav_grid_iterators/spiral.h>
+#include <nav_grid_iterators/line.h>
+#include <nav_grid_iterators/polygon_outline.h>
+#include <nav_grid_iterators/polygon_fill.h>
 
-namespace dwb_critics
-{
-
-/**
- * @class ObstacleFootprintCritic
- * @brief Uses costmap 2d to assign negative costs if robot footprint is in obstacle on any point of the trajectory.
- *
- * Internally, this technically only checks if the border of the footprint collides with anything for computational
- * efficiency. This is valid if the obstacles in the local costmap are inflated.
- *
- * A more robust class could check every cell within the robot's footprint without inflating the obstacles,
- * at some computational cost. That is left as an excercise to the reader.
- */
-class ObstacleFootprintCritic : public BaseObstacleCritic
-{
-public:
-  void onInit() override;
-  bool prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msgs::Twist2D& vel,
-               const geometry_msgs::Pose2D& goal, const nav_2d_msgs::Path2D& global_plan) override;
-  double scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose) override;
-  virtual double scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose,
-                           const nav_2d_msgs::Polygon2D& oriented_footprint);
-  double getScale() const override { return costmap_->getResolution() * scale_; }
-protected:
-  nav_2d_msgs::Polygon2D footprint_spec_;
-};
-}  // namespace dwb_critics
-
-#endif  // DWB_CRITICS_OBSTACLE_FOOTPRINT_H
+#endif  // NAV_GRID_ITERATORS_ITERATORS_H

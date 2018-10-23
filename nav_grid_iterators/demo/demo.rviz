@@ -1,0 +1,19 @@
+Visualization Manager:
+  Displays:
+    - Class: rviz/Map
+      Color Scheme: costmap
+      Enabled: true
+      Name: Map
+      Topic: /map
+  Views:
+    Current:
+      Angle: 0
+      Class: rviz/TopDownOrtho
+      Name: Current View
+      Scale: 100
+      Value: TopDownOrtho (rviz)
+      X: 3.5
+      Y: 2.5
+Window Geometry:
+  Height: 1400
+  Width: 2500

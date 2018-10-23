@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,39 +32,33 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef DWB_CRITICS_OBSTACLE_FOOTPRINT_H
-#define DWB_CRITICS_OBSTACLE_FOOTPRINT_H
+#include <nav_grid_iterators/sub_grid.h>
 
-#include <dwb_critics/base_obstacle.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <vector>
-
-namespace dwb_critics
+namespace nav_grid_iterators
 {
-
-/**
- * @class ObstacleFootprintCritic
- * @brief Uses costmap 2d to assign negative costs if robot footprint is in obstacle on any point of the trajectory.
- *
- * Internally, this technically only checks if the border of the footprint collides with anything for computational
- * efficiency. This is valid if the obstacles in the local costmap are inflated.
- *
- * A more robust class could check every cell within the robot's footprint without inflating the obstacles,
- * at some computational cost. That is left as an excercise to the reader.
- */
-class ObstacleFootprintCritic : public BaseObstacleCritic
+SubGrid SubGrid::begin() const
 {
-public:
-  void onInit() override;
-  bool prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msgs::Twist2D& vel,
-               const geometry_msgs::Pose2D& goal, const nav_2d_msgs::Path2D& global_plan) override;
-  double scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose) override;
-  virtual double scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose,
-                           const nav_2d_msgs::Polygon2D& oriented_footprint);
-  double getScale() const override { return costmap_->getResolution() * scale_; }
-protected:
-  nav_2d_msgs::Polygon2D footprint_spec_;
-};
-}  // namespace dwb_critics
+  return SubGrid(info_, min_x_, min_y_, width_, height_);
+}
 
-#endif  // DWB_CRITICS_OBSTACLE_FOOTPRINT_H
+SubGrid SubGrid::end() const
+{
+  return SubGrid(info_, nav_grid::Index(min_x_, min_y_ + height_), min_x_, min_y_, width_, height_);
+}
+
+void SubGrid::increment()
+{
+  ++index_.x;
+  if (index_.x >= min_x_ + width_)
+  {
+    index_.x = min_x_;
+    ++index_.y;
+  }
+}
+
+bool SubGrid::fieldsEqual(const SubGrid& other)
+{
+  return min_x_ == other.min_x_ && min_y_ == other.min_y_ && width_ == other.width_ && height_ == other.height_;
+}
+
+}  // namespace nav_grid_iterators

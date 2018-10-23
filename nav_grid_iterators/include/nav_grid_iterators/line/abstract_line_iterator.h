@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,39 +32,53 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef DWB_CRITICS_OBSTACLE_FOOTPRINT_H
-#define DWB_CRITICS_OBSTACLE_FOOTPRINT_H
+#ifndef NAV_GRID_ITERATORS_LINE_ABSTRACT_LINE_ITERATOR_H
+#define NAV_GRID_ITERATORS_LINE_ABSTRACT_LINE_ITERATOR_H
 
-#include <dwb_critics/base_obstacle.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <vector>
+#include <nav_grid/index.h>
 
-namespace dwb_critics
+namespace nav_grid_iterators
 {
-
 /**
- * @class ObstacleFootprintCritic
- * @brief Uses costmap 2d to assign negative costs if robot footprint is in obstacle on any point of the trajectory.
+ * @class AbstractLineIterator
+ * @brief Abstract class for iterating over lines.
  *
- * Internally, this technically only checks if the border of the footprint collides with anything for computational
- * efficiency. This is valid if the obstacles in the local costmap are inflated.
- *
- * A more robust class could check every cell within the robot's footprint without inflating the obstacles,
- * at some computational cost. That is left as an excercise to the reader.
+ * Not constrained by a bounding box from NavGridInfo, i.e. can include positive and negative indexes
  */
-class ObstacleFootprintCritic : public BaseObstacleCritic
+class AbstractLineIterator
 {
 public:
-  void onInit() override;
-  bool prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msgs::Twist2D& vel,
-               const geometry_msgs::Pose2D& goal, const nav_2d_msgs::Path2D& global_plan) override;
-  double scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose) override;
-  virtual double scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose,
-                           const nav_2d_msgs::Polygon2D& oriented_footprint);
-  double getScale() const override { return costmap_->getResolution() * scale_; }
-protected:
-  nav_2d_msgs::Polygon2D footprint_spec_;
-};
-}  // namespace dwb_critics
+  /**
+   * @brief Public Constructor
+   */
+  AbstractLineIterator() {}
 
-#endif  // DWB_CRITICS_OBSTACLE_FOOTPRINT_H
+  /**
+   * @brief Dereference the iterator
+   * @return the index to which the iterator is pointing.
+   */
+  const nav_grid::SignedIndex& operator*() const { return index_; }
+
+  virtual nav_grid::SignedIndex getFinalIndex() const = 0;
+
+  bool isFinished()
+  {
+    return getFinalIndex() == index_;
+  }
+
+  /**
+   * @brief Increase the iterator to the next element.
+   */
+  virtual void increment() = 0;
+
+protected:
+  /**
+   * @brief Protected Constructor - takes arbitrary index
+   */
+  explicit AbstractLineIterator(nav_grid::SignedIndex index) : index_(index) {}
+  nav_grid::SignedIndex index_;
+};
+
+}  // namespace nav_grid_iterators
+
+#endif  // NAV_GRID_ITERATORS_LINE_ABSTRACT_LINE_ITERATOR_H

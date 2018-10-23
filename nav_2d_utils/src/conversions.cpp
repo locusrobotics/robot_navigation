@@ -159,4 +159,16 @@ nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d)
   return path;
 }
 
+nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info)
+{
+  nav_msgs::MapMetaData metadata;
+  metadata.resolution = info.resolution;
+  metadata.width = info.width;
+  metadata.height = info.height;
+  metadata.origin.position.x = info.origin_x;
+  metadata.origin.position.y = info.origin_y;
+  metadata.origin.orientation.w = 1.0;
+  return metadata;
+}
+
 }  // namespace nav_2d_utils
