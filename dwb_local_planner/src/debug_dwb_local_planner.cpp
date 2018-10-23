@@ -116,6 +116,8 @@ bool DebugDWBLocalPlanner::getCriticScoreService(dwb_msgs::GetCriticScore::Reque
   res.score.scale = critic->getScale();
   res.score.name = req.critic_name;
 
+  pub_.publishCostGrid(costmap_, critics_);
+
   return true;
 }
 

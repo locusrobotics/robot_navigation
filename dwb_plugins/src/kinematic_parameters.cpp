@@ -40,6 +40,8 @@ using nav_2d_utils::moveDeprecatedParameter;
 namespace dwb_plugins
 {
 
+const double EPSILON = 1E-5;
+
 /**
  * @brief Helper function to set the deceleration to the negative acceleration if it was not already set.
  * @param nh NodeHandle
@@ -113,9 +115,9 @@ void KinematicParameters::reconfigureCB(KinematicParamsConfig &config, uint32_t 
 bool KinematicParameters::isValidSpeed(double x, double y, double theta)
 {
   double vmag_sq = x * x + y * y;
-  if (max_speed_xy_ >= 0.0 && vmag_sq > max_speed_xy_sq_) return false;
-  if (min_speed_xy_ >= 0.0 && vmag_sq < min_speed_xy_sq_ &&
-      min_speed_theta_ >= 0.0 && fabs(theta) < min_speed_theta_) return false;
+  if (max_speed_xy_ >= 0.0 && vmag_sq > max_speed_xy_sq_ + EPSILON) return false;
+  if (min_speed_xy_ >= 0.0 && vmag_sq + EPSILON < min_speed_xy_sq_ &&
+      min_speed_theta_ >= 0.0 && fabs(theta) + EPSILON < min_speed_theta_) return false;
   if (vmag_sq == 0.0 && theta == 0.0) return false;
   return true;
 }

@@ -67,14 +67,14 @@ namespace dwb_local_planner
  *       This can be used for stateful critics that monitor the trajectory through time.
  *
  *  Optionally, there is also a debugging mechanism for certain types of critics in the
- *  addGridScores method. If the score for a trajectory depends on its relationship to
- *  the costmap, addGridScores can provide that information to the dwb_local_planner
+ *  addCriticVisualization method. If the score for a trajectory depends on its relationship to
+ *  the costmap, addCriticVisualization can provide that information to the dwb_local_planner
  *  which will publish the grid scores as a PointCloud2.
  */
 class TrajectoryCritic
 {
 public:
-  typedef std::shared_ptr<dwb_local_planner::TrajectoryCritic> Ptr;
+  using Ptr = std::shared_ptr<dwb_local_planner::TrajectoryCritic>;
 
   virtual ~TrajectoryCritic() {}
 
@@ -141,7 +141,7 @@ public:
   /**
    * @brief Add information to the given pointcloud for debugging costmap-grid based scores
    *
-   * addGridScores is an optional debugging mechanism for providing rich information
+   * addCriticVisualization is an optional debugging mechanism for providing rich information
    * about the cost for certain trajectories. Some critics will have scoring mechanisms
    * wherein there will be some score for each cell in the costmap. This could be as
    * straightforward as the cost in the costmap, or it could be the number of cells away
@@ -154,7 +154,7 @@ public:
    *
    * @param pc PointCloud to add channels to
    */
-  virtual void addGridScores(sensor_msgs::PointCloud& pc) {}
+  virtual void addCriticVisualization(sensor_msgs::PointCloud& pc) {}
 
   std::string getName()
   {

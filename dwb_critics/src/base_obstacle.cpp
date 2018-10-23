@@ -78,7 +78,7 @@ bool BaseObstacleCritic::isValidCost(const unsigned char cost)
          cost != costmap_->NO_INFORMATION;
 }
 
-void BaseObstacleCritic::addGridScores(sensor_msgs::PointCloud& pc)
+void BaseObstacleCritic::addCriticVisualization(sensor_msgs::PointCloud& pc)
 {
   sensor_msgs::ChannelFloat32 grid_scores;
   grid_scores.name = name_;

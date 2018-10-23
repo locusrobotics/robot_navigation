@@ -19,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES dwb_local_planner debug_dwb_local_planner
+    LIBRARIES dwb_local_planner debug_dwb_local_planner trajectory_utils
     CATKIN_DEPENDS
         dwb_msgs geometry_msgs nav_2d_msgs nav_2d_utils nav_core2
         nav_msgs pluginlib roscpp sensor_msgs tf visualization_msgs
@@ -42,20 +42,27 @@ add_library(debug_dwb_local_planner src/debug_dwb_local_planner.cpp)
 target_link_libraries(debug_dwb_local_planner ${catkin_LIBRARIES} dwb_local_planner)
 add_dependencies(debug_dwb_local_planner ${catkin_EXPORTED_TARGETS})
 
+add_library(trajectory_utils src/trajectory_utils.cpp)
+target_link_libraries(trajectory_utils ${catkin_LIBRARIES})
+
 add_executable(planner_node src/planner_node.cpp)
 target_link_libraries(planner_node ${catkin_LIBRARIES} debug_dwb_local_planner)
 add_dependencies(planner_node ${catkin_EXPORTED_TARGETS})
 
 if(CATKIN_ENABLE_TESTING)
-  find_package(catkin REQUIRED COMPONENTS roslint)
+  find_package(rostest REQUIRED)
+  find_package(roslint)
   roslint_cpp()
   roslint_add_test()
+
+  catkin_add_gtest(utils_test test/utils_test.cpp)
+  target_link_libraries(utils_test trajectory_utils)
 endif()
 
 install(TARGETS planner_node
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-install(TARGETS dwb_local_planner debug_dwb_local_planner
+install(TARGETS dwb_local_planner debug_dwb_local_planner trajectory_utils
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
