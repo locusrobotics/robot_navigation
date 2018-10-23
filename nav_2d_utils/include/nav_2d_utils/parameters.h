@@ -58,7 +58,7 @@ param_t searchAndGetParam(const ros::NodeHandle& nh, const std::string& param_na
   std::string resolved_name;
   if (nh.searchParam(param_name, resolved_name))
   {
-    param_t value = 0;
+    param_t value = default_value;
     nh.param(resolved_name, value, default_value);
     return value;
   }

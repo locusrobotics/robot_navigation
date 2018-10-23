@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,56 +32,56 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NAV_2D_UTILS_ODOM_SUBSCRIBER_H
-#define NAV_2D_UTILS_ODOM_SUBSCRIBER_H
+#ifndef NAV_GRID_PUB_SUB_NAV_GRID_SUBSCRIBER_H
+#define NAV_GRID_PUB_SUB_NAV_GRID_SUBSCRIBER_H
 
 #include <ros/ros.h>
-#include <nav_2d_utils/conversions.h>
-#include <nav_msgs/Odometry.h>
-#include <nav_2d_msgs/Twist2DStamped.h>
-#include <boost/thread/mutex.hpp>
+#include <nav_grid/nav_grid.h>
+#include <nav_core2/bounds.h>
+#include <nav_2d_msgs/NavGridOfChars.h>
+#include <nav_2d_msgs/NavGridOfCharsUpdate.h>
+#include <nav_msgs/OccupancyGrid.h>
+#include <map_msgs/OccupancyGridUpdate.h>
 #include <string>
+#include <vector>
 
-namespace nav_2d_utils
+namespace nav_grid_pub_sub
 {
-
-/**
- * @class OdomSubscriber
- * Wrapper for some common odometry operations. Subscribes to the topic with a mutex.
- */
-class OdomSubscriber
+class NavGridSubscriber
 {
 public:
-  /**
-   * @brief Constructor that subscribes to an Odometry topic
-   *
-   * @param nh NodeHandle for creating subscriber
-   * @param default_topic Name of the topic that will be loaded of the odom_topic param is not set.
-   */
-  explicit OdomSubscriber(ros::NodeHandle& nh, std::string default_topic = "odom")
+  using NewDataCallback = std::function<void(const nav_core2::UIntBounds&)>;
+
+  explicit NavGridSubscriber(nav_grid::NavGrid<unsigned char>& data) : data_(data) {}
+  void init(ros::NodeHandle& nh, NewDataCallback callback, const std::string& topic = "map",
+            bool nav_grid = true, bool subscribe_to_updates = true);
+  void activate();
+  void deactivate();
+  bool hasData() const { return map_received_; }
+
+  void setCostInterpretation(const std::vector<unsigned char>& cost_interpretation_table)
   {
-    std::string odom_topic;
-    nh.param("odom_topic", odom_topic, default_topic);
-    odom_sub_ = nh.subscribe<nav_msgs::Odometry>(odom_topic, 1, boost::bind(&OdomSubscriber::odomCallback, this, _1));
+    cost_interpretation_table_ = cost_interpretation_table;
   }
-
-  inline nav_2d_msgs::Twist2D getTwist() { return odom_vel_.velocity; }
-  inline nav_2d_msgs::Twist2DStamped getTwistStamped() { return odom_vel_; }
-
 protected:
-  void odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
-  {
-    ROS_INFO_ONCE("odom received!");
-    boost::mutex::scoped_lock lock(odom_mutex_);
-    odom_vel_.header = msg->header;
-    odom_vel_.velocity = twist3Dto2D(msg->twist.twist);
-  }
+  void incomingNav(const nav_2d_msgs::NavGridOfCharsConstPtr& new_map);
+  void incomingNavUpdate(const nav_2d_msgs::NavGridOfCharsUpdateConstPtr& update);
 
-  ros::Subscriber odom_sub_;
-  nav_2d_msgs::Twist2DStamped odom_vel_;
-  boost::mutex odom_mutex_;
+  void incomingOcc(const nav_msgs::OccupancyGridConstPtr& new_map);
+  void incomingOccUpdate(const map_msgs::OccupancyGridUpdateConstPtr& update);
+
+  nav_grid::NavGrid<unsigned char>& data_;
+  NewDataCallback callback_;
+
+  std::vector<unsigned char> cost_interpretation_table_;
+
+  ros::Subscriber sub_, update_sub_;
+  bool map_received_;
+
+  ros::NodeHandle nh_;
+  std::string topic_;
+  bool nav_grid_, subscribe_to_updates_;
 };
+}  // namespace nav_grid_pub_sub
 
-}  // namespace nav_2d_utils
-
-#endif  // NAV_2D_UTILS_ODOM_SUBSCRIBER_H
+#endif  // NAV_GRID_PUB_SUB_NAV_GRID_SUBSCRIBER_H

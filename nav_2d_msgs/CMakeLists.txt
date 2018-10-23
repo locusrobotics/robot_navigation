@@ -9,6 +9,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(FILES
     NavGridInfo.msg
+    NavGridOfChars.msg
+    NavGridOfCharsUpdate.msg
+    NavGridOfDoubles.msg
+    NavGridOfDoublesUpdate.msg
     Path2D.msg
     Point2D.msg
     Polygon2D.msg
@@ -18,6 +22,7 @@ add_message_files(FILES
     Twist2D.msg
     Twist2D32.msg
     Twist2DStamped.msg
+    UIntBounds.msg
 )
 
 generate_messages(DEPENDENCIES geometry_msgs std_msgs)
