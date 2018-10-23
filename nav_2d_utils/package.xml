@@ -16,5 +16,7 @@
   <depend>roscpp</depend>
   <depend>tf</depend>
   <depend>xmlrpcpp</depend>
+  <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
 
 </package>

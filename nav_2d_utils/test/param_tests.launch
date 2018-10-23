@@ -1,0 +1,34 @@
+<launch>
+  <test time-limit="10" test-name="param_tests" pkg="nav_2d_utils" type="param_tests">
+    <param name="unpadded/footprint" value="[[1, 1], [-1, 1], [-1, -1]]" />
+
+    <rosparam ns="xmlrpc">
+      footprint: [[0.1, 0.1], [-0.1, 0.1], [-0.1, -0.1], [0.1, -0.1]]
+      footprint2:
+        x: [0.1, -0.1, -0.1, 0.1]
+        y: [0.1, 0.1, -0.1, -0.1]
+    </rosparam>
+
+    <rosparam ns="xmlrpc_fail"> <!-- Footprint includes a 3-value point, which should make it fail. -->
+      footprint: [[0.1, 0.1], [-0.1, 0.1, 77.0], [-0.1, -0.1], [0.1, -0.1]]
+      footprint2: 1.0
+      footprint3: false
+      footprint4: [[0.1, 0.1], [0.1, 0.1]]
+      footprint5: ['x', 'y', 'z']
+      footprint6: [['x', 'y'], ['a', 'b'], ['c'], ['d']]
+      footprint7:
+       x: [0.1, -0.1, -0.1, 0.1]
+      footprint8:
+       x: 0
+       y: 0
+      footprint9:
+       x: ['a', 'b', 'c']
+       y: [d, e, f]
+    </rosparam>
+
+    <param name="same_level/footprint" value="[[1, 2], [3, 4], [5, 6]]" />
+
+    <param name="empty/empty" value="0" /> <!-- just so you can see there are no real params under "empty". -->
+  </test>
+
+</launch>
