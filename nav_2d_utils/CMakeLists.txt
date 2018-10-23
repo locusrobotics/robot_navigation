@@ -4,11 +4,27 @@ project(nav_2d_utils)
 set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED
-    COMPONENTS geometry_msgs nav_2d_msgs nav_core2 nav_msgs roscpp tf xmlrpcpp
+    COMPONENTS
+        geometry_msgs
+        nav_2d_msgs
+        nav_core2
+        nav_grid
+        nav_msgs
+        roscpp
+        tf
+        xmlrpcpp
 )
 
 catkin_package(
-    CATKIN_DEPENDS geometry_msgs nav_2d_msgs nav_core2 nav_msgs roscpp tf xmlrpcpp
+    CATKIN_DEPENDS
+        geometry_msgs
+        nav_2d_msgs
+        nav_core2
+        nav_grid
+        nav_msgs
+        roscpp
+        tf
+        xmlrpcpp
     INCLUDE_DIRS include
     LIBRARIES conversions path_ops polygons
 )
