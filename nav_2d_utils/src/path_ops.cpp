@@ -36,6 +36,18 @@
 
 namespace nav_2d_utils
 {
+double getPlanLength(const nav_2d_msgs::Path2D& plan)
+{
+  double length = 0.0;
+  for (unsigned int i = 1; i < plan.poses.size(); i++)
+  {
+    const geometry_msgs::Pose2D& prev = plan.poses[i - 1];
+    const geometry_msgs::Pose2D& pose = plan.poses[i];
+    length += hypot(prev.x - pose.x, prev.y - pose.y);
+  }
+  return length;
+}
+
 nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_in, double resolution)
 {
   nav_2d_msgs::Path2D global_plan_out;

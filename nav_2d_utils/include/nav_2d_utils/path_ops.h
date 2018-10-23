@@ -40,6 +40,11 @@
 namespace nav_2d_utils
 {
 /**
+ * @brief Calculate the length of the plan
+  */
+double getPlanLength(const nav_2d_msgs::Path2D& plan);
+
+/**
  * @brief Increase plan resolution to match that of the costmap by adding points linearly between points
  *
  * @param global_plan_in input plan
