@@ -51,6 +51,15 @@ void DWBPublisher::initialize(ros::NodeHandle& nh)
   if (publish_evaluation_)
     eval_pub_ = nh.advertise<dwb_msgs::LocalPlanEvaluation>("evaluation", 1);
 
+  nh.param("publish_input_params", publish_input_params_, true);
+  if (publish_input_params_)
+  {
+    info_pub_ = nh.advertise<nav_2d_msgs::NavGridInfo>("info", 1);
+    pose_pub_ = nh.advertise<geometry_msgs::Pose2D>("pose", 1);
+    goal_pub_ = nh.advertise<geometry_msgs::Pose2D>("goal", 1);
+    velocity_pub_ = nh.advertise<nav_2d_msgs::Twist2D>("velocity", 1);
+  }
+
   nh.param("publish_global_plan", publish_global_plan_, true);
   if (publish_global_plan_)
     global_pub_ = nh.advertise<nav_msgs::Path>("global_plan", 1);
@@ -66,7 +75,9 @@ void DWBPublisher::initialize(ros::NodeHandle& nh)
   nh.param("publish_trajectories", publish_trajectories_, true);
   if (publish_trajectories_)
     marker_pub_ = global_nh.advertise<visualization_msgs::MarkerArray>("marker", 1);
-  prev_marker_count_ = 0;
+  double marker_lifetime;
+  nh.param("marker_lifetime", marker_lifetime, 0.1);
+  marker_lifetime_ = ros::Duration(marker_lifetime);
 
   nh.param("publish_cost_grid_pc", publish_cost_grid_pc_, false);
   if (publish_cost_grid_pc_)
@@ -76,7 +87,7 @@ void DWBPublisher::initialize(ros::NodeHandle& nh)
 void DWBPublisher::publishEvaluation(std::shared_ptr<dwb_msgs::LocalPlanEvaluation> results)
 {
   if (results == nullptr) return;
-  if (publish_evaluation_)
+  if (publish_evaluation_ && eval_pub_.getNumSubscribers() > 0)
   {
     eval_pub_.publish(*results);
   }
@@ -85,7 +96,7 @@ void DWBPublisher::publishEvaluation(std::shared_ptr<dwb_msgs::LocalPlanEvaluati
 
 void DWBPublisher::publishTrajectories(const dwb_msgs::LocalPlanEvaluation& results)
 {
-  if (!publish_trajectories_) return;
+  if (!publish_trajectories_ || marker_pub_.getNumSubscribers() == 0) return;
   visualization_msgs::MarkerArray ma;
   visualization_msgs::Marker m;
 
@@ -98,17 +109,23 @@ void DWBPublisher::publishTrajectories(const dwb_msgs::LocalPlanEvaluation& resu
   m.pose.orientation.w = 1;
   m.scale.x = 0.002;
   m.color.a = 1.0;
+  m.lifetime = marker_lifetime_;
 
   double best_cost = results.twists[results.best_index].total,
-         worst_cost = results.twists[results.worst_index].total;
+         worst_cost = results.twists[results.worst_index].total,
+         denominator = worst_cost - best_cost;
+  if (std::fabs(denominator) < 1e-9)
+  {
+    denominator = 1.0;
+  }
 
   for (unsigned int i = 0; i < results.twists.size(); i++)
   {
     const dwb_msgs::TrajectoryScore& twist = results.twists[i];
     if (twist.total >= 0)
     {
-      m.color.r = 1 - (twist.total - best_cost) / (worst_cost - best_cost);
-      m.color.g = 1 - (twist.total - best_cost) / (worst_cost - best_cost);
+      m.color.r = 1 - (twist.total - best_cost) / denominator;
+      m.color.g = 1 - (twist.total - best_cost) / denominator;
       m.color.b = 1;
       m.ns = "ValidTrajectories";
     }
@@ -128,21 +145,14 @@ void DWBPublisher::publishTrajectories(const dwb_msgs::LocalPlanEvaluation& resu
     ma.markers.push_back(m);
     m.id += 1;
   }
-  int temp = ma.markers.size();
-  for (int i = temp; i < prev_marker_count_; i++)
-  {
-    m.action = m.DELETE;
-    m.id = i;
-    ma.markers.push_back(m);
-  }
-  prev_marker_count_ = temp;
+
   marker_pub_.publish(ma);
 }
 
 void DWBPublisher::publishLocalPlan(const std_msgs::Header& header,
                                     const dwb_msgs::Trajectory2D& traj)
 {
-  if (!publish_local_plan_) return;
+  if (!publish_local_plan_ || local_pub_.getNumSubscribers() == 0) return;
 
   nav_msgs::Path path = nav_2d_utils::poses2DToPath(traj.poses, header.frame_id, header.stamp);
   local_pub_.publish(path);
@@ -151,7 +161,7 @@ void DWBPublisher::publishLocalPlan(const std_msgs::Header& header,
 void DWBPublisher::publishCostGrid(const nav_core2::Costmap::Ptr costmap,
                                    const std::vector<TrajectoryCritic::Ptr> critics)
 {
-  if (!publish_cost_grid_pc_) return;
+  if (!publish_cost_grid_pc_ || cost_grid_pc_pub_.getNumSubscribers() == 0) return;
 
   const nav_grid::NavGridInfo& info = costmap->getInfo();
   sensor_msgs::PointCloud cost_grid_pc;
@@ -180,7 +190,7 @@ void DWBPublisher::publishCostGrid(const nav_core2::Costmap::Ptr costmap,
   for (TrajectoryCritic::Ptr critic : critics)
   {
     unsigned int channel_index = cost_grid_pc.channels.size();
-    critic->addGridScores(cost_grid_pc);
+    critic->addCriticVisualization(cost_grid_pc);
     if (channel_index == cost_grid_pc.channels.size())
     {
       // No channels were added, so skip to next critic
@@ -216,9 +226,20 @@ void DWBPublisher::publishLocalPlan(const nav_2d_msgs::Path2D plan)
 
 void DWBPublisher::publishGenericPlan(const nav_2d_msgs::Path2D plan, const ros::Publisher pub, bool flag)
 {
-  if (!flag) return;
+  if (!flag || pub.getNumSubscribers() == 0) return;
   nav_msgs::Path path = nav_2d_utils::pathToPath(plan);
   pub.publish(path);
+}
+
+void DWBPublisher::publishInputParams(const nav_grid::NavGridInfo& info, const geometry_msgs::Pose2D& start_pose,
+                                      const nav_2d_msgs::Twist2D& velocity, const geometry_msgs::Pose2D& goal_pose)
+{
+  if (!publish_input_params_) return;
+
+  info_pub_.publish(nav_2d_utils::toMsg(info));
+  pose_pub_.publish(start_pose);
+  goal_pub_.publish(goal_pose);
+  velocity_pub_.publish(velocity);
 }
 
 }  // namespace dwb_local_planner

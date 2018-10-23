@@ -67,6 +67,7 @@ void DWBLocalPlanner::initialize(const ros::NodeHandle& parent, const std::strin
 
   planner_nh_.param("prune_plan", prune_plan_, true);
   planner_nh_.param("prune_distance", prune_distance_, 1.0);
+  planner_nh_.param("short_circuit_trajectory_evaluation", short_circuit_trajectory_evaluation_, true);
   planner_nh_.param("debug_trajectory_details", debug_trajectory_details_, false);
   pub_.initialize(planner_nh_);
 
@@ -145,13 +146,23 @@ bool DWBLocalPlanner::isGoalReached(const nav_2d_msgs::Pose2DStamped& pose, cons
     return false;
   }
 
-  return goal_checker_->isGoalReached(transformPoseToLocal(pose), transformPoseToLocal(goal_pose_), velocity);
+  // Update time stamp of goal pose
+  goal_pose_.header.stamp = pose.header.stamp;
+
+  bool ret = goal_checker_->isGoalReached(transformPoseToLocal(pose), transformPoseToLocal(goal_pose_), velocity);
+  if (ret)
+  {
+    ROS_INFO_THROTTLE_NAMED(1.0, "DWBLocalPlanner", "Goal reached!");
+  }
+  return ret;
 }
 
 void DWBLocalPlanner::setGoalPose(const nav_2d_msgs::Pose2DStamped& goal_pose)
 {
   ROS_INFO_NAMED("DWBLocalPlanner", "New Goal Received.");
   goal_pose_ = goal_pose;
+  traj_generator_->reset();
+  goal_checker_->reset();
   for (TrajectoryCritic::Ptr critic : critics_)
   {
     critic->reset();
@@ -179,7 +190,7 @@ nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2
     pub_.publishEvaluation(results);
     return cmd_vel;
   }
-  catch(const nav_core2::PlannerException& e)
+  catch (const nav_core2::PlannerException& e)
   {
     pub_.publishEvaluation(results);
     throw;
@@ -201,6 +212,8 @@ void DWBLocalPlanner::prepare(const nav_2d_msgs::Pose2DStamped& pose, const nav_
 
   geometry_msgs::Pose2D local_start_pose = transformPoseToLocal(pose),
                         local_goal_pose = transformPoseToLocal(goal_pose_);
+
+  pub_.publishInputParams(costmap_->getInfo(), local_start_pose, velocity, local_goal_pose);
 
   for (TrajectoryCritic::Ptr critic : critics_)
   {
@@ -231,7 +244,7 @@ nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2
     cmd_vel.header.stamp = ros::Time::now();
     cmd_vel.velocity = best.traj.velocity;
 
-    // debrief stateful scoring functions
+    // debrief stateful critics
     for (TrajectoryCritic::Ptr critic : critics_)
     {
       critic->debrief(cmd_vel.velocity);
@@ -242,7 +255,7 @@ nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2
 
     return cmd_vel;
   }
-  catch(const NoLegalTrajectoriesException& e)
+  catch (const NoLegalTrajectoriesException& e)
   {
     nav_2d_msgs::Twist2D empty_cmd;
     dwb_msgs::Trajectory2D empty_traj;
@@ -300,7 +313,7 @@ dwb_msgs::TrajectoryScore DWBLocalPlanner::coreScoringAlgorithm(const geometry_m
         }
       }
     }
-    catch(const nav_core2::IllegalTrajectoryException& e)
+    catch (const nav_core2::IllegalTrajectoryException& e)
     {
       if (results)
       {
@@ -356,7 +369,7 @@ dwb_msgs::TrajectoryScore DWBLocalPlanner::scoreTrajectory(const dwb_msgs::Traje
     cs.raw_score = critic_score;
     score.scores.push_back(cs);
     score.total += critic_score * cs.scale;
-    if (best_score > 0 && score.total > best_score)
+    if (short_circuit_trajectory_evaluation_ && best_score > 0 && score.total > best_score)
     {
       // since we keep adding positives, once we are worse than the best, we will stay worse
       break;

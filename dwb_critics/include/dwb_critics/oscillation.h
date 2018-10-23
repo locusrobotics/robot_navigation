@@ -86,7 +86,7 @@ public:
   void reset() override;
   void debrief(const nav_2d_msgs::Twist2D& cmd_vel) override;
 
-private:
+protected:
   /**
    * @class CommandTrend
    * @brief Helper class for performing the same logic on the x,y and theta dimensions
@@ -117,7 +117,7 @@ private:
      */
     bool hasSignFlipped();
 
-  private:
+  protected:
     // Simple Enum for Tracking
     enum class Sign { ZERO, POSITIVE, NEGATIVE };
 

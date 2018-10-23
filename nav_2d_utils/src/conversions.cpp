@@ -159,6 +159,46 @@ nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d)
   return path;
 }
 
+nav_2d_msgs::NavGridInfo toMsg(const nav_grid::NavGridInfo& info)
+{
+  nav_2d_msgs::NavGridInfo msg;
+  msg.width = info.width;
+  msg.height = info.height;
+  msg.resolution = info.resolution;
+  msg.frame_id = info.frame_id;
+  msg.origin_x = info.origin_x;
+  msg.origin_y = info.origin_y;
+  return msg;
+}
+
+nav_grid::NavGridInfo fromMsg(const nav_2d_msgs::NavGridInfo& msg)
+{
+  nav_grid::NavGridInfo info;
+  info.width = msg.width;
+  info.height = msg.height;
+  info.resolution = msg.resolution;
+  info.frame_id = msg.frame_id;
+  info.origin_x = msg.origin_x;
+  info.origin_y = msg.origin_y;
+  return info;
+}
+
+nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata)
+{
+  nav_grid::NavGridInfo info;
+  info.resolution = metadata.resolution;
+  info.width = metadata.width;
+  info.height = metadata.height;
+  info.origin_x = metadata.origin.position.x;
+  info.origin_y = metadata.origin.position.y;
+  if (std::abs(tf::getYaw(metadata.origin.orientation)) > 1e-5)
+  {
+    ROS_WARN_NAMED("nav_2d_utils",
+                   "Conversion from MapMetaData to NavGridInfo encountered a non-zero rotation. Ignoring.");
+  }
+  return info;
+}
+
 nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info)
 {
   nav_msgs::MapMetaData metadata;

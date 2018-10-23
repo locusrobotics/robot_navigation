@@ -55,7 +55,7 @@ class BaseObstacleCritic : public dwb_local_planner::TrajectoryCritic
 public:
   void onInit() override;
   double scoreTrajectory(const dwb_msgs::Trajectory2D& traj) override;
-  void addGridScores(sensor_msgs::PointCloud& pc) override;
+  void addCriticVisualization(sensor_msgs::PointCloud& pc) override;
 
   /**
    * @brief Return the obstacle score for a particular pose

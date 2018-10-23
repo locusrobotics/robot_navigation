@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,34 +32,34 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef DWB_CRITICS_PREFER_FORWARD_H_
-#define DWB_CRITICS_PREFER_FORWARD_H_
+#ifndef DWB_LOCAL_PLANNER_TRAJECTORY_UTILS_H
+#define DWB_LOCAL_PLANNER_TRAJECTORY_UTILS_H
 
-#include <dwb_local_planner/trajectory_critic.h>
-#include <string>
+#include <dwb_msgs/Trajectory2D.h>
 
-namespace dwb_critics
+namespace dwb_local_planner
 {
 
 /**
- * @class PreferForwardCritic
- * @brief Penalize trajectories with move backwards and/or turn too much
+ * @brief Helper function to find a pose in the trajectory with a particular time time_offset
+ * @param trajectory The trajectory to search
+ * @param time_offset The desired time_offset
+ * @return reference to the pose that is closest to the particular time offset
  *
- * Has three different scoring conditions:
- * 1) If the trajectory's x velocity is negative, return the penalty
- * 2) If the trajectory's x is low and the theta is also low, return the penalty.
- * 3) Otherwise, return a scaled version of the trajectory's theta.
+ * Linearly searches through the poses. Once the poses time_offset is greater than the desired time_offset,
+ * the search ends, since the poses have increasing time_offsets.
  */
-class PreferForwardCritic: public dwb_local_planner::TrajectoryCritic
-{
-public:
-  PreferForwardCritic() : penalty_(1.0), strafe_x_(0.1), strafe_theta_(0.2), theta_scale_(10.0) {}
-  void onInit() override;
-  double scoreTrajectory(const dwb_msgs::Trajectory2D& traj) override;
+const geometry_msgs::Pose2D& getClosestPose(const dwb_msgs::Trajectory2D& trajectory, const double time_offset);
 
-protected:
-  double penalty_, strafe_x_, strafe_theta_, theta_scale_;
-};
+/**
+ * @brief Helper function to create a pose with an exact time_offset by linearly interpolating between existing poses
+ * @param trajectory The trajectory with pose and time offset information
+ * @param time_offset The desired time_offset
+ * @return New Pose2D with interpolated values
+ * @note If the given time offset is outside the bounds of the trajectory, the return pose will be either the first or last pose.
+ */
+geometry_msgs::Pose2D projectPose(const dwb_msgs::Trajectory2D& trajectory, const double time_offset);
 
-} /* namespace dwb_critics */
-#endif /* DWB_CRITICS_PREFER_FORWARD_H_ */
+}  // namespace dwb_local_planner
+
+#endif  // DWB_LOCAL_PLANNER_TRAJECTORY_UTILS_H

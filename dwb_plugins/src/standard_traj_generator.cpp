@@ -55,6 +55,8 @@ void StandardTrajectoryGenerator::initialize(ros::NodeHandle& nh)
   nh.param("sim_time", sim_time_, 1.7);
   checkUseDwaParam(nh);
 
+  nh.param("include_last_point", include_last_point_, true);
+
   /*
    * If discretize_by_time, then sim_granularity represents the amount of time that should be between
    *  two successive points on the trajectory.
@@ -66,12 +68,12 @@ void StandardTrajectoryGenerator::initialize(ros::NodeHandle& nh)
   nh.param("discretize_by_time", discretize_by_time_, false);
   if (discretize_by_time_)
   {
-    time_granularity_ = loadParameterWithDeprecation(nh, "time_granularity", "sim_granularity", 0.5);
+    time_granularity_ = loadParameterWithDeprecation(nh, "time_granularity", "sim_granularity", 0.025);
   }
   else
   {
-    linear_granularity_ = loadParameterWithDeprecation(nh, "linear_granularity", "sim_granularity", 0.5);
-    angular_granularity_ = loadParameterWithDeprecation(nh, "angular_granularity", "angular_sim_granularity", 0.025);
+    linear_granularity_ = loadParameterWithDeprecation(nh, "linear_granularity", "sim_granularity", 0.025);
+    angular_granularity_ = loadParameterWithDeprecation(nh, "angular_granularity", "angular_sim_granularity", 0.1);
   }
 }
 
@@ -143,20 +145,29 @@ dwb_msgs::Trajectory2D StandardTrajectoryGenerator::generateTrajectory(const geo
 {
   dwb_msgs::Trajectory2D traj;
   traj.velocity = cmd_vel;
-  traj.duration = ros::Duration(sim_time_);
+
   //  simulate the trajectory
   geometry_msgs::Pose2D pose = start_pose;
   nav_2d_msgs::Twist2D vel = start_vel;
+  double running_time = 0.0;
   std::vector<double> steps = getTimeSteps(cmd_vel);
   for (double dt : steps)
   {
     traj.poses.push_back(pose);
+    traj.time_offsets.push_back(ros::Duration(running_time));
     //  calculate velocities
     vel = computeNewVelocity(cmd_vel, vel, dt);
 
     //  update the position of the robot using the velocities passed in
     pose = computeNewPosition(pose, vel, dt);
+    running_time += dt;
   }  //  end for simulation steps
+
+  if (include_last_point_)
+  {
+    traj.poses.push_back(pose);
+    traj.time_offsets.push_back(ros::Duration(running_time));
+  }
 
   return traj;
 }

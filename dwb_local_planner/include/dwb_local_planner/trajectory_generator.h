@@ -61,7 +61,7 @@ namespace dwb_local_planner
 class TrajectoryGenerator
 {
 public:
-  typedef std::shared_ptr<dwb_local_planner::TrajectoryGenerator> Ptr;
+  using Ptr = std::shared_ptr<dwb_local_planner::TrajectoryGenerator>;
 
   virtual ~TrajectoryGenerator() {}
 
@@ -70,6 +70,11 @@ public:
    * @param nh NodeHandle to read parameters from
    */
   virtual void initialize(ros::NodeHandle& nh) = 0;
+
+  /**
+   * @brief Reset the state (if any) when the planner gets a new goal
+   */
+  virtual void reset() {}
 
   /**
    * @brief Start a new iteration based on the current velocity
