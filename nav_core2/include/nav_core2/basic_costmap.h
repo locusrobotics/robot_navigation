@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,53 +31,38 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef NAV_CORE2_GLOBAL_PLANNER_H
-#define NAV_CORE2_GLOBAL_PLANNER_H
 
-#include <nav_core2/common.h>
+#ifndef NAV_CORE2_BASIC_COSTMAP_H
+#define NAV_CORE2_BASIC_COSTMAP_H
+
 #include <nav_core2/costmap.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Pose2DStamped.h>
 #include <string>
+#include <vector>
 
 namespace nav_core2
 {
-
-/**
- * @class GlobalPlanner
- * @brief Provides an interface for global planners used in navigation.
- */
-class GlobalPlanner
+class BasicCostmap : public nav_core2::Costmap
 {
 public:
-  /**
-   * @brief Virtual Destructor
-   */
-  virtual ~GlobalPlanner() {}
+  // Standard Costmap Interface
+  mutex_t* getMutex() override { return &my_mutex_; }
 
-  /**
-   * @brief  Initialization function for the GlobalPlanner
-   *
-   * ROS parameters/topics are expected to be in the parent/name namespace.
-   * It is suggested that all NodeHandles in the planner use the parent NodeHandle's callback queue.
-   *
-   * @param  parent NodeHandle to derive other NodeHandles from
-   * @param  name The name of this planner
-   * @param  tf A pointer to a transform listener
-   * @param  costmap A pointer to the costmap
-   */
-  virtual void initialize(const ros::NodeHandle& parent, const std::string& name,
-                          TFListenerPtr tf, Costmap::Ptr costmap) = 0;
+  // NavGrid Interface
+  void reset() override;
+  void setValue(const unsigned int x, const unsigned int y, const unsigned char& value) override;
+  unsigned char getValue(const unsigned int x, const unsigned int y) const override;
+  void setInfo(const nav_grid::NavGridInfo& new_info) override
+  {
+    info_ = new_info;
+    reset();
+  }
 
-  /**
-   * @brief Run the global planner to make a plan starting at the start and ending at the goal.
-   * @param start The starting pose of the robot
-   * @param goal  The goal pose of the robot
-   * @return      The sequence of poses to get from start to goal, if any
-   */
-  virtual nav_2d_msgs::Path2D makePlan(const nav_2d_msgs::Pose2DStamped& start,
-                                       const nav_2d_msgs::Pose2DStamped& goal) = 0;
+  // Index Conversion
+  unsigned int getIndex(const unsigned int x, const unsigned int y) const;
+protected:
+  mutex_t my_mutex_;
+  std::vector<unsigned char> data_;
 };
 }  // namespace nav_core2
 
-#endif  // NAV_CORE2_GLOBAL_PLANNER_H
+#endif  // NAV_CORE2_BASIC_COSTMAP_H
