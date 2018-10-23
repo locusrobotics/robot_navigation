@@ -33,6 +33,7 @@
  */
 
 #include <nav_core_adapter/global_planner_adapter.h>
+#include <nav_core_adapter/costmap_adapter.h>
 #include <nav_2d_utils/conversions.h>
 #include <nav_2d_utils/tf_help.h>
 #include <nav_core2/exceptions.h>
@@ -53,15 +54,17 @@ GlobalPlannerAdapter::GlobalPlannerAdapter() :
  */
 void GlobalPlannerAdapter::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros)
 {
-  costmap_ros_ = CostmapROSPtr(costmap_ros);
+  costmap_ros_ = costmap_ros;
+  costmap_adapter_ = std::make_shared<CostmapAdapter>();
+  costmap_adapter_->initialize(costmap_ros);
 
   ros::NodeHandle private_nh("~/" + name);
   std::string planner_name;
-  // There is no nav_core2 global planner as of yet.
-  private_nh.param("planner_name", planner_name, std::string("XXXX::XXXX"));
+  private_nh.param("planner_name", planner_name, std::string("generic_global_planner::GenericGlobalPlanner"));
   ROS_INFO_NAMED("GlobalPlannerAdapter", "Loading plugin %s", planner_name.c_str());
   planner_ = planner_loader_.createInstance(planner_name);
-  planner_->initialize(planner_loader_.getName(planner_name), costmap_ros_);
+  planner_->initialize(private_nh, planner_loader_.getName(planner_name), tf_, costmap_adapter_);
+  path_pub_ = private_nh.advertise<nav_msgs::Path>("plan", 1);
 }
 
 bool GlobalPlannerAdapter::makePlan(const geometry_msgs::PoseStamped& start,
@@ -75,6 +78,7 @@ bool GlobalPlannerAdapter::makePlan(const geometry_msgs::PoseStamped& start,
     nav_2d_msgs::Path2D path2d = planner_->makePlan(start2d, goal2d);
     nav_msgs::Path path = nav_2d_utils::pathToPath(path2d);
     plan = path.poses;
+    path_pub_.publish(path);
     return true;
   }
   catch (nav_core2::PlannerException e)

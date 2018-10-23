@@ -11,8 +11,9 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>geometry_msgs</depend>
   <depend>nav_2d_msgs</depend>
-  <depend>message_generation</depend>
   <depend>nav_msgs</depend>
+  <build_depend>message_generation</build_depend>
+  <build_export_depend>message_runtime</build_export_depend>
   <exec_depend>message_runtime</exec_depend>
 
 </package>

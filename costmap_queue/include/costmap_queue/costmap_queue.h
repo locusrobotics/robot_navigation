@@ -35,10 +35,12 @@
 #ifndef COSTMAP_QUEUE_COSTMAP_QUEUE_H
 #define COSTMAP_QUEUE_COSTMAP_QUEUE_H
 
-#include <costmap_2d/costmap_2d.h>
+#include <nav_core2/costmap.h>
 #include <costmap_queue/map_based_queue.h>
-#include <vector>
+#include <nav_grid/vector_nav_grid.h>
+#include <algorithm>
 #include <limits>
+#include <vector>
 
 namespace costmap_queue
 {
@@ -52,15 +54,13 @@ public:
   /**
    * @brief Real Constructor
    * @param d The distance to the nearest obstacle
-   * @param i The index of the cell in the costmap. Redundant with the following two parameters.
    * @param x The x coordinate of the cell in the cost map
    * @param y The y coordinate of the cell in the cost map
    * @param sx The x coordinate of the closest source cell in the costmap
    * @param sy The y coordinate of the closest source cell in the costmap
    */
-  CellData(const double d, const unsigned int i, const unsigned int x, const unsigned int y,
-           const unsigned int sx, const unsigned int sy) :
-    distance_(d), index_(i), x_(x), y_(y), src_x_(sx), src_y_(sy)
+  CellData(const double d, const unsigned int x, const unsigned int y, const unsigned int sx, const unsigned int sy) :
+    distance_(d), x_(x), y_(y), src_x_(sx), src_y_(sy)
   {
   }
 
@@ -68,18 +68,17 @@ public:
    * @brief Default Constructor - Should be used sparingly
    */
   CellData() :
-    distance_(std::numeric_limits<double>::max()), index_(0), x_(0), y_(0), src_x_(0), src_y_(0)
+    distance_(std::numeric_limits<double>::max()), x_(0), y_(0), src_x_(0), src_y_(0)
   {
   }
 
   double distance_;
-  unsigned int index_;
   unsigned int x_, y_;
   unsigned int src_x_, src_y_;
 };
 
 /**
- * @class CostmaQueue
+ * @class CostmapQueue
  * @brief A tool for finding the cells closest to some set of originating cells.
  *
  * A common operation with costmaps is to define a set of cells in the costmap, and then
@@ -105,7 +104,7 @@ public:
    * @param costmap Costmap which defines the size/number of cells
    * @param manhattan If true, sort cells by Manhattan distance, otherwise use Euclidean distance
    */
-  explicit CostmapQueue(costmap_2d::Costmap2D& costmap, bool manhattan = false);
+  explicit CostmapQueue(nav_core2::Costmap& costmap, bool manhattan = false);
 
   /**
    * @brief Clear the queue
@@ -128,6 +127,11 @@ public:
   CellData getNextCell();
 
   /**
+   * @brief Get the maximum x or y distance we'll need to calculate the distance between
+   */
+  virtual int getMaxDistance() const { return std::max(costmap_.getWidth(), costmap_.getHeight()); }
+
+  /**
    * @brief Check to see if we should add this cell to the queue. Always true unless overridden.
    * @param cell The cell to check
    * @return True, unless overriden
@@ -135,23 +139,25 @@ public:
   virtual bool validCellToQueue(const CellData& cell) { return true; }
 
   /**
-   * @brief convenience typedef for a pointer
+   * @brief convenience definition for a pointer
    */
-  typedef std::shared_ptr<CostmapQueue> Ptr;
+  using Ptr = std::shared_ptr<CostmapQueue>;
 protected:
   /**
    * @brief Enqueue a cell with the given coordinates and the given source cell
    */
-  void enqueueCell(unsigned int index, unsigned int cur_x, unsigned int cur_y, unsigned int src_x, unsigned int src_y);
+  void enqueueCell(unsigned int cur_x, unsigned int cur_y, unsigned int src_x, unsigned int src_y);
 
   /**
    * @brief Compute the cached distances
    */
   void computeCache();
 
-  costmap_2d::Costmap2D& costmap_;
-  std::vector<bool> seen_;
-  int max_distance_;
+  nav_core2::Costmap& costmap_;
+
+  // This really should be VectorNavGrid<bool>, but since
+  // vector<bool> is wacky, it would result in compile errors.
+  nav_grid::VectorNavGrid<unsigned char> seen_;
   bool manhattan_;
 protected:
   /**
@@ -160,13 +166,19 @@ protected:
    * @param cur_y The y coordinate of the current cell
    * @param src_x The x coordinate of the source cell
    * @param src_y The y coordinate of the source cell
-   * @return
+   * @return Precomputed distance
+   *
+   * NB: Note that while abs() has the correct behavior i.e. abs(2 - 5) ==> 3.
+   *     std::abs() without explicit casting does not have the correct behavior
+   *     i.e. std::abs(2 - 5) ==> (the unsigned version of) -3.
+   *     We're using explicit casting here to ensure the behavior is not compiler dependent.
+   *     std::abs(static_cast<int>(2) - static_cast<int>(5)) ==> 3.
    */
   inline double distanceLookup(const unsigned int cur_x, const unsigned int cur_y,
                                const unsigned int src_x, const unsigned int src_y)
   {
-    unsigned int dx = abs(cur_x - src_x);
-    unsigned int dy = abs(cur_y - src_y);
+    unsigned int dx = std::abs(static_cast<int>(cur_x) - static_cast<int>(src_x));
+    unsigned int dy = std::abs(static_cast<int>(cur_y) - static_cast<int>(src_y));
     return cached_distances_[dx][dy];
   }
   std::vector<std::vector<double> > cached_distances_;

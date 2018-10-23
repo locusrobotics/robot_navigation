@@ -2,7 +2,9 @@
 <package format="2">
   <name>dwb_local_planner</name>
   <version>0.1.0</version>
-  <description>The dwb_local_planner package</description>
+  <description>
+    Plugin based local planner implementing the nav_core2::LocalPlanner interface.
+  </description>
 
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
   <author email="davidvlu@gmail.com">David V. Lu!!</author>
@@ -10,7 +12,6 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>costmap_2d</depend>
   <depend>dwb_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>nav_2d_msgs</depend>

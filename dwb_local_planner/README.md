@@ -70,7 +70,7 @@ virtual bool isGoalReached(const geometry_msgs::Pose2D& query_pose, const geomet
 ## Trajectory Critics
 [Critics](https://www.youtube.com/watch?v=X6I_dKUYyI4) like to give things scores. Once we know we're not a the goal and have a bunch of candidate trajectories, we evaluate them based on a collections of TrajectoryCritics. Here's the life-cycle.
 
- * `void initialize(std::string name, std::string parent_namespace, costmap_2d::Costmap2DROS* costmap_ros)` - called once on startup, and then calls `onInit`
+ * `void initialize(const ros::NodeHandle& planner_nh, std::string name, nav_core2::Costmap::Ptr costmap)` - called once on startup, and then calls `onInit`
  * `void onInit()` - May be overwritten to load parameters as needed.
  * `void reset()` - called at the beginning of every new navigation, i.e. when we get a new global plan.
  * `bool prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msgs::Twist2D& vel, const geometry_msgs::Pose2D& goal, const nav_2d_msgs::Path2D& global_plan)` - called once per iteration of the planner, prior to the evaluation of all the trajectories

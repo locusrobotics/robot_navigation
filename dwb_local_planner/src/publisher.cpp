@@ -32,6 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <dwb_local_planner/publisher.h>
+#include <nav_grid/coordinate_conversion.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <sensor_msgs/PointCloud2.h>
@@ -147,25 +148,25 @@ void DWBPublisher::publishLocalPlan(const std_msgs::Header& header,
   local_pub_.publish(path);
 }
 
-void DWBPublisher::publishCostGrid(const CostmapROSPtr costmap_ros, const std::vector<TrajectoryCritic::Ptr> critics)
+void DWBPublisher::publishCostGrid(const nav_core2::Costmap::Ptr costmap,
+                                   const std::vector<TrajectoryCritic::Ptr> critics)
 {
   if (!publish_cost_grid_pc_) return;
 
+  const nav_grid::NavGridInfo& info = costmap->getInfo();
   sensor_msgs::PointCloud cost_grid_pc;
-  cost_grid_pc.header.frame_id = costmap_ros->getGlobalFrameID();
+  cost_grid_pc.header.frame_id = info.frame_id;
   cost_grid_pc.header.stamp = ros::Time::now();
 
-  costmap_2d::Costmap2D* costmap = costmap_ros->getCostmap();
   double x_coord, y_coord;
-  unsigned int size_x = costmap->getSizeInCellsX();
-  unsigned int size_y = costmap->getSizeInCellsY();
-  cost_grid_pc.points.resize(size_x * size_y);
+  unsigned int n = info.width * info.height;
+  cost_grid_pc.points.resize(n);
   unsigned int i = 0;
-  for (unsigned int cy = 0; cy < size_y; cy++)
+  for (unsigned int cy = 0; cy < info.height; cy++)
   {
-    for (unsigned int cx = 0; cx < size_x; cx++)
+    for (unsigned int cx = 0; cx < info.width; cx++)
     {
-      costmap->mapToWorld(cx, cy, x_coord, y_coord);
+      gridToWorld(info, cx, cy, x_coord, y_coord);
       cost_grid_pc.points[i].x = x_coord;
       cost_grid_pc.points[i].y = y_coord;
       i++;
@@ -174,7 +175,7 @@ void DWBPublisher::publishCostGrid(const CostmapROSPtr costmap_ros, const std::v
 
   sensor_msgs::ChannelFloat32 totals;
   totals.name = "total_cost";
-  totals.values.resize(size_x * size_y);
+  totals.values.resize(n);
 
   for (TrajectoryCritic::Ptr critic : critics)
   {
@@ -186,7 +187,7 @@ void DWBPublisher::publishCostGrid(const CostmapROSPtr costmap_ros, const std::v
       continue;
     }
     double scale = critic->getScale();
-    for (i = 0; i < size_x * size_y; i++)
+    for (i = 0; i < n; i++)
     {
       totals.values[i] = cost_grid_pc.channels[channel_index].values[i] * scale;
     }

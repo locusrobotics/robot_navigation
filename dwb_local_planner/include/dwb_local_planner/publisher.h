@@ -76,7 +76,7 @@ public:
    */
   void publishEvaluation(std::shared_ptr<dwb_msgs::LocalPlanEvaluation> results);
   void publishLocalPlan(const std_msgs::Header& header, const dwb_msgs::Trajectory2D& traj);
-  void publishCostGrid(const CostmapROSPtr costmap_ros, const std::vector<TrajectoryCritic::Ptr> critics);
+  void publishCostGrid(const nav_core2::Costmap::Ptr costmap, const std::vector<TrajectoryCritic::Ptr> critics);
   void publishGlobalPlan(const nav_2d_msgs::Path2D plan);
   void publishTransformedPlan(const nav_2d_msgs::Path2D plan);
   void publishLocalPlan(const nav_2d_msgs::Path2D plan);

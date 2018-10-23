@@ -37,6 +37,7 @@
 
 #include <ros/ros.h>
 #include <nav_core2/common.h>
+#include <nav_core2/costmap.h>
 #include <geometry_msgs/Pose2D.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <nav_2d_msgs/Path2D.h>
@@ -81,19 +82,19 @@ public:
    * @brief Initialize the critic with appropriate pointers and parameters
    *
    * The name and costmap are stored as member variables.
-   * A NodeHandle is created using the combination of the parent namespace and the critic name
+   * A NodeHandle for the critic is created with the namespace of the planner NodeHandle
    *
+   * @param planner_nh Planner Nodehandle
    * @param name The name of this critic
-   * @param parent_namespace The namespace of the planner
    * @param costmap_ros Pointer to the costmap
    */
-  void initialize(std::string name, std::string parent_namespace, CostmapROSPtr costmap_ros)
+  void initialize(const ros::NodeHandle& planner_nh, std::string name, nav_core2::Costmap::Ptr costmap)
   {
     name_ = name;
-    costmap_ros_ = costmap_ros;
-    nh_ = std::make_shared<ros::NodeHandle>("~/" + parent_namespace + "/" + name_);
-    parent_nh_ = std::make_shared<ros::NodeHandle>("~/" + parent_namespace);
-    nh_->param("scale", scale_, 1.0);
+    costmap_ = costmap;
+    planner_nh_ = planner_nh;
+    critic_nh_ = ros::NodeHandle(planner_nh_, name_);
+    critic_nh_.param("scale", scale_, 1.0);
     onInit();
   }
 
@@ -164,9 +165,9 @@ public:
   void setScale(const double scale) { scale_ = scale; }
 protected:
   std::string name_;
-  CostmapROSPtr costmap_ros_;
+  nav_core2::Costmap::Ptr costmap_;
   double scale_;
-  std::shared_ptr<ros::NodeHandle> nh_, parent_nh_;
+  ros::NodeHandle critic_nh_, planner_nh_;
 };
 
 }  // namespace dwb_local_planner

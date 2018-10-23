@@ -32,16 +32,26 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <ros/ros.h>
+#include <pluginlib/class_loader.h>
 #include <dwb_local_planner/debug_dwb_local_planner.h>
+#include <string>
 
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "plan_node");
+  ros::NodeHandle private_nh("~");
+
   dwb_local_planner::DebugDWBLocalPlanner planner;
   ROS_INFO("Plan Node");
 
   TFListenerPtr tf = std::make_shared<tf::TransformListener>();
-  CostmapROSPtr costmap_ros = std::make_shared<costmap_2d::Costmap2DROS>("costmap", *tf);
-  planner.initialize("dwb_local_planner", tf, costmap_ros);
+
+  pluginlib::ClassLoader<nav_core2::Costmap> costmap_loader("nav_core2", "nav_core2::Costmap");
+  std::string costmap_class;
+  private_nh.param("local_costmap_class", costmap_class, std::string("nav_core_adapter::CostmapAdapter"));
+  nav_core2::Costmap::Ptr costmap = costmap_loader.createUniqueInstance(costmap_class);
+  costmap->initialize(private_nh, "costmap", tf);
+
+  planner.initialize(private_nh, "dwb_local_planner", tf, costmap);
   ros::spin();
 }

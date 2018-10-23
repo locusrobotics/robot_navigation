@@ -9,6 +9,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(FILES
     Path2D.msg
+    Point2D.msg
+    Polygon2D.msg
+    Polygon2DStamped.msg
     Pose2D32.msg
     Pose2DStamped.msg
     Twist2D.msg

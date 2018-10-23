@@ -10,7 +10,7 @@ find_package(catkin REQUIRED
 catkin_package(
     CATKIN_DEPENDS geometry_msgs nav_2d_msgs nav_core2 nav_msgs roscpp tf xmlrpcpp
     INCLUDE_DIRS include
-    LIBRARIES conversions path_ops
+    LIBRARIES conversions path_ops polygons
 )
 
 include_directories(
@@ -25,7 +25,24 @@ add_library(path_ops src/path_ops.cpp)
 target_link_libraries(path_ops ${catkin_LIBRARIES})
 add_dependencies(path_ops ${catkin_EXPORTED_TARGETS})
 
-install(TARGETS conversions path_ops
+add_library(polygons src/polygons.cpp src/footprint.cpp)
+target_link_libraries(polygons ${catkin_LIBRARIES})
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  find_package(catkin REQUIRED COMPONENTS roslint)
+  roslint_cpp()
+  roslint_add_test()
+
+  catkin_add_gtest(polygon_tests test/polygon_tests.cpp)
+  target_link_libraries(polygon_tests polygons ${catkin_LIBRARIES})
+
+  add_executable(param_tests test/param_tests.cpp)
+  target_link_libraries(param_tests polygons ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+  add_rostest(test/param_tests.launch DEPENDENCIES param_tests)
+endif()
+
+install(TARGETS conversions path_ops polygons
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}

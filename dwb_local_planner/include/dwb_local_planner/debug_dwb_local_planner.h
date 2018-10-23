@@ -57,7 +57,8 @@ public:
   /**
    * @brief Override the DWB constructor to also advertise the services
    */
-  void initialize(std::string name, TFListenerPtr tf, CostmapROSPtr costmap_ros) override;
+  void initialize(const ros::NodeHandle& parent, const std::string& name,
+                  TFListenerPtr tf, nav_core2::Costmap::Ptr costmap) override;
 protected:
   bool generateTwistsService(dwb_msgs::GenerateTwists::Request  &req,
                              dwb_msgs::GenerateTwists::Response &res);

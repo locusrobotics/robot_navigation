@@ -4,13 +4,13 @@ project(costmap_queue)
 set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED COMPONENTS
-  costmap_2d
+  nav_core2
   roscpp
 )
 
 catkin_package(
     INCLUDE_DIRS include
-    CATKIN_DEPENDS costmap_2d roscpp
+    CATKIN_DEPENDS nav_core2 roscpp
     LIBRARIES ${PROJECT_NAME}
 )
 
