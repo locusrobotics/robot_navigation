@@ -50,8 +50,11 @@ public:
   /**
    * @brief Constructor with limit as an integer number of cells.
    */
-  LimitedCostmapQueue(costmap_2d::Costmap2D& costmap, const int cell_distance_limit);
+  LimitedCostmapQueue(nav_core2::Costmap& costmap, const int cell_distance_limit);
   bool validCellToQueue(const CellData& cell) override;
+  int getMaxDistance() const override;
+protected:
+  int max_distance_;
 };
 }  // namespace costmap_queue
 

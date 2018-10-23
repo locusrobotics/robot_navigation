@@ -32,13 +32,15 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <gtest/gtest.h>
+#include <nav_core2/basic_costmap.h>
 #include <costmap_queue/costmap_queue.h>
 #include <costmap_queue/limited_costmap_queue.h>
 #include <ros/ros.h>
 #include <memory>
 #include <algorithm>
 
-costmap_2d::Costmap2D costmap(5, 5, 1.0, 0.0, 0.0);
+
+nav_core2::BasicCostmap costmap;
 
 TEST(CostmapQueue, basicQueue)
 {
@@ -54,9 +56,29 @@ TEST(CostmapQueue, basicQueue)
   EXPECT_EQ(count, 25);
 }
 
+TEST(CostmapQueue, reverseQueue)
+{
+  costmap_queue::CostmapQueue q(costmap);
+  int count = 0;
+  q.enqueueCell(4, 4);
+  while (!q.isEmpty())
+  {
+    costmap_queue::CellData cell = q.getNextCell();
+    EXPECT_EQ(cell.distance_, hypot(4.0 - static_cast<double>(cell.x_),
+                                    4.0 - static_cast<double>(cell.y_)));
+    count++;
+  }
+  EXPECT_EQ(count, 25);
+}
+
 TEST(CostmapQueue, bigTest)
 {
-  costmap_2d::Costmap2D big_map(500, 500, 1.0, 0.0, 0.0);
+  nav_grid::NavGridInfo big_info;
+  big_info.width = 500;
+  big_info.height = 500;
+
+  nav_core2::BasicCostmap big_map;
+  big_map.setInfo(big_info);
   costmap_queue::CostmapQueue q(big_map);
   int count = 0;
   q.enqueueCell(0, 0);
@@ -139,8 +161,48 @@ TEST(CostmapQueue, limitedQueue)
   EXPECT_EQ(count, 11);
 }
 
+
+TEST(CostmapQueue, changingSize)
+{
+  nav_grid::NavGridInfo info0;
+  info0.width = 2;
+  info0.height = 3;
+
+  nav_grid::NavGridInfo info1;
+  info1.width = 6;
+  info1.height = 7;
+
+  nav_core2::BasicCostmap size_map;
+  size_map.setInfo(info0);
+  costmap_queue::CostmapQueue q(size_map);
+  int count = 0;
+  q.enqueueCell(0, 0);
+  while (!q.isEmpty())
+  {
+    q.getNextCell();
+    count++;
+  }
+
+  EXPECT_EQ(count, info0.width * info0.height);
+
+  size_map.setInfo(info1);
+  q.reset();
+  count = 0;
+  q.enqueueCell(0, 0);
+  while (!q.isEmpty())
+  {
+    q.getNextCell();
+    count++;
+  }
+  EXPECT_EQ(count, info1.width * info1.height);
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
+  nav_grid::NavGridInfo info;
+  info.width = 5;
+  info.height = 5;
+  costmap.setInfo(info);
   return RUN_ALL_TESTS();
 }
