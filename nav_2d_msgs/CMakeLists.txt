@@ -9,6 +9,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(FILES
     NavGridInfo.msg
+    NavGridOfChars.msg
+    NavGridOfCharsUpdate.msg
+    NavGridOfDoubles.msg
+    NavGridOfDoublesUpdate.msg
     Path2D.msg
     Point2D.msg
     Polygon2D.msg
