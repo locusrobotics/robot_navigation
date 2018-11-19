@@ -30,7 +30,8 @@ if (CATKIN_ENABLE_TESTING)
 
   catkin_add_gtest(utest test/utest.cpp)
   target_link_libraries(utest ${PROJECT_NAME} ${catkin_LIBRARIES})
-  find_package(catkin REQUIRED COMPONENTS roslint)
+
+  find_package(roslint)
   roslint_cpp()
   roslint_add_test()
 endif (CATKIN_ENABLE_TESTING)

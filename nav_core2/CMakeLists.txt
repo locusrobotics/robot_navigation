@@ -22,7 +22,7 @@ include_directories(
 )
 
 if(CATKIN_ENABLE_TESTING)
-  find_package(catkin REQUIRED COMPONENTS roslint)
+  find_package(roslint)
   roslint_cpp()
   roslint_add_test()
 

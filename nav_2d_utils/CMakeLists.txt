@@ -46,16 +46,15 @@ target_link_libraries(polygons ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  find_package(catkin REQUIRED COMPONENTS roslint)
+  find_package(roslint)
   roslint_cpp()
   roslint_add_test()
 
   catkin_add_gtest(polygon_tests test/polygon_tests.cpp)
   target_link_libraries(polygon_tests polygons ${catkin_LIBRARIES})
 
-  add_executable(param_tests test/param_tests.cpp)
+  add_rostest_gtest(param_tests test/param_tests.launch test/param_tests.cpp)
   target_link_libraries(param_tests polygons ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-  add_rostest(test/param_tests.launch DEPENDENCIES param_tests)
 endif()
 
 install(TARGETS conversions path_ops polygons
