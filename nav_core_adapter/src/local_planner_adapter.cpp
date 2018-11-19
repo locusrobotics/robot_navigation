@@ -61,9 +61,10 @@ void LocalPlannerAdapter::initialize(std::string name, tf::TransformListener* tf
   costmap_adapter_->initialize(costmap_ros);
 
   ros::NodeHandle nh;
-  ros::NodeHandle private_nh("~/" + name);
+  ros::NodeHandle private_nh("~");
+  ros::NodeHandle adapter_nh("~/" + name);
   std::string planner_name;
-  private_nh.param("planner_name", planner_name, std::string("dwb_local_planner::DWBLocalPlanner"));
+  adapter_nh.param("planner_name", planner_name, std::string("dwb_local_planner::DWBLocalPlanner"));
   ROS_INFO_NAMED("LocalPlannerAdapter", "Loading plugin %s", planner_name.c_str());
   planner_ = planner_loader_.createInstance(planner_name);
   planner_->initialize(private_nh, planner_loader_.getName(planner_name), tf_, costmap_adapter_);
