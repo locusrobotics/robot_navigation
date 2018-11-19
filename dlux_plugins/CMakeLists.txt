@@ -20,19 +20,19 @@ include_directories(
 
 if (CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  find_package(catkin REQUIRED COMPONENTS global_planner_tests dlux_global_planner roslint)
-  include_directories(include ${catkin_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
+
+  find_package(global_planner_tests)
+  include_directories(include ${global_planner_tests_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
   link_directories(${GTEST_LIBRARY_DIRS})
 
-  add_executable(planner_test test/planner_test.cpp)
-  target_link_libraries(planner_test ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+  add_rostest_gtest(planner_test test/planner_test.launch test/planner_test.cpp)
+  target_link_libraries(planner_test ${global_planner_tests_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 
-  add_executable(full_planner_test test/full_planner_test.cpp)
-  target_link_libraries(full_planner_test ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+  # full_planner_test contains many parameter variations and does not need to be run regularly
+  # add_rostest_gtest(full_planner_test test/full_planner_test.launch test/full_planner_test.cpp)
+  # target_link_libraries(full_planner_test ${global_planner_tests_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 
-  # full_planner_test is a dependency just to ensure it compiles
-  add_rostest(test/planner_test.launch DEPENDENCIES planner_test full_planner_test dlux_plugins)
-
+  find_package(roslint)
   roslint_cpp()
   roslint_add_test()
 endif()
@@ -52,6 +52,6 @@ install(
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 install(
-    FILES common.yaml node_test.launch planner_test.launch rviz.rviz
+    DIRECTORY test
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/test
 )

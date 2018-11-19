@@ -55,13 +55,12 @@ include_directories(
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  find_package(catkin REQUIRED COMPONENTS roslint)
+  find_package(roslint)
   roslint_cpp()
   roslint_add_test()
 
-  add_executable(unload_test test/unload_test.cpp)
+  add_rostest_gtest(unload_test test/unload_test.launch test/unload_test.cpp)
   target_link_libraries(unload_test local_planner_adapter ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
-  add_rostest(test/unload_test.launch DEPENDENCIES unload_test)
 endif()
 
 install(TARGETS local_planner_adapter global_planner_adapter costmap_adapter global_planner_adapter2
