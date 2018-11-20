@@ -1,0 +1,12 @@
+title Error Handling
+participant Main Thread as ml
+participant Local Planner as lp
+participant Local Costmap as lc
+ml -> ml: ...
+ml -> +lp: requestLocalPlan
+lp -> -ml: onLocalPlanningException
+ml -> lc: clearCostmap
+ml -> +lc: requestLocalCostmapUpdate
+lc -> -ml: onLocalCostmapUpdate
+ml -> +lp: requestLocalPlan
+lp -> -ml: onNewLocalPlan

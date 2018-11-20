@@ -1,0 +1,27 @@
+title Action Server
+participant ActionServer as as
+participant Main Thread as ml
+participant Local Planner as lp
+participant Local Costmap as lc
+participant Global Planner as gp
+participant Global Costmap as gc
+as -> ml: onGoal
+ml -> +gc: requestGlobalCostmapUpdate
+gc -> -ml: onGlobalCostmapUpdate
+ml -> +gp: requestGlobalPlan
+gp -> -ml: onNewGlobalPlan
+ml -> as: sendFeedback
+ml -> lp: setPlan
+ml -> +lc: requestLocalCostmapUpdate
+lc -> -ml: onLocalCostmapUpdate
+ml -> +lp: requestLocalPlan
+lp -> -ml: onNewLocalPlan
+ml -> as: sendFeedback
+ml -> +lc: doCostmapUpdate
+lc -> -ml: onLocalCostmapUpdate
+ml -> +lp: requestLocalPlan
+lp -> -ml: onNewLocalPlan
+ml -> as: sendFeedback
+ml -> ml: ...
+lp -> ml: onNavigationCompleted
+ml -> as: sendResult

@@ -162,18 +162,6 @@ nav_2d_msgs::Polygon2D movePolygonToPose(const nav_2d_msgs::Polygon2D& polygon,
 bool isInside(const nav_2d_msgs::Polygon2D& polygon, const double x, const double y);
 
 /**
- * @brief Distance from point (pX, pY) to closest point on line from (x0, y0) to (x1, y1)
- * @param pX
- * @param pY
- * @param x0
- * @param y0
- * @param x1
- * @param y1
- * @return shorted distance from point to line
- */
-double distanceToLine(double pX, double pY, double x0, double y0, double x1, double y1);
-
-/**
  * @brief Calculate the minimum and maximum distance from (0, 0) to any point on the polygon
  * @param[in] polygon polygon to analyze
  * @param[out] min_dist

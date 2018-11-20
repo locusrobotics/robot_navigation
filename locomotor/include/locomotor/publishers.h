@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,48 +32,38 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NAV_2D_UTILS_PATH_OPS_H
-#define NAV_2D_UTILS_PATH_OPS_H
+#ifndef LOCOMOTOR_PUBLISHERS_H
+#define LOCOMOTOR_PUBLISHERS_H
 
+#include <ros/ros.h>
 #include <nav_2d_msgs/Path2D.h>
+#include <nav_2d_msgs/Twist2DStamped.h>
 
-namespace nav_2d_utils
+namespace locomotor
 {
-/**
- * @brief Calculate the linear distance between two poses
- */
-double poseDistance(const geometry_msgs::Pose2D& pose0, const geometry_msgs::Pose2D& pose1);
+enum class PathType { NO_PATH, PATH_3D, PATH_2D };
+enum class TwistType { NO_TWIST, TWIST_3D, TWIST_2D, TWIST_2D_STAMPED };
 
-/**
- * @brief Calculate the length of the plan, starting from the given index
- */
-double getPlanLength(const nav_2d_msgs::Path2D& plan, const unsigned int start_index = 0);
+class PathPublisher
+{
+public:
+  explicit PathPublisher(ros::NodeHandle& nh);
+  void publishPath(const nav_2d_msgs::Path2D& global_plan);
+protected:
+  PathType path_type_;
+  ros::Publisher pub_;
+  double global_plan_epsilon_;
+};
 
-/**
- * @brief Calculate the length of the plan from the pose on the plan closest to the given pose
- */
-double getPlanLength(const nav_2d_msgs::Path2D& plan, const geometry_msgs::Pose2D& query_pose);
+class TwistPublisher
+{
+public:
+  explicit TwistPublisher(ros::NodeHandle& nh);
+  void publishTwist(const nav_2d_msgs::Twist2DStamped& command);
+protected:
+  TwistType twist_type_;
+  ros::Publisher pub_;
+};
+}  // namespace locomotor
 
-/**
- * @brief Increase plan resolution to match that of the costmap by adding points linearly between points
- *
- * @param global_plan_in input plan
- * @param resolution desired distance between waypoints
- * @return Higher resolution plan
- */
-nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_in, double resolution);
-
-/**
- * @brief Decrease the length of the plan by eliminating colinear points
- *
- * Uses the Ramer Douglas Peucker algorithm. Ignores theta values
- *
- * @param input_path Path to compress
- * @param epsilon maximum allowable error. Increase for greater compression.
- * @return Path2D with possibly fewer poses
- */
-nav_2d_msgs::Path2D compressPlan(const nav_2d_msgs::Path2D& input_path, double epsilon = 0.1);
-
-}  // namespace nav_2d_utils
-
-#endif  // NAV_2D_UTILS_PATH_OPS_H
+#endif  // LOCOMOTOR_PUBLISHERS_H
