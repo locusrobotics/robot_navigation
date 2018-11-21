@@ -14,7 +14,7 @@ For the highest view of a planner's functionality, simply run a test against `gl
 
 TEST(YourPlanner, simple_planner_test)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   your_planner::YourPlanner planner;
   EXPECT_TRUE(global_planner_tests::many_map_test_suite(planner, tf, "your_planner_namespace"));
 }

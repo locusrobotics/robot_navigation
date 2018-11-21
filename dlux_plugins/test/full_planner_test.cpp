@@ -44,7 +44,7 @@ using dlux_global_planner::DluxGlobalPlanner;
 
 TEST(GlobalPlanner, DijkstraVonNeumann)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "DijkstraVonNeumann";
 
@@ -57,7 +57,7 @@ TEST(GlobalPlanner, DijkstraVonNeumann)
 
 TEST(GlobalPlanner, DijkstraGrid)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "DijkstraGrid";
 
@@ -70,7 +70,7 @@ TEST(GlobalPlanner, DijkstraGrid)
 
 TEST(GlobalPlanner, DijkstraGradientStep)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "DijkstraGradientStep";
 
@@ -84,7 +84,7 @@ TEST(GlobalPlanner, DijkstraGradientStep)
 
 TEST(GlobalPlanner, DijkstraGradient)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "DijkstraGradient";
 
@@ -98,7 +98,7 @@ TEST(GlobalPlanner, DijkstraGradient)
 
 TEST(GlobalPlanner, AStarVonNeumannManK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarVonNeumannManK";
 
@@ -114,7 +114,7 @@ TEST(GlobalPlanner, AStarVonNeumannManK)
 
 TEST(GlobalPlanner, AStarVonNeumannK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarVonNeumannK";
 
@@ -130,7 +130,7 @@ TEST(GlobalPlanner, AStarVonNeumannK)
 
 TEST(GlobalPlanner, AStarVonNeumannMan)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarVonNeumannMan";
 
@@ -146,7 +146,7 @@ TEST(GlobalPlanner, AStarVonNeumannMan)
 
 TEST(GlobalPlanner, AStarVonNeumann)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarVonNeumann";
 
@@ -162,7 +162,7 @@ TEST(GlobalPlanner, AStarVonNeumann)
 
 TEST(GlobalPlanner, AStarVonNeumannManThreshK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarVonNeumannManThreshK";
 
@@ -178,7 +178,7 @@ TEST(GlobalPlanner, AStarVonNeumannManThreshK)
 
 TEST(GlobalPlanner, AStarVonNeumannThreshK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarVonNeumannThreshK";
 
@@ -194,7 +194,7 @@ TEST(GlobalPlanner, AStarVonNeumannThreshK)
 
 TEST(GlobalPlanner, AStarVonNeumannManThresh)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarVonNeumannManThresh";
 
@@ -210,7 +210,7 @@ TEST(GlobalPlanner, AStarVonNeumannManThresh)
 
 TEST(GlobalPlanner, AStarVonNeumannThresh)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarVonNeumannThresh";
 
@@ -226,7 +226,7 @@ TEST(GlobalPlanner, AStarVonNeumannThresh)
 
 TEST(GlobalPlanner, AStarGridManK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGridManK";
 
@@ -242,7 +242,7 @@ TEST(GlobalPlanner, AStarGridManK)
 
 TEST(GlobalPlanner, AStarGridK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGridK";
 
@@ -258,7 +258,7 @@ TEST(GlobalPlanner, AStarGridK)
 
 TEST(GlobalPlanner, AStarGridMan)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGridMan";
 
@@ -274,7 +274,7 @@ TEST(GlobalPlanner, AStarGridMan)
 
 TEST(GlobalPlanner, AStarGrid)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGrid";
 
@@ -290,7 +290,7 @@ TEST(GlobalPlanner, AStarGrid)
 
 TEST(GlobalPlanner, AStarGridManThreshK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGridManThreshK";
 
@@ -306,7 +306,7 @@ TEST(GlobalPlanner, AStarGridManThreshK)
 
 TEST(GlobalPlanner, AStarGridThreshK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGridThreshK";
 
@@ -322,7 +322,7 @@ TEST(GlobalPlanner, AStarGridThreshK)
 
 TEST(GlobalPlanner, AStarGridManThresh)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGridManThresh";
 
@@ -338,7 +338,7 @@ TEST(GlobalPlanner, AStarGridManThresh)
 
 TEST(GlobalPlanner, AStarGridThresh)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGridThresh";
 
@@ -354,7 +354,7 @@ TEST(GlobalPlanner, AStarGridThresh)
 
 TEST(GlobalPlanner, AStarGradientStepManK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientStepManK";
 
@@ -371,7 +371,7 @@ TEST(GlobalPlanner, AStarGradientStepManK)
 
 TEST(GlobalPlanner, AStarGradientManK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientManK";
 
@@ -388,7 +388,7 @@ TEST(GlobalPlanner, AStarGradientManK)
 
 TEST(GlobalPlanner, AStarGradientStepK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientStepK";
 
@@ -405,7 +405,7 @@ TEST(GlobalPlanner, AStarGradientStepK)
 
 TEST(GlobalPlanner, AStarGradientK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientK";
 
@@ -422,7 +422,7 @@ TEST(GlobalPlanner, AStarGradientK)
 
 TEST(GlobalPlanner, AStarGradientStepMan)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientStepMan";
 
@@ -439,7 +439,7 @@ TEST(GlobalPlanner, AStarGradientStepMan)
 
 TEST(GlobalPlanner, AStarGradientMan)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientMan";
 
@@ -456,7 +456,7 @@ TEST(GlobalPlanner, AStarGradientMan)
 
 TEST(GlobalPlanner, AStarGradientStep)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientStep";
 
@@ -473,7 +473,7 @@ TEST(GlobalPlanner, AStarGradientStep)
 
 TEST(GlobalPlanner, AStarGradient)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradient";
 
@@ -490,7 +490,7 @@ TEST(GlobalPlanner, AStarGradient)
 
 TEST(GlobalPlanner, AStarGradientStepManThreshK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientStepManThreshK";
 
@@ -507,7 +507,7 @@ TEST(GlobalPlanner, AStarGradientStepManThreshK)
 
 TEST(GlobalPlanner, AStarGradientManThreshK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientManThreshK";
 
@@ -524,7 +524,7 @@ TEST(GlobalPlanner, AStarGradientManThreshK)
 
 TEST(GlobalPlanner, AStarGradientStepThreshK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientStepThreshK";
 
@@ -541,7 +541,7 @@ TEST(GlobalPlanner, AStarGradientStepThreshK)
 
 TEST(GlobalPlanner, AStarGradientThreshK)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientThreshK";
 
@@ -558,7 +558,7 @@ TEST(GlobalPlanner, AStarGradientThreshK)
 
 TEST(GlobalPlanner, AStarGradientStepManThresh)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientStepManThresh";
 
@@ -575,7 +575,7 @@ TEST(GlobalPlanner, AStarGradientStepManThresh)
 
 TEST(GlobalPlanner, AStarGradientManThresh)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientManThresh";
 
@@ -592,7 +592,7 @@ TEST(GlobalPlanner, AStarGradientManThresh)
 
 TEST(GlobalPlanner, AStarGradientStepThresh)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientStepThresh";
 
@@ -609,7 +609,7 @@ TEST(GlobalPlanner, AStarGradientStepThresh)
 
 TEST(GlobalPlanner, AStarGradientThresh)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
   std::string ns = "AStarGradientThresh";
 

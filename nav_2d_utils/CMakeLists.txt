@@ -14,6 +14,8 @@ find_package(catkin REQUIRED
         roscpp
         std_msgs
         tf
+        tf2_ros
+        tf2_geometry_msgs
         xmlrpcpp
 )
 
@@ -28,6 +30,8 @@ catkin_package(
         roscpp
         std_msgs
         tf
+        tf2_ros
+        tf2_geometry_msgs
         xmlrpcpp
     INCLUDE_DIRS include
     LIBRARIES conversions path_ops polygons

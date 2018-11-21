@@ -42,7 +42,7 @@ using dlux_global_planner::DluxGlobalPlanner;
 
 void dlux_test(std::string ns, std::string potential_calculator = "", std::string traceback = "")
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   DluxGlobalPlanner planner;
 
   ros::NodeHandle nh("~/" + ns);

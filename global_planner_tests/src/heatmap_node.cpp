@@ -57,7 +57,7 @@ int main(int argc, char** argv)
   // *************** Initialize the Planner ****************************************************************************
   ros::init(argc, argv, "plan");
   ros::NodeHandle private_nh("~");
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
 
   std::string map_filename;
   private_nh.param("map_filename", map_filename, std::string("package://global_planner_tests/maps/smile.png"));

@@ -39,6 +39,7 @@
 #include <nav_2d_utils/conversions.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_2d_msgs/Pose2DStamped.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <string>
 
 namespace nav_2d_utils
@@ -66,7 +67,7 @@ bool transformPose(const TFListenerPtr tf, const std::string frame,
 
   try
   {
-    tf->transformPose(frame, in_pose, out_pose);
+    tf->transform(in_pose, out_pose, frame);
     return true;
   }
   catch (tf::ExtrapolationException& ex)
@@ -76,7 +77,7 @@ bool transformPose(const TFListenerPtr tf, const std::string frame,
     geometry_msgs::PoseStamped latest_in_pose;
     latest_in_pose.header.frame_id = in_pose.header.frame_id;
     latest_in_pose.pose = in_pose.pose;
-    tf->transformPose(frame, latest_in_pose, out_pose);
+    tf->transform(latest_in_pose, out_pose, frame);
     return true;
   }
   catch (tf::TransformException& ex)

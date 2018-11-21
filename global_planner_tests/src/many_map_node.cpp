@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "plan");
   ros::NodeHandle private_nh("~");
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
 
   pluginlib::ClassLoader<nav_core2::GlobalPlanner> global_planner_loader("nav_core2", "nav_core2::GlobalPlanner");
 

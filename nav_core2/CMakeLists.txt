@@ -3,11 +3,11 @@ project(nav_core2)
 set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11")
 
 find_package(catkin REQUIRED
-    COMPONENTS nav_2d_msgs nav_grid tf
+    COMPONENTS nav_2d_msgs nav_grid tf2_ros
 )
 
 catkin_package(
-    CATKIN_DEPENDS nav_2d_msgs nav_grid tf
+    CATKIN_DEPENDS nav_2d_msgs nav_grid tf2_ros
     INCLUDE_DIRS include
     LIBRARIES basic_costmap
 )

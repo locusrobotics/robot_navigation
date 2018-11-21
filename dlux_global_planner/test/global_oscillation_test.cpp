@@ -84,7 +84,7 @@ bool pathsEqual(const nav_2d_msgs::Path2D& path_a, const nav_2d_msgs::Path2D& pa
 void replanning_test(const std::string& ns, bool expect_different,
                      bool path_caching = false, double improvement_threshold = -1.0)
 {
-  TFListenerPtr tf = std::make_shared<tf::TransformListener>(ros::Duration(10));
+  TFListenerPtr tf = std::make_shared<tf2_ros::Buffer>();
   std::shared_ptr<global_planner_tests::EasyCostmap> easy_costmap =
         std::make_shared<global_planner_tests::EasyCostmap>(map_path, 1.0);
 

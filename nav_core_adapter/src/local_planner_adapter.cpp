@@ -53,9 +53,9 @@ LocalPlannerAdapter::LocalPlannerAdapter() :
 /**
  * @brief Load the nav_core2 local planner and initialize it
  */
-void LocalPlannerAdapter::initialize(std::string name, tf::TransformListener* tf, costmap_2d::Costmap2DROS* costmap_ros)
+void LocalPlannerAdapter::initialize(std::string name, tf2_ros::Buffer* tf, costmap_2d::Costmap2DROS* costmap_ros)
 {
-  tf_ = createSharedPointerWithNoDelete<tf::TransformListener>(tf);
+  tf_ = createSharedPointerWithNoDelete<tf2_ros::Buffer>(tf);
   costmap_ros_ = costmap_ros;
   costmap_adapter_ = std::make_shared<CostmapAdapter>();
   costmap_adapter_->initialize(costmap_ros);
@@ -171,13 +171,13 @@ bool LocalPlannerAdapter::hasGoalChanged(const nav_2d_msgs::Pose2DStamped& new_g
 
 bool LocalPlannerAdapter::getRobotPose(nav_2d_msgs::Pose2DStamped& pose2d)
 {
-  tf::Stamped<tf::Pose> current_pose;
+  geometry_msgs::PoseStamped current_pose;
   if (!costmap_ros_->getRobotPose(current_pose))
   {
     ROS_ERROR_NAMED("LocalPlannerAdapter", "Could not get robot pose");
     return false;
   }
-  pose2d = nav_2d_utils::stampedPoseToPose2D(current_pose);
+  pose2d = nav_2d_utils::poseStampedToPose2D(current_pose);
   return true;
 }
 
