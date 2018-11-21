@@ -13,7 +13,6 @@ find_package(catkin REQUIRED
         pluginlib
         roscpp
         std_msgs
-        std_srvs
         tf
         xmlrpcpp
 )
@@ -28,7 +27,6 @@ catkin_package(
         pluginlib
         roscpp
         std_msgs
-        std_srvs
         tf
         xmlrpcpp
     INCLUDE_DIRS include

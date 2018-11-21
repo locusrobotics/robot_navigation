@@ -23,3 +23,6 @@ This package has basic message types for two dimensional navigation. Many of the
  * [`NavGridOfDoubles`](msg/NavGridOfDoubles.msg) - Data for `nav_grid::NavGrid<double>`
  * [`NavGridOfCharsUpdate`](msg/NavGridOfCharsUpdate.msg) and [`NavGridOfDoublesUpdate`](msg/NavGridOfDoublesUpdate.msg) - Similar to `map_msgs::OccupancyGridUpdate`
  * [`UIntBounds`](msg/UIntBounds.msg) - Same data as `nav_core2::UIntBounds`. Used in both `Update` messages.
+
+## Service
+ * [`SwitchPlugin`](srv/SwitchPlugin.srv) - A simple service equivalent to [SetString.srv](https://discourse.ros.org/t/suggestions-for-std-srvs/1079) use by the PluginMux.

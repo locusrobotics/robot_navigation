@@ -25,6 +25,8 @@ add_message_files(FILES
     UIntBounds.msg
 )
 
+add_service_files(FILES SwitchPlugin.srv)
+
 generate_messages(DEPENDENCIES geometry_msgs std_msgs)
 
 catkin_package(

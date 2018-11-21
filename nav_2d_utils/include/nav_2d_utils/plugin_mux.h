@@ -38,7 +38,7 @@
 #include <ros/ros.h>
 #include <pluginlib/class_loader.h>
 #include <std_msgs/String.h>
-#include <std_srvs/SetString.h>
+#include <nav_2d_msgs/SwitchPlugin.h>
 #include <map>
 #include <string>
 #include <vector>
@@ -183,9 +183,9 @@ protected:
   /**
    * @brief ROS Interface for Switching Plugins
    */
-  bool switchPluginService(std_srvs::SetString::Request &req, std_srvs::SetString::Response &resp)
+  bool switchPluginService(nav_2d_msgs::SwitchPlugin::Request &req, nav_2d_msgs::SwitchPlugin::Response &resp)
   {
-    std::string name = req.data;
+    std::string name = req.new_plugin;
     if (usePlugin(name))
     {
       resp.success = true;
