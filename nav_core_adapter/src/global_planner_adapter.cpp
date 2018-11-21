@@ -61,7 +61,7 @@ void GlobalPlannerAdapter::initialize(std::string name, costmap_2d::Costmap2DROS
   ros::NodeHandle private_nh("~");
   ros::NodeHandle adapter_nh("~/" + name);
   std::string planner_name;
-  adapter_nh.param("planner_name", planner_name, std::string("generic_global_planner::GenericGlobalPlanner"));
+  adapter_nh.param("planner_name", planner_name, std::string("dlux_global_planner::DluxGlobalPlanner"));
   ROS_INFO_NAMED("GlobalPlannerAdapter", "Loading plugin %s", planner_name.c_str());
   planner_ = planner_loader_.createInstance(planner_name);
   planner_->initialize(private_nh, planner_loader_.getName(planner_name), tf_, costmap_adapter_);

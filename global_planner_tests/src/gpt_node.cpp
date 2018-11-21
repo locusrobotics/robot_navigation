@@ -49,7 +49,7 @@ int main(int argc, char** argv)
   pluginlib::ClassLoader<nav_core2::GlobalPlanner> global_planner_loader("nav_core2", "nav_core2::GlobalPlanner");
 
   std::string planner_name;
-  private_nh.param("global_planner", planner_name, std::string("generic_global_planner::GenericGlobalPlanner"));
+  private_nh.param("global_planner", planner_name, std::string("dlux_global_planner::DluxGlobalPlanner"));
   boost::shared_ptr<nav_core2::GlobalPlanner> global_planner = global_planner_loader.createInstance(planner_name);
   global_planner->initialize(private_nh, global_planner_loader.getName(planner_name), tf, global_costmap);
 

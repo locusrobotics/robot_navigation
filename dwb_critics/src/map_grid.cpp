@@ -111,7 +111,9 @@ void MapGridCritic::propogateManhattanDistances()
   while (!queue_->isEmpty())
   {
     costmap_queue::CellData cell = queue_->getNextCell();
-    cell_values_.setValue(cell.x_, cell.y_, abs(cell.src_x_ - cell.x_) + abs(cell.src_y_ - cell.y_));
+    cell_values_.setValue(cell.x_, cell.y_,
+                          std::abs(static_cast<int>(cell.src_x_) - static_cast<int>(cell.x_))
+                          + std::abs(static_cast<int>(cell.src_y_) - static_cast<int>(cell.y_)));
   }
 }
 

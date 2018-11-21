@@ -137,7 +137,7 @@ bool CircleOutline::isValidIndex(int x, int y) const
 
 bool CircleOutline::isOnOutline(int dx, int dy) const
 {
-  return static_cast<int>(hypot(dx, dy)) == distance_;
+  return static_cast<unsigned int>(hypot(dx, dy)) == distance_;
 }
 
 }  // namespace nav_grid_iterators

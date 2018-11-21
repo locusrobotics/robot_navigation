@@ -35,7 +35,9 @@
 #ifndef NAV_2D_UTILS_CONVERSIONS_H
 #define NAV_2D_UTILS_CONVERSIONS_H
 
+#include <ros/ros.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Twist.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <nav_2d_msgs/Path2D.h>
 #include <nav_2d_msgs/Pose2DStamped.h>
