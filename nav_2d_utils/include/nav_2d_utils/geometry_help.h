@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,48 +32,52 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NAV_2D_UTILS_PATH_OPS_H
-#define NAV_2D_UTILS_PATH_OPS_H
-
-#include <nav_2d_msgs/Path2D.h>
+#ifndef NAV_2D_UTILS_GEOMETRY_HELP_H
+#define NAV_2D_UTILS_GEOMETRY_HELP_H
 
 namespace nav_2d_utils
 {
 /**
- * @brief Calculate the linear distance between two poses
+ * @brief Distance from point (pX, pY) to closest point on line from (x0, y0) to (x1, y1)
+ * @param pX
+ * @param pY
+ * @param x0
+ * @param y0
+ * @param x1
+ * @param y1
+ * @return shortest distance from point to line
  */
-double poseDistance(const geometry_msgs::Pose2D& pose0, const geometry_msgs::Pose2D& pose1);
+inline double distanceToLine(double pX, double pY, double x0, double y0, double x1, double y1)
+{
+  double A = pX - x0;
+  double B = pY - y0;
+  double C = x1 - x0;
+  double D = y1 - y0;
 
-/**
- * @brief Calculate the length of the plan, starting from the given index
- */
-double getPlanLength(const nav_2d_msgs::Path2D& plan, const unsigned int start_index = 0);
+  double dot = A * C + B * D;
+  double len_sq = C * C + D * D;
+  double param = dot / len_sq;
 
-/**
- * @brief Calculate the length of the plan from the pose on the plan closest to the given pose
- */
-double getPlanLength(const nav_2d_msgs::Path2D& plan, const geometry_msgs::Pose2D& query_pose);
+  double xx, yy;
 
-/**
- * @brief Increase plan resolution to match that of the costmap by adding points linearly between points
- *
- * @param global_plan_in input plan
- * @param resolution desired distance between waypoints
- * @return Higher resolution plan
- */
-nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_in, double resolution);
+  if (param < 0)
+  {
+    xx = x0;
+    yy = y0;
+  }
+  else if (param > 1)
+  {
+    xx = x1;
+    yy = y1;
+  }
+  else
+  {
+    xx = x0 + param * C;
+    yy = y0 + param * D;
+  }
 
-/**
- * @brief Decrease the length of the plan by eliminating colinear points
- *
- * Uses the Ramer Douglas Peucker algorithm. Ignores theta values
- *
- * @param input_path Path to compress
- * @param epsilon maximum allowable error. Increase for greater compression.
- * @return Path2D with possibly fewer poses
- */
-nav_2d_msgs::Path2D compressPlan(const nav_2d_msgs::Path2D& input_path, double epsilon = 0.1);
-
+  return hypot(pX - xx, pY - yy);
+}
 }  // namespace nav_2d_utils
 
-#endif  // NAV_2D_UTILS_PATH_OPS_H
+#endif  // NAV_2D_UTILS_GEOMETRY_HELP_H

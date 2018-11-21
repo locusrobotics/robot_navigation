@@ -33,6 +33,7 @@
  */
 
 #include <nav_2d_utils/polygons.h>
+#include <nav_2d_utils/geometry_help.h>
 #include <algorithm>
 #include <limits>
 #include <string>
@@ -397,38 +398,6 @@ bool isInside(const nav_2d_msgs::Polygon2D& polygon, const double x, const doubl
   }
   // Return true if the number of crossings is odd
   return cross % 2 > 0;
-}
-
-double distanceToLine(double pX, double pY, double x0, double y0, double x1, double y1)
-{
-  double A = pX - x0;
-  double B = pY - y0;
-  double C = x1 - x0;
-  double D = y1 - y0;
-
-  double dot = A * C + B * D;
-  double len_sq = C * C + D * D;
-  double param = dot / len_sq;
-
-  double xx, yy;
-
-  if (param < 0)
-  {
-    xx = x0;
-    yy = y0;
-  }
-  else if (param > 1)
-  {
-    xx = x1;
-    yy = y1;
-  }
-  else
-  {
-    xx = x0 + param * C;
-    yy = y0 + param * D;
-  }
-
-  return hypot(pX - xx, pY - yy);
 }
 
 void calculateMinAndMaxDistances(const nav_2d_msgs::Polygon2D& polygon, double& min_dist, double& max_dist)

@@ -1,0 +1,8 @@
+nav_2d_msgs/Pose2DStamped goal
+---
+ResultCode result_code
+---
+NavigationState state
+float32 percent_complete
+float32 distance_traveled
+float32 estimated_distance_remaining

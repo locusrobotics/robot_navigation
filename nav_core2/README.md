@@ -46,6 +46,7 @@ Now let's compare the old [nav_core::BaseLocalPlanner](https://github.com/ros-pl
 ## Exceptions
 A hierarchical collection of [exceptions](include/nav_core2/exceptions.h) is provided to allow for reacting to navigation failures in a more robust and contextual way.
 ![exception hierarchy tree](doc/exceptions.png)
+Each exception has a corresponding integer "result code" that can be used in ROS interfaces where passing the C++ object is infeasible.
 
 ## Bounds
 For use in tracking `Costmap` changes and more, this package also provides an implementation of [bounding boxes](include/nav_core2/bounds.h). These are represented with the ranges `[min_x, max_x]` and `[min_y, max_y]` (inclusive).

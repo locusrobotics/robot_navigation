@@ -17,6 +17,9 @@
   <exec_depend>dwb_msgs</exec_depend>
   <exec_depend>dwb_plugins</exec_depend>
   <exec_depend>global_planner_tests</exec_depend>
+  <exec_depend>locomotor</exec_depend>
+  <exec_depend>locomotor_msgs</exec_depend>
+  <exec_depend>locomove_base</exec_depend>
   <exec_depend>nav_2d_msgs</exec_depend>
   <exec_depend>nav_2d_utils</exec_depend>
   <exec_depend>nav_core2</exec_depend>

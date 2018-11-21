@@ -19,6 +19,11 @@
  * `dlux_plugins` - Plugin implementations for dlux global planner interfaces.
  * `global_planner_tests` - Collection of tests for checking the validity and completeness of global planners.
 
+### Planner Coordination
+ * `locomotor` - Extensible path planning coordination engine that controls what happens when the global and local planners succeed and fail
+ * `locomotor_msgs` - An action definition for Locomotor and other related messages
+ * `locomove_base` - Extension of Locomotor that replicates `move_base`'s functionality.
+
 ### Utilities
  * `nav_2d_utils` - Message conversions, etc.
  * `nav_grid_iterators` - Iterator implementations for moving around the cells of a `nav_grid` in a number of common patterns.

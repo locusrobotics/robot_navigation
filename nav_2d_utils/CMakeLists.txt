@@ -10,7 +10,10 @@ find_package(catkin REQUIRED
         nav_core2
         nav_grid
         nav_msgs
+        pluginlib
         roscpp
+        std_msgs
+        std_srvs
         tf
         xmlrpcpp
 )
@@ -22,7 +25,10 @@ catkin_package(
         nav_core2
         nav_grid
         nav_msgs
+        pluginlib
         roscpp
+        std_msgs
+        std_srvs
         tf
         xmlrpcpp
     INCLUDE_DIRS include
@@ -52,6 +58,9 @@ if(CATKIN_ENABLE_TESTING)
 
   catkin_add_gtest(polygon_tests test/polygon_tests.cpp)
   target_link_libraries(polygon_tests polygons ${catkin_LIBRARIES})
+
+  catkin_add_gtest(compress_test test/compress_test.cpp)
+  target_link_libraries(compress_test path_ops ${catkin_LIBRARIES})
 
   add_rostest_gtest(param_tests test/param_tests.launch test/param_tests.cpp)
   target_link_libraries(param_tests polygons ${catkin_LIBRARIES} ${GTEST_LIBRARIES})

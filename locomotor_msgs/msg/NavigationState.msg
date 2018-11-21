@@ -1,0 +1,6 @@
+nav_2d_msgs/Pose2DStamped global_pose
+nav_2d_msgs/Pose2DStamped local_pose
+nav_2d_msgs/Pose2DStamped goal
+nav_2d_msgs/Twist2DStamped current_velocity
+nav_2d_msgs/Twist2DStamped command_velocity
+nav_2d_msgs/Path2D global_plan

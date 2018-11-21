@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Locus Robotics
+ *  Copyright (c) 2018, Locus Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,48 +32,32 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NAV_2D_UTILS_PATH_OPS_H
-#define NAV_2D_UTILS_PATH_OPS_H
+#ifndef LOCOMOTOR_LOCOMOTOR_ACTION_SERVER_H
+#define LOCOMOTOR_LOCOMOTOR_ACTION_SERVER_H
 
-#include <nav_2d_msgs/Path2D.h>
+#include <actionlib/server/simple_action_server.h>
+#include <locomotor_msgs/NavigateToPoseAction.h>
+#include <locomotor_msgs/NavigationState.h>
+#include <string>
 
-namespace nav_2d_utils
+namespace locomotor
 {
-/**
- * @brief Calculate the linear distance between two poses
- */
-double poseDistance(const geometry_msgs::Pose2D& pose0, const geometry_msgs::Pose2D& pose1);
+using NewGoalCallback = std::function<void (const nav_2d_msgs::Pose2DStamped&)>;
 
-/**
- * @brief Calculate the length of the plan, starting from the given index
- */
-double getPlanLength(const nav_2d_msgs::Path2D& plan, const unsigned int start_index = 0);
+class LocomotorActionServer
+{
+public:
+  LocomotorActionServer(const ros::NodeHandle nh, NewGoalCallback cb, const std::string name = "navigate");
+  void publishFeedback(const locomotor_msgs::NavigationState& nav_state);
+  void completeNavigation();
+  void failNavigation(const locomotor_msgs::ResultCode& result_code);
+protected:
+  void preGoalCallback();
+  void preemptCallback();
+  actionlib::SimpleActionServer<locomotor_msgs::NavigateToPoseAction> navigate_action_server_;
+  locomotor_msgs::NavigateToPoseFeedback feedback_;
+  NewGoalCallback goal_cb_;
+};
+}  // namespace locomotor
 
-/**
- * @brief Calculate the length of the plan from the pose on the plan closest to the given pose
- */
-double getPlanLength(const nav_2d_msgs::Path2D& plan, const geometry_msgs::Pose2D& query_pose);
-
-/**
- * @brief Increase plan resolution to match that of the costmap by adding points linearly between points
- *
- * @param global_plan_in input plan
- * @param resolution desired distance between waypoints
- * @return Higher resolution plan
- */
-nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_in, double resolution);
-
-/**
- * @brief Decrease the length of the plan by eliminating colinear points
- *
- * Uses the Ramer Douglas Peucker algorithm. Ignores theta values
- *
- * @param input_path Path to compress
- * @param epsilon maximum allowable error. Increase for greater compression.
- * @return Path2D with possibly fewer poses
- */
-nav_2d_msgs::Path2D compressPlan(const nav_2d_msgs::Path2D& input_path, double epsilon = 0.1);
-
-}  // namespace nav_2d_utils
-
-#endif  // NAV_2D_UTILS_PATH_OPS_H
+#endif  // LOCOMOTOR_LOCOMOTOR_ACTION_SERVER_H

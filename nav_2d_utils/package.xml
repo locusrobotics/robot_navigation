@@ -14,7 +14,10 @@
   <depend>nav_core2</depend>
   <depend>nav_grid</depend>
   <depend>nav_msgs</depend>
+  <depend>pluginlib</depend>
   <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
   <depend>tf</depend>
   <depend>xmlrpcpp</depend>
   <test_depend>roslint</test_depend>
