@@ -49,13 +49,6 @@ if (CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   catkin_add_gtest(kernel_test test/kernel_test.cpp)
   target_link_libraries(kernel_test dgp)
-
-  find_package(global_planner_tests)
-  include_directories(include ${global_planner_tests_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
-  link_directories(${GTEST_LIBRARY_DIRS})
-
-  add_rostest_gtest(got test/global_oscillation_test.launch test/global_oscillation_test.cpp)
-  target_link_libraries(got dgp ${global_planner_tests_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 endif()
 
 install(TARGETS planner_node

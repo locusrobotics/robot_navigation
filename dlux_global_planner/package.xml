@@ -18,7 +18,6 @@
   <depend>pluginlib</depend>
   <depend>roscpp</depend>
   <depend>visualization_msgs</depend>
-  <test_depend>global_planner_tests</test_depend>
   <test_depend>roslint</test_depend>
   <export>
     <nav_core2 plugin="${prefix}/nav_core2_plugins.xml"/>
