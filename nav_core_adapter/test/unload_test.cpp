@@ -56,7 +56,7 @@ TEST(LocalPlannerAdapter, unload_local_planner)
   delete lpa;
 
   // Simple test to make sure costmap hasn't been deleted
-  EXPECT_EQ("local_costmap", costmap_ros.getName());
+  EXPECT_EQ("map", costmap_ros.getGlobalFrameID());
 }
 
 

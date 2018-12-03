@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nav_core_adapter</name>
-  <version>0.1.0</version>
+  <version>0.2.2</version>
   <description>
       This package contains adapters for using `nav_core` plugins as `nav_core2` plugins and vice versa (more or less).
       See README.md for more information.
@@ -25,6 +25,11 @@
   <depend>visualization_msgs</depend>
   <test_depend>roslint</test_depend>
   <test_depend>rostest</test_depend>
+
+  <!-- When running the unload test, it loads DWB, so these are needed -->
+  <test_depend>dwb_local_planner</test_depend>
+  <test_depend>dwb_plugins</test_depend>
+  <test_depend>dwb_critics</test_depend>
 
   <export>
     <nav_core plugin="${prefix}/nav_core_plugins.xml"/>

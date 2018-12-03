@@ -32,6 +32,9 @@ if (CATKIN_ENABLE_TESTING)
   # add_rostest_gtest(full_planner_test test/full_planner_test.launch test/full_planner_test.cpp)
   # target_link_libraries(full_planner_test ${global_planner_tests_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 
+  add_rostest_gtest(got test/global_oscillation_test.launch test/global_oscillation_test.cpp)
+  target_link_libraries(got ${global_planner_tests_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+
   find_package(roslint)
   roslint_cpp()
   roslint_add_test()
