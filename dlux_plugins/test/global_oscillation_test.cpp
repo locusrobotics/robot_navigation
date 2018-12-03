@@ -42,7 +42,7 @@
 #include <string>
 #include <vector>
 
-const std::string map_path = "package://dlux_global_planner/test/robert_frost.png";
+const std::string map_path = "package://dlux_plugins/test/robert_frost.png";
 
 int barrier_x = 5;
 int barrier_y0 = 1;
