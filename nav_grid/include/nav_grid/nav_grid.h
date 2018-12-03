@@ -76,7 +76,7 @@ namespace nav_grid
 template <typename T> class NavGrid
 {
 public:
-  explicit NavGrid(const T default_value = 0) : default_value_(default_value) {}
+  explicit NavGrid(const T default_value = T{}) : default_value_(default_value) {}
 
   /**
    * @brief Reset the contents of the grid
