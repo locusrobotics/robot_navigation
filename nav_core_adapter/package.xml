@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nav_core_adapter</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>
       This package contains adapters for using `nav_core` plugins as `nav_core2` plugins and vice versa (more or less).
       See README.md for more information.

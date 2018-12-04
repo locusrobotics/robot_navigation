@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>locomotor</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>Locomotor is an extensible path planning coordination engine that replaces move_base. The goal is to provide a mechanism for controlling what happens when the global and local planners succeed and fail. It leverages ROS callback queues to coordinate multiple threads.</description>
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
   <license>BSD</license>

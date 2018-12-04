@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nav_grid_iterators</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>
     Iterator implementations for moving around the cells of a nav_grid in a number of common patterns.
   </description>

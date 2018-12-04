@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nav_core2</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>
       Interfaces for Costmap, LocalPlanner and GlobalPlanner. Replaces nav_core.
   </description>

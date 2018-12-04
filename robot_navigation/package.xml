@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>robot_navigation</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>The robot_navigation package</description>
 
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>

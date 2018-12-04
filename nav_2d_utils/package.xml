@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nav_2d_utils</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>A handful of useful utility functions for nav_core2 packages.</description>
 
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>

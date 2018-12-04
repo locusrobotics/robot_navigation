@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>locomove_base</name>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <description>Extension of locomotor that implements move_base's functionality.</description>
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
   <license>BSD</license>
