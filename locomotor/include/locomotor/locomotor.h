@@ -47,6 +47,7 @@
 #include <pluginlib/class_loader.h>
 #include <nav_2d_utils/odom_subscriber.h>
 #include <nav_2d_utils/plugin_mux.h>
+#include <tf2_ros/transform_listener.h>
 #include <map>
 #include <string>
 #include <vector>
@@ -221,6 +222,7 @@ protected:
   // Tools for getting the position and velocity of the robot
   nav_2d_msgs::Pose2DStamped getRobotPose(const std::string& target_frame) const;
   TFListenerPtr tf_;
+  std::shared_ptr<tf2_ros::TransformListener> tf2_listener_;
   bool use_latest_pose_;
   std::shared_ptr<nav_2d_utils::OdomSubscriber> odom_sub_;
 
