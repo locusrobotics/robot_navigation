@@ -82,7 +82,7 @@ bool GlobalPlannerAdapter::makePlan(const geometry_msgs::PoseStamped& start,
     path_pub_.publish(path);
     return true;
   }
-  catch (nav_core2::PlannerException e)
+  catch (nav_core2::PlannerException& e)
   {
     ROS_ERROR_NAMED("GlobalPlannerAdapter", "makePlan Exception: %s", e.what());
     return false;
