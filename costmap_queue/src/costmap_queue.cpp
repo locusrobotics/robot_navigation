@@ -76,6 +76,7 @@ CellData CostmapQueue::getNextCell()
 {
   // get the highest priority cell and pop it off the priority queue
   CellData current_cell = front();
+  pop();
 
   unsigned int mx = current_cell.x_;
   unsigned int my = current_cell.y_;
@@ -92,8 +93,6 @@ CellData CostmapQueue::getNextCell()
   if (my < costmap_.getHeight() - 1)
     enqueueCell(mx, my + 1, sx, sy);
 
-  // pop once we have our cell info
-  pop();
   return current_cell;
 }
 
