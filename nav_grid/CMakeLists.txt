@@ -13,7 +13,7 @@ if (CATKIN_ENABLE_TESTING)
   include_directories(include ${catkin_INCLUDE_DIRS})
   roslint_cpp()
   roslint_add_test()
-  catkin_add_gtest(utest test/utest.cpp)
+  catkin_add_gtest(${PROJECT_NAME}_utest test/utest.cpp)
 endif (CATKIN_ENABLE_TESTING)
 
 install(DIRECTORY include/${PROJECT_NAME}/
