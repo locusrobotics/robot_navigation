@@ -179,4 +179,13 @@ nav_2d_msgs::Path2D compressPlan(const nav_2d_msgs::Path2D& input_path, double e
   results.poses = compressPlan(input_path.poses, 0, input_path.poses.size() - 1, epsilon);
   return results;
 }
+
+void addPose(nav_2d_msgs::Path2D& path, double x, double y, double theta)
+{
+  geometry_msgs::Pose2D pose;
+  pose.x = x;
+  pose.y = y;
+  pose.theta = theta;
+  path.poses.push_back(pose);
+}
 }  // namespace nav_2d_utils

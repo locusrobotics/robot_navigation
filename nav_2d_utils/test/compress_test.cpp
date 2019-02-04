@@ -35,66 +35,54 @@
 #include <nav_2d_utils/path_ops.h>
 
 using nav_2d_utils::compressPlan;
-
-geometry_msgs::Pose2D make_pose(double x, double y)
-{
-  geometry_msgs::Pose2D pose;
-  pose.x = x;
-  pose.y = y;
-  return pose;
-}
-
-void add_pose(nav_2d_msgs::Path2D& path, double x, double y)
-{
-  path.poses.push_back(make_pose(x, y));
-}
+using nav_2d_utils::addPose;
 
 TEST(CompressTest, compress_test)
 {
   nav_2d_msgs::Path2D path;
   // Dataset borrowed from https://karthaus.nl/rdp/
-  add_pose(path, 24, 173);
-  add_pose(path, 26, 170);
-  add_pose(path, 24, 166);
-  add_pose(path, 27, 162);
-  add_pose(path, 37, 161);
-  add_pose(path, 45, 157);
-  add_pose(path, 48, 152);
-  add_pose(path, 46, 143);
-  add_pose(path, 40, 140);
-  add_pose(path, 34, 137);
-  add_pose(path, 26, 134);
-  add_pose(path, 24, 130);
-  add_pose(path, 24, 125);
-  add_pose(path, 28, 121);
-  add_pose(path, 36, 118);
-  add_pose(path, 46, 117);
-  add_pose(path, 63, 121);
-  add_pose(path, 76, 125);
-  add_pose(path, 82, 120);
-  add_pose(path, 86, 111);
-  add_pose(path, 88, 103);
-  add_pose(path, 90, 91);
-  add_pose(path, 95, 87);
-  add_pose(path, 107, 89);
-  add_pose(path, 107, 104);
-  add_pose(path, 106, 117);
-  add_pose(path, 109, 129);
-  add_pose(path, 119, 131);
-  add_pose(path, 131, 131);
-  add_pose(path, 139, 134);
-  add_pose(path, 138, 143);
-  add_pose(path, 131, 152);
-  add_pose(path, 119, 154);
-  add_pose(path, 111, 149);
-  add_pose(path, 105, 143);
-  add_pose(path, 91, 139);
-  add_pose(path, 80, 142);
-  add_pose(path, 81, 152);
-  add_pose(path, 76, 163);
-  add_pose(path, 67, 161);
-  add_pose(path, 59, 149);
-  add_pose(path, 63, 138);
+  addPose(path, 24, 173);
+  addPose(path, 26, 170);
+  addPose(path, 24, 166);
+  addPose(path, 27, 162);
+  addPose(path, 37, 161);
+  addPose(path, 45, 157);
+  addPose(path, 48, 152);
+  addPose(path, 46, 143);
+  addPose(path, 40, 140);
+  addPose(path, 34, 137);
+  addPose(path, 26, 134);
+  addPose(path, 24, 130);
+  addPose(path, 24, 125);
+  addPose(path, 28, 121);
+  addPose(path, 36, 118);
+  addPose(path, 46, 117);
+  addPose(path, 63, 121);
+  addPose(path, 76, 125);
+  addPose(path, 82, 120);
+  addPose(path, 86, 111);
+  addPose(path, 88, 103);
+  addPose(path, 90, 91);
+  addPose(path, 95, 87);
+  addPose(path, 107, 89);
+  addPose(path, 107, 104);
+  addPose(path, 106, 117);
+  addPose(path, 109, 129);
+  addPose(path, 119, 131);
+  addPose(path, 131, 131);
+  addPose(path, 139, 134);
+  addPose(path, 138, 143);
+  addPose(path, 131, 152);
+  addPose(path, 119, 154);
+  addPose(path, 111, 149);
+  addPose(path, 105, 143);
+  addPose(path, 91, 139);
+  addPose(path, 80, 142);
+  addPose(path, 81, 152);
+  addPose(path, 76, 163);
+  addPose(path, 67, 161);
+  addPose(path, 59, 149);
+  addPose(path, 63, 138);
 
   EXPECT_EQ(41, compressPlan(path, 0.1).poses.size());
   EXPECT_EQ(34, compressPlan(path, 1.3).poses.size());
