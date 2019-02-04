@@ -42,7 +42,7 @@ target_link_libraries(planner_node dgp ${catkin_LIBRARIES})
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 if (CATKIN_ENABLE_TESTING)
-  find_package(roslint)
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 

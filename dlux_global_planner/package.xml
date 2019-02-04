@@ -19,6 +19,8 @@
   <depend>roscpp</depend>
   <depend>visualization_msgs</depend>
   <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
+  <test_depend>rosunit</test_depend>
   <export>
     <nav_core2 plugin="${prefix}/nav_core2_plugins.xml"/>
   </export>
