@@ -50,7 +50,7 @@ TEST(CostmapQueue, basicQueue)
   while (!q.isEmpty())
   {
     costmap_queue::CellData cell = q.getNextCell();
-    EXPECT_EQ(cell.distance_, hypot(cell.x_, cell.y_));
+    EXPECT_FLOAT_EQ(cell.distance_, hypot(cell.x_, cell.y_));
     count++;
   }
   EXPECT_EQ(count, 25);
@@ -64,8 +64,8 @@ TEST(CostmapQueue, reverseQueue)
   while (!q.isEmpty())
   {
     costmap_queue::CellData cell = q.getNextCell();
-    EXPECT_EQ(cell.distance_, hypot(4.0 - static_cast<double>(cell.x_),
-                                    4.0 - static_cast<double>(cell.y_)));
+    EXPECT_FLOAT_EQ(cell.distance_, hypot(4.0 - static_cast<double>(cell.x_),
+                                          4.0 - static_cast<double>(cell.y_)));
     count++;
   }
   EXPECT_EQ(count, 25);
@@ -85,7 +85,7 @@ TEST(CostmapQueue, bigTest)
   while (!q.isEmpty())
   {
     costmap_queue::CellData cell = q.getNextCell();
-    EXPECT_EQ(cell.distance_, hypot(cell.x_, cell.y_));
+    EXPECT_FLOAT_EQ(cell.distance_, hypot(cell.x_, cell.y_));
     count++;
   }
   EXPECT_EQ(count, 500 * 500);
@@ -103,7 +103,7 @@ TEST(CostmapQueue, linearQueue)
   while (!q.isEmpty())
   {
     costmap_queue::CellData cell = q.getNextCell();
-    EXPECT_EQ(cell.distance_, cell.x_);
+    EXPECT_FLOAT_EQ(cell.distance_, cell.x_);
     count++;
   }
   EXPECT_EQ(count, 25);
@@ -131,7 +131,7 @@ TEST(CostmapQueue, crossQueue)
       double dd = hypot(xs[i] - static_cast<float>(cell.x_), ys[i] - static_cast<float>(cell.y_));
       min_d = std::min(min_d, dd);
     }
-    EXPECT_EQ(cell.distance_, min_d);
+    EXPECT_FLOAT_EQ(cell.distance_, min_d);
     count++;
   }
   EXPECT_EQ(count, 25);
@@ -145,7 +145,7 @@ TEST(CostmapQueue, limitedQueue)
   while (!q.isEmpty())
   {
     costmap_queue::CellData cell = q.getNextCell();
-    EXPECT_EQ(cell.distance_, hypot(cell.x_, cell.y_));
+    EXPECT_FLOAT_EQ(cell.distance_, hypot(cell.x_, cell.y_));
     count++;
   }
   EXPECT_EQ(count, 24);
@@ -175,7 +175,7 @@ TEST(CostmapQueue, changingSize)
   nav_core2::BasicCostmap size_map;
   size_map.setInfo(info0);
   costmap_queue::CostmapQueue q(size_map);
-  int count = 0;
+  unsigned int count = 0;
   q.enqueueCell(0, 0);
   while (!q.isEmpty())
   {
