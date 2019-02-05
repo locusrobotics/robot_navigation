@@ -89,7 +89,6 @@ public:
   typedef std::shared_ptr<CostInterpreter> Ptr;
 
 protected:
-  void calculateCache();
   std::array<float, 256> cached_costs_;
   unsigned char neutral_cost_;
 

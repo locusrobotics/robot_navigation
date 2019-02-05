@@ -90,7 +90,7 @@ bool DluxGlobalPlanner::isPlanValid(const nav_2d_msgs::Path2D& path) const
   const nav_grid::NavGridInfo& info = costmap.getInfo();
   for (geometry_msgs::Pose2D pose : path.poses)
   {
-    if (!worldToGridBounded(info, pose.x, pose.y, x, y) || costmap(x, y) >= costmap.LETHAL_OBSTACLE)
+    if (!worldToGridBounded(info, pose.x, pose.y, x, y) || costmap(x, y) >= costmap.INSCRIBED_INFLATED_OBSTACLE)
     {
       return false;
     }

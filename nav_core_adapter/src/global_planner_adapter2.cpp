@@ -68,7 +68,7 @@ void GlobalPlannerAdapter2::initialize(const ros::NodeHandle& parent, const std:
 
   ros::NodeHandle planner_nh(parent, name);
   std::string planner_name;
-  planner_nh.param("planner_name", planner_name, std::string("global_planner::GlobalPlanner"));
+  planner_nh.param("planner_name", planner_name, std::string("global_planner/GlobalPlanner"));
   ROS_INFO_NAMED("GlobalPlannerAdapter2", "Loading plugin %s", planner_name.c_str());
   planner_ = planner_loader_.createInstance(planner_name);
   planner_->initialize(planner_loader_.getName(planner_name), costmap_ros_);
