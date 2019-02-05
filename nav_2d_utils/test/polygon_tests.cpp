@@ -44,9 +44,9 @@ TEST(array_parser, basic_operation)
 {
   std::vector<std::vector<double> > vvd;
   vvd = parseVVD("[[1, 2.2], [.3, -4e4]]");
-  EXPECT_DOUBLE_EQ(2, vvd.size());
-  EXPECT_DOUBLE_EQ(2, vvd[0].size());
-  EXPECT_DOUBLE_EQ(2, vvd[1].size());
+  EXPECT_DOUBLE_EQ(2U, vvd.size());
+  EXPECT_DOUBLE_EQ(2U, vvd[0].size());
+  EXPECT_DOUBLE_EQ(2U, vvd[1].size());
   EXPECT_DOUBLE_EQ(1.0, vvd[0][0]);
   EXPECT_DOUBLE_EQ(2.2, vvd[0][1]);
   EXPECT_DOUBLE_EQ(0.3, vvd[1][0]);
@@ -72,7 +72,7 @@ TEST(Polygon2D, radius_param)
 {
   Polygon2D footprint = nav_2d_utils::polygonFromRadius(10.0);
   // Circular robot has 16-point footprint auto-generated.
-  ASSERT_EQ(16, footprint.points.size());
+  ASSERT_EQ(16U, footprint.points.size());
 
   // Check the first point
   EXPECT_EQ(10.0, footprint.points[0].x);
@@ -86,7 +86,7 @@ TEST(Polygon2D, radius_param)
 TEST(Polygon2D, string_param)
 {
   Polygon2D footprint = polygonFromString("[[1, 1], [-1, 1], [-1, -1]]");
-  ASSERT_EQ(3, footprint.points.size());
+  ASSERT_EQ(3U, footprint.points.size());
 
   EXPECT_EQ(1.0, footprint.points[ 0 ].x);
   EXPECT_EQ(1.0, footprint.points[ 0 ].y);
@@ -124,7 +124,7 @@ TEST(Polygon2D, arrays)
   std::vector<double> xs = {1, -1, -1};
   std::vector<double> ys = {1, 1, -1};
   Polygon2D footprint = polygonFromParallelArrays(xs, ys);
-  ASSERT_EQ(3, footprint.points.size());
+  ASSERT_EQ(3U, footprint.points.size());
 
   EXPECT_EQ(1.0, footprint.points[ 0 ].x);
   EXPECT_EQ(1.0, footprint.points[ 0 ].y);
@@ -155,7 +155,7 @@ TEST(Polygon2D, test_move)
   pose.y = -10;
   pose.theta = M_PI / 4;
   Polygon2D diamond = nav_2d_utils::movePolygonToPose(square, pose);
-  ASSERT_EQ(4, diamond.points.size());
+  ASSERT_EQ(4U, diamond.points.size());
   double side = 1.0 / sqrt(2);
 
   EXPECT_DOUBLE_EQ(pose.x,        diamond.points[ 0 ].x);

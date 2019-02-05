@@ -50,7 +50,7 @@ void checkLimits(const std::vector<nav_2d_msgs::Twist2D>& twists,
                  double exp_max_xy = -1.0,
                  double exp_min_xy = -1.0, double exp_min_speed_theta = -1.0)
 {
-  ASSERT_GT(twists.size(), 0);
+  ASSERT_GT(twists.size(), 0U);
   nav_2d_msgs::Twist2D first = twists[0];
 
   double min_x = first.x, max_x = first.x, min_y = first.y, max_y = first.y;
@@ -80,7 +80,9 @@ void checkLimits(const std::vector<nav_2d_msgs::Twist2D>& twists,
   EXPECT_DOUBLE_EQ(min_theta, exp_min_theta);
   EXPECT_DOUBLE_EQ(max_theta, exp_max_theta);
   if (exp_max_xy >= 0)
+  {
     EXPECT_DOUBLE_EQ(max_xy, exp_max_xy);
+  }
 }
 
 TEST(VelocityIterator, standard_gen)
@@ -89,7 +91,7 @@ TEST(VelocityIterator, standard_gen)
   StandardTrajectoryGenerator gen;
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
-  EXPECT_EQ(twists.size(), 1926);
+  EXPECT_EQ(twists.size(), 1926U);
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0, 0.55, 0.1, 0.4);
 }
 
@@ -102,7 +104,7 @@ TEST(VelocityIterator, max_xy)
 
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // Expect more twists since max_speed_xy is now beyond feasible limits
-  EXPECT_EQ(twists.size(), 2010);
+  EXPECT_EQ(twists.size(), 2010U);
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0, hypot(0.55, 0.1));
 }
 
@@ -114,7 +116,7 @@ TEST(VelocityIterator, min_xy)
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // Expect even more since theres no min_speed_xy
-  EXPECT_EQ(twists.size(), 2015);
+  EXPECT_EQ(twists.size(), 2015U);
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0);
 }
 
@@ -126,7 +128,7 @@ TEST(VelocityIterator, min_theta)
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // Expect even more since theres no min_speed_xy
-  EXPECT_EQ(twists.size(), 2015);
+  EXPECT_EQ(twists.size(), 2015U);
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0);
 }
 
@@ -140,7 +142,7 @@ TEST(VelocityIterator, no_limits)
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // vx_samples * vtheta_samples * vy_samples + added zero theta samples - (0,0,0)
-  EXPECT_EQ(twists.size(), 20 * 20 * 5 + 100 - 1);
+  EXPECT_EQ(twists.size(), static_cast<unsigned int>(20 * 20 * 5 + 100 - 1));
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0, hypot(0.55, 0.1), 0.0, 0.0);
 }
 
@@ -157,7 +159,7 @@ TEST(VelocityIterator, no_limits_samples)
   StandardTrajectoryGenerator gen;
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
-  EXPECT_EQ(twists.size(), x_samples * y_samples * theta_samples - 1);
+  EXPECT_EQ(twists.size(), static_cast<unsigned int>(x_samples * y_samples * theta_samples - 1));
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0, hypot(0.55, 0.1), 0.0, 0.0);
 }
 
@@ -186,7 +188,7 @@ TEST(VelocityIterator, dwa_gen)
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // Same as no-limits since everything is within our velocity limits
-  EXPECT_EQ(twists.size(), 20 * 20 * 5 + 100 - 1);
+  EXPECT_EQ(twists.size(), static_cast<unsigned int>(20 * 20 * 5 + 100 - 1));
   checkLimits(twists, 0.0, 0.125, -0.1, 0.1, -0.16, 0.16, hypot(0.125, 0.1), 0.0, 0.1);
 }
 
@@ -197,7 +199,7 @@ TEST(VelocityIterator, dwa_gen_no_param)
   dwb_plugins::LimitedAccelGenerator gen;
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
-  EXPECT_EQ(twists.size(), 20 * 20 * 5 + 100 - 1);
+  EXPECT_EQ(twists.size(), static_cast<unsigned int>(20 * 20 * 5 + 100 - 1));
   checkLimits(twists, 0.0, 0.125, -0.1, 0.1, -0.16, 0.16, hypot(0.125, 0.1), 0.0, 0.1);
 }
 
@@ -213,7 +215,7 @@ TEST(VelocityIterator, nonzero)
   initial.y = -0.08;
   initial.theta = 0.05;
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(initial);
-  EXPECT_EQ(twists.size(), 2519);
+  EXPECT_EQ(twists.size(), 2519U);
   checkLimits(twists, 0.0, 0.225, -0.1, 0.045, -0.11000000000000003, 0.21,
                       0.24622144504490268, 0.0, 0.1);
 }
@@ -377,7 +379,7 @@ TEST(TrajectoryGenerator, accel)
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, zero, forward);
   matchTwist(res.velocity, forward);
   EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), 5.0);
-  ASSERT_EQ(res.poses.size(), 6);
+  ASSERT_EQ(res.poses.size(), 6U);
   matchPose(res.poses[0], origin);
   matchPose(res.poses[1], 0.1, 0, 0);
   matchPose(res.poses[2], 0.3, 0, 0);
@@ -402,7 +404,7 @@ TEST(TrajectoryGenerator, dwa)
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, zero, forward);
   matchTwist(res.velocity, forward);
   EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), 5.0);
-  ASSERT_EQ(res.poses.size(), 6);
+  ASSERT_EQ(res.poses.size(), 6U);
   matchPose(res.poses[0], origin);
   matchPose(res.poses[1], 0.3, 0, 0);
   matchPose(res.poses[2], 0.6, 0, 0);

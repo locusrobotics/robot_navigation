@@ -39,9 +39,9 @@
 using nav_grid::Index;
 
 template<class iterator_type>
-unsigned int countIterations(iterator_type it, unsigned int max_iterations = 1000)
+int countIterations(iterator_type it, int max_iterations = 1000)
 {
-  unsigned int count = 0;
+  int count = 0;
   iterator_type end = it.end();
   for ( ; it != end; ++it)
   {
@@ -107,8 +107,8 @@ TEST(SubGrid, sub_grid)
   int count = 0;
   for (Index i : nav_grid_iterators::SubGrid(&info, 1, 2, 2, 3))
   {
-    ASSERT_EQ(i.x, 1 + count % 2);
-    ASSERT_EQ(i.y, 2 + count / 2);
+    ASSERT_EQ(i.x, static_cast<unsigned int>(1 + count % 2));
+    ASSERT_EQ(i.y, static_cast<unsigned int>(2 + count / 2));
     ++count;
   }
   ASSERT_EQ(count, 6);
@@ -399,46 +399,46 @@ TEST(Iterators, test_assignment)
   info.resolution = 1.0;
   nav_grid_iterators::CircleFill iter1(&info, 3.0, 3.0, 1.0);
   // Sequence should be (2, 2) (3, 2) (2, 3) (3, 3)
-  EXPECT_EQ((*iter1).x, 2);
-  EXPECT_EQ((*iter1).y, 2);
+  EXPECT_EQ((*iter1).x, 2U);
+  EXPECT_EQ((*iter1).y, 2U);
 
   nav_grid_iterators::CircleFill iter2 = iter1;
 
   // Effective Copy
-  EXPECT_EQ((*iter1).x, 2);
-  EXPECT_EQ((*iter1).y, 2);
-  EXPECT_EQ((*iter2).x, 2);
-  EXPECT_EQ((*iter2).y, 2);
+  EXPECT_EQ((*iter1).x, 2U);
+  EXPECT_EQ((*iter1).y, 2U);
+  EXPECT_EQ((*iter2).x, 2U);
+  EXPECT_EQ((*iter2).y, 2U);
 
   // Increment only iter2
   ++iter2;
-  EXPECT_EQ((*iter1).x, 2);
-  EXPECT_EQ((*iter1).y, 2);
-  EXPECT_EQ((*iter2).x, 3);
-  EXPECT_EQ((*iter2).y, 2);
+  EXPECT_EQ((*iter1).x, 2U);
+  EXPECT_EQ((*iter1).y, 2U);
+  EXPECT_EQ((*iter2).x, 3U);
+  EXPECT_EQ((*iter2).y, 2U);
 
   // Increment first to match
   ++iter1;
-  EXPECT_EQ((*iter1).x, 3);
-  EXPECT_EQ((*iter1).y, 2);
-  EXPECT_EQ((*iter2).x, 3);
-  EXPECT_EQ((*iter2).y, 2);
+  EXPECT_EQ((*iter1).x, 3U);
+  EXPECT_EQ((*iter1).y, 2U);
+  EXPECT_EQ((*iter2).x, 3U);
+  EXPECT_EQ((*iter2).y, 2U);
 
   // Increment only iter2
   ++iter2;
-  EXPECT_EQ((*iter1).x, 3);
-  EXPECT_EQ((*iter1).y, 2);
-  EXPECT_EQ((*iter2).x, 2);
-  EXPECT_EQ((*iter2).y, 3);
+  EXPECT_EQ((*iter1).x, 3U);
+  EXPECT_EQ((*iter1).y, 2U);
+  EXPECT_EQ((*iter2).x, 2U);
+  EXPECT_EQ((*iter2).y, 3U);
 
   // Check copy when not at the start
   nav_grid_iterators::CircleFill iter3 = iter1;
-  EXPECT_EQ((*iter1).x, 3);
-  EXPECT_EQ((*iter1).y, 2);
-  EXPECT_EQ((*iter2).x, 2);
-  EXPECT_EQ((*iter2).y, 3);
-  EXPECT_EQ((*iter3).x, 3);
-  EXPECT_EQ((*iter3).y, 2);
+  EXPECT_EQ((*iter1).x, 3U);
+  EXPECT_EQ((*iter1).y, 2U);
+  EXPECT_EQ((*iter2).x, 2U);
+  EXPECT_EQ((*iter2).y, 3U);
+  EXPECT_EQ((*iter3).x, 3U);
+  EXPECT_EQ((*iter3).y, 2U);
 }
 
 int main(int argc, char **argv)

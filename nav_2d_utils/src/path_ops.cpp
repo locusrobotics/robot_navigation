@@ -34,6 +34,7 @@
 
 #include <nav_2d_utils/path_ops.h>
 #include <nav_2d_utils/geometry_help.h>
+#include <cmath>
 #include <vector>
 
 namespace nav_2d_utils
