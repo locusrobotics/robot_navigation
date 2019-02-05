@@ -74,6 +74,15 @@ nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_
  */
 nav_2d_msgs::Path2D compressPlan(const nav_2d_msgs::Path2D& input_path, double epsilon = 0.1);
 
+/**
+ * @brief Convenience function to add a pose to a path in one line.
+ * @param path Path to add to
+ * @param x x-coordinate
+ * @param y y-coordinate
+ * @param theta theta (if needed)
+ */
+void addPose(nav_2d_msgs::Path2D& path, double x, double y, double theta = 0.0);
+
 }  // namespace nav_2d_utils
 
 #endif  // NAV_2D_UTILS_PATH_OPS_H
