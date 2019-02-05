@@ -47,7 +47,7 @@ TEST(Polygon2D, unpadded_footprint_from_string_param)
 {
   ros::NodeHandle nh("~unpadded");
   Polygon2D footprint = polygonFromParams(nh, "footprint");
-  ASSERT_EQ(3, footprint.points.size());
+  ASSERT_EQ(3U, footprint.points.size());
 
   EXPECT_EQ(1.0f, footprint.points[ 0 ].x);
   EXPECT_EQ(1.0f, footprint.points[ 0 ].y);
@@ -63,7 +63,7 @@ TEST(Polygon2D, check_search_capabilities)
 {
   ros::NodeHandle nh("~unpadded/unneccessarily/long_namespace");
   Polygon2D footprint = polygonFromParams(nh, "footprint");
-  ASSERT_EQ(3, footprint.points.size());
+  ASSERT_EQ(3U, footprint.points.size());
   EXPECT_THROW(polygonFromParams(nh, "footprint", false), nav_2d_utils::PolygonParseException);
 }
 
@@ -71,7 +71,7 @@ TEST(Polygon2D, footprint_from_xmlrpc_param)
 {
   ros::NodeHandle nh("~xmlrpc");
   Polygon2D footprint = polygonFromParams(nh, "footprint");
-  ASSERT_EQ(4, footprint.points.size());
+  ASSERT_EQ(4U, footprint.points.size());
 
   EXPECT_FLOAT_EQ(0.1f, footprint.points[ 0 ].x);
   EXPECT_FLOAT_EQ(0.1f, footprint.points[ 0 ].y);
@@ -93,7 +93,7 @@ TEST(Polygon2D, footprint_from_same_level_param)
 {
   ros::NodeHandle nh("~same_level");
   Polygon2D footprint = polygonFromParams(nh, "footprint");
-  ASSERT_EQ(3, footprint.points.size());
+  ASSERT_EQ(3U, footprint.points.size());
 
   EXPECT_EQ(1.0f, footprint.points[ 0 ].x);
   EXPECT_EQ(2.0f, footprint.points[ 0 ].y);

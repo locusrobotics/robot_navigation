@@ -36,9 +36,9 @@
 #include <nav_grid_iterators/line/ray_trace.h>
 
 template<class iterator_type>
-unsigned int countIterations(iterator_type it, unsigned int max_iterations = 1000)
+int countIterations(iterator_type it, int max_iterations = 1000)
 {
-  unsigned int count = 0;
+  int count = 0;
   iterator_type end = it.end();
   for ( ; it != end; ++it)
   {

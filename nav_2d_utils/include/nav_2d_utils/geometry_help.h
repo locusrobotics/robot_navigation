@@ -35,6 +35,8 @@
 #ifndef NAV_2D_UTILS_GEOMETRY_HELP_H
 #define NAV_2D_UTILS_GEOMETRY_HELP_H
 
+#include <cmath>
+
 namespace nav_2d_utils
 {
 /**

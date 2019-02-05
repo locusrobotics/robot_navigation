@@ -96,10 +96,10 @@ TEST(CompressTest, compress_test)
   add_pose(path, 59, 149);
   add_pose(path, 63, 138);
 
-  EXPECT_EQ(41, compressPlan(path, 0.1).poses.size());
-  EXPECT_EQ(34, compressPlan(path, 1.3).poses.size());
-  EXPECT_EQ(12, compressPlan(path, 9.5).poses.size());
-  EXPECT_EQ(8, compressPlan(path, 19.9).poses.size());
+  EXPECT_EQ(41U, compressPlan(path, 0.1).poses.size());
+  EXPECT_EQ(34U, compressPlan(path, 1.3).poses.size());
+  EXPECT_EQ(12U, compressPlan(path, 9.5).poses.size());
+  EXPECT_EQ(8U, compressPlan(path, 19.9).poses.size());
 }
 
 int main(int argc, char** argv)
