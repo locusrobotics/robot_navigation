@@ -76,6 +76,7 @@ double getPlanLength(const nav_2d_msgs::Path2D& plan, const geometry_msgs::Pose2
 nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_in, double resolution)
 {
   nav_2d_msgs::Path2D global_plan_out;
+  global_plan_out.header = global_plan_in.header;
   if (global_plan_in.poses.size() == 0)
   {
     return global_plan_out;
@@ -84,19 +85,18 @@ nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_
   geometry_msgs::Pose2D last = global_plan_in.poses[0];
   global_plan_out.poses.push_back(last);
 
-  // we can take "holes" in the plan smaller than 2 grid cells (squared = 4)
-  double min_sq_resolution = resolution * resolution * 4.0;
+  double sq_resolution = resolution * resolution;
 
   for (unsigned int i = 1; i < global_plan_in.poses.size(); ++i)
   {
     geometry_msgs::Pose2D loop = global_plan_in.poses[i];
     double sq_dist = (loop.x - last.x) * (loop.x - last.x) + (loop.y - last.y) * (loop.y - last.y);
-    if (sq_dist > min_sq_resolution)
+    if (sq_dist > sq_resolution)
     {
       // add points in-between
-      double diff = sqrt(sq_dist) - sqrt(min_sq_resolution);
-      int steps = static_cast<int>(diff / resolution) - 1;
-      double steps_double = static_cast<double>(steps);
+      double diff = sqrt(sq_dist) - resolution;
+      double steps_double = ceil(diff / resolution) + 1.0;
+      int steps = static_cast<int>(steps_double);
 
       double delta_x = (loop.x - last.x) / steps_double;
       double delta_y = (loop.y - last.y) / steps_double;
@@ -179,5 +179,14 @@ nav_2d_msgs::Path2D compressPlan(const nav_2d_msgs::Path2D& input_path, double e
   results.header = input_path.header;
   results.poses = compressPlan(input_path.poses, 0, input_path.poses.size() - 1, epsilon);
   return results;
+}
+
+void addPose(nav_2d_msgs::Path2D& path, double x, double y, double theta)
+{
+  geometry_msgs::Pose2D pose;
+  pose.x = x;
+  pose.y = y;
+  pose.theta = theta;
+  path.poses.push_back(pose);
 }
 }  // namespace nav_2d_utils
