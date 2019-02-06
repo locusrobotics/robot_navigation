@@ -35,14 +35,15 @@ add_library(dgp src/dlux_global_planner.cpp src/cost_interpreter.cpp)
 add_dependencies(dgp ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dgp ${catkin_LIBRARIES})
 
-add_executable(planner_node src/planner_node.cpp)
-add_dependencies(planner_node ${catkin_EXPORTED_TARGETS})
-target_link_libraries(planner_node dgp ${catkin_LIBRARIES})
+add_executable(${PROJECT_NAME}_planner_node src/planner_node.cpp)
+add_dependencies(${PROJECT_NAME}_planner_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_planner_node dgp ${catkin_LIBRARIES})
+set_target_properties(${PROJECT_NAME}_planner_node PROPERTIES OUTPUT_NAME planner_node PREFIX "")
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 if (CATKIN_ENABLE_TESTING)
-  find_package(roslint)
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 
@@ -51,7 +52,7 @@ if (CATKIN_ENABLE_TESTING)
   target_link_libraries(kernel_test dgp)
 endif()
 
-install(TARGETS planner_node
+install(TARGETS ${PROJECT_NAME}_planner_node
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(TARGETS dgp

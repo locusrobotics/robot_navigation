@@ -50,7 +50,7 @@ target_link_libraries(polygons ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  find_package(roslint)
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 

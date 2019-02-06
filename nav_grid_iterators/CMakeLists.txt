@@ -38,14 +38,14 @@ include_directories(
 )
 
 if (CATKIN_ENABLE_TESTING)
-  find_package(roslint)
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 
   catkin_add_gtest(line_tests test/line_tests.cpp)
   target_link_libraries(line_tests nav_grid_iterators)
-  catkin_add_gtest(utest test/utest.cpp)
-  target_link_libraries(utest nav_grid_iterators)
+  catkin_add_gtest(${PROJECT_NAME}_utest test/utest.cpp)
+  target_link_libraries(${PROJECT_NAME}_utest nav_grid_iterators)
 endif (CATKIN_ENABLE_TESTING)
 
 install(TARGETS nav_grid_iterators

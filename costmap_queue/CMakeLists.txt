@@ -28,10 +28,10 @@ if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(mbq_test test/mbq_test.cpp)
   target_link_libraries(mbq_test ${catkin_LIBRARIES})
 
-  catkin_add_gtest(utest test/utest.cpp)
-  target_link_libraries(utest ${PROJECT_NAME} ${catkin_LIBRARIES})
+  catkin_add_gtest(${PROJECT_NAME}_utest test/utest.cpp)
+  target_link_libraries(${PROJECT_NAME}_utest ${PROJECT_NAME} ${catkin_LIBRARIES})
 
-  find_package(roslint)
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 endif (CATKIN_ENABLE_TESTING)

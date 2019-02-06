@@ -43,7 +43,7 @@ if (CATKIN_ENABLE_TESTING)
   add_rostest_gtest(twist_gen_test test/twist_gen.launch test/twist_gen.cpp)
   target_link_libraries(twist_gen_test standard_traj_generator ${GTEST_LIBRARIES})
 
-  find_package(roslint)
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 endif (CATKIN_ENABLE_TESTING)
