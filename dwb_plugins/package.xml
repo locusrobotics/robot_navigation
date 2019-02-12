@@ -21,6 +21,8 @@
   <depend>pluginlib</depend>
   <depend>roscpp</depend>
   <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
+  <test_depend>rosunit</test_depend>
 
   <export>
     <dwb_local_planner plugin="${prefix}/plugins.xml"/>

@@ -38,7 +38,7 @@ target_link_libraries(nav_grid_pub_sub ${catkin_LIBRARIES})
 add_dependencies(nav_grid_pub_sub ${catkin_EXPORTED_TARGETS})
 
 if(CATKIN_ENABLE_TESTING)
-    find_package(roslint)
+    find_package(roslint REQUIRED)
     roslint_cpp()
     roslint_add_test()
 endif()

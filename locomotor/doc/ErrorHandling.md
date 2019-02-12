@@ -15,15 +15,15 @@ void SomeStateMachine::onGlobalPlanningException(nav_core2::PlannerException e,
   {
     throw e;
   }
-  catch (nav_core2::OccupiedGoalException e)
+  catch (nav_core2::OccupiedGoalException& e)
   {
     // modify the goal and try again
   }
-  catch (nav_core2::PlannerTFException e)
+  catch (nav_core2::PlannerTFException& e)
   {
     // wait 10 seconds, try again
   }
-  catch (nav_core2::PlannerException e)  // catch all
+  catch (nav_core2::PlannerException& e)  // catch all
   {
     // trigger plan failure
   }
@@ -40,7 +40,7 @@ void LocomotorBrown::onGlobalPlanningException(nav_core2::PlannerException e,
   {
     throw e;
   }
-  catch (LocomotorBrown::TimeTravelException e)
+  catch (LocomotorBrown::TimeTravelException& e)
   {
     // recalibrate flux capacitor
   }

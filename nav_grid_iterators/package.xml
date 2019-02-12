@@ -17,5 +17,5 @@
   <depend>nav_msgs</depend>
   <depend>roscpp</depend>
   <test_depend>roslint</test_depend>
-
+  <test_depend>rosunit</test_depend>
 </package>

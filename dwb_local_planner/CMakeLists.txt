@@ -45,13 +45,14 @@ add_dependencies(debug_dwb_local_planner ${catkin_EXPORTED_TARGETS})
 add_library(trajectory_utils src/trajectory_utils.cpp)
 target_link_libraries(trajectory_utils ${catkin_LIBRARIES})
 
-add_executable(planner_node src/planner_node.cpp)
-target_link_libraries(planner_node ${catkin_LIBRARIES} debug_dwb_local_planner)
-add_dependencies(planner_node ${catkin_EXPORTED_TARGETS})
+add_executable(${PROJECT_NAME}_planner_node src/planner_node.cpp)
+target_link_libraries(${PROJECT_NAME}_planner_node ${catkin_LIBRARIES} debug_dwb_local_planner)
+add_dependencies(${PROJECT_NAME}_planner_node ${catkin_EXPORTED_TARGETS})
+set_target_properties(${PROJECT_NAME}_planner_node PROPERTIES OUTPUT_NAME planner_node PREFIX "")
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  find_package(roslint)
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 
@@ -59,7 +60,7 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(utils_test trajectory_utils)
 endif()
 
-install(TARGETS planner_node
+install(TARGETS ${PROJECT_NAME}_planner_node
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(TARGETS dwb_local_planner debug_dwb_local_planner trajectory_utils

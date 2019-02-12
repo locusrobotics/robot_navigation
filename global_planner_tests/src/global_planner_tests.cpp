@@ -128,7 +128,7 @@ bool planExists(nav_core2::GlobalPlanner& planner, nav_2d_msgs::Pose2DStamped st
     planner.makePlan(start, goal);
     return true;
   }
-  catch (nav_core2::PlannerException e)
+  catch (nav_core2::PlannerException& e)
   {
     return false;
   }
@@ -189,17 +189,17 @@ bool checkOccupiedPathCoverage(nav_core2::GlobalPlanner& planner,
         }
         valid = false;
       }
-      catch (nav_core2::OccupiedStartException e)
+      catch (nav_core2::OccupiedStartException& e)
       {
         if (check_exception_type)
           valid = invalid_starts;
       }
-      catch (nav_core2::OccupiedGoalException e)
+      catch (nav_core2::OccupiedGoalException& e)
       {
         if (check_exception_type)
           valid = !invalid_starts;
       }
-      catch (nav_core2::PlannerException e)
+      catch (nav_core2::PlannerException& e)
       {
         valid = !check_exception_type;
       }
@@ -246,17 +246,17 @@ bool checkOutOfBoundsPathCoverage(nav_core2::GlobalPlanner& planner,
         }
         valid = false;
       }
-      catch (nav_core2::StartBoundsException e)
+      catch (nav_core2::StartBoundsException& e)
       {
         if (check_exception_type)
           valid = invalid_starts;
       }
-      catch (nav_core2::GoalBoundsException e)
+      catch (nav_core2::GoalBoundsException& e)
       {
         if (check_exception_type)
           valid = !invalid_starts;
       }
-      catch (nav_core2::PlannerException e)
+      catch (nav_core2::PlannerException& e)
       {
         valid = !check_exception_type;
       }
@@ -369,11 +369,11 @@ bool hasNoPaths(nav_core2::GlobalPlanner& planner, const nav_core2::Costmap& cos
         }
         valid = false;
       }
-      catch (nav_core2::NoGlobalPathException e)
+      catch (nav_core2::NoGlobalPathException& e)
       {
         valid = true;
       }
-      catch (nav_core2::PlannerException e)
+      catch (nav_core2::PlannerException& e)
       {
         valid = !check_exception_type;
       }

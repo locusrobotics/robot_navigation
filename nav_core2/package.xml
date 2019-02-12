@@ -13,4 +13,5 @@
   <depend>nav_grid</depend>
   <depend>tf2_ros</depend>
   <test_depend>roslint</test_depend>
+  <test_depend>rosunit</test_depend>
 </package>

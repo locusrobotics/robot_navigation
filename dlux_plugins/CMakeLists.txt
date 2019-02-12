@@ -21,9 +21,8 @@ include_directories(
 if (CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
 
-  find_package(global_planner_tests)
+  find_package(global_planner_tests REQUIRED)
   include_directories(include ${global_planner_tests_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${GTEST_INCLUDE_DIRS})
-  link_directories(${GTEST_LIBRARY_DIRS})
 
   add_rostest_gtest(planner_test test/planner_test.launch test/planner_test.cpp)
   target_link_libraries(planner_test ${global_planner_tests_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
@@ -35,7 +34,7 @@ if (CATKIN_ENABLE_TESTING)
   add_rostest_gtest(got test/global_oscillation_test.launch test/global_oscillation_test.cpp)
   target_link_libraries(got ${global_planner_tests_LIBRARIES} ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 
-  find_package(roslint)
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 endif()
