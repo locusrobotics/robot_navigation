@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nav_grid_pub_sub</name>
-  <version>0.2.4</version>
+  <version>0.2.5</version>
   <description>Publishers and Subscribers for nav_grid data.</description>
 
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
