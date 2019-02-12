@@ -113,7 +113,7 @@ private:
     {
       plan = gp_.makePlan(start_, goal_);
     }
-    catch (nav_core2::PlannerException e)
+    catch (nav_core2::PlannerException& e)
     {
       ROS_ERROR("%s", e.what());
     }
