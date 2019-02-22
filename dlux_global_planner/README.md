@@ -115,13 +115,13 @@ Below, we provide a "brief" mathematical derivation of the calculation.
   * `P(C) <= P(D)`
   * `P(A) <= P(C)`
  * If `P(C)` is infinite, that is, not initialized yet, the new potential calculation is straightforwardly  ![P(X) = P(A) + h](https://latex.codecogs.com/gif.latex?P%28X%29%20%3D%20P%28A%29%20&plus;%20h).
- * Otherwise, we want to find a value of `P(X)` that satisfies the equation ![(P(X) - P(A))^2 + (P(X) - P(C))^2 = h](https://latex.codecogs.com/gif.latex?%5CBig%28P%28X%29%20-%20P%28A%29%5CBig%29%5E2%20&plus;%20%5CBig%28P%28X%29%20-%20P%28C%29%5CBig%29%5E2%20%3D%20h)
+ * Otherwise, we want to find a value of `P(X)` that satisfies the equation ![(P(X) - P(A))^2 + (P(X) - P(C))^2 = h^2](https://latex.codecogs.com/gif.latex?\Big&space;(&space;P&space;(&space;X&space;)-P&space;(&space;A&space;)&space;\Big)^{2}&space;&plus;&space;\Big&space;(&space;P&space;(&space;X&space;)-P&space;(&space;C&space;)&space;\Big&space;)^{2}&space;=&space;h^{2})
  * It's possible there are no real values that satisfy the equation if ![P(C) - P(A) >= h](https://latex.codecogs.com/gif.latex?P%28C%29%20-%20P%28A%29%20%5Cgeq%20h) in which case the straightforward update is used.
  * Otherwise, through clever manipulation of the quadratic formula, we can solve the equation with the following:
    * ![P(X) = 0.5 * (-beta + sqrt(beta^2 - 4 * gamma))](https://latex.codecogs.com/gif.latex?P%28X%29%20%3D%20%5Cfrac%7B-%5Cbeta%20&plus;%20%5Csqrt%7B%5Cbeta%5E2%20-%204%20%5Cgamma%7D%7D%7B2%7D)
    * ![beta = -(P(A) + P(C))](https://latex.codecogs.com/gif.latex?%5Cbeta%20%3D%20-%5CBig%28P%28A%29&plus;P%28C%29%5CBig%29)
    * ![gamma = 0.5 * (P(A)^2 + P(C)^2 - h^2)](https://latex.codecogs.com/gif.latex?%5Cgamma%20%3D%20%5Cfrac%7BP%28A%29%5E2%20&plus;%20P%28C%29%5E2%20-%20h%5E2%7D%7B2%7D)
- * That all looks complicated, and computationally inefficient due to the square root operation. Hence, we calculate a second-degree Taylor series approximation as
+ * That all looks complicated, and computationally inefficient due to the square root operation. Hence, we calculate a second-degree Taylor series approximation at ![P(C)=P(A)+h](https://latex.codecogs.com/gif.latex?P(C)=P(A)&plus;h) as
   * ![delta = beta / h](https://latex.codecogs.com/gif.latex?%5Cdelta%20%3D%20%5Cbeta%20/%20h)
   * ![P(X) = P(A) + h (c_2 \delta^2 + c_1\delta + c_0)](https://latex.codecogs.com/gif.latex?P%28X%29%20%5Capprox%20P%28A%29%20&plus;%20h%20%28c_2%20%5Cdelta%5E2%20&plus;%20c_1%5Cdelta%20&plus;%20c_0%29)
   * ![c_2 = -0.2301, c_1 = 0.5307, c_0 = 0.7040](https://latex.codecogs.com/gif.latex?c_2%20%3D%20-0.2301%2C%20c_1%20%3D%200.5307%2C%20c_0%20%3D%200.7040)
