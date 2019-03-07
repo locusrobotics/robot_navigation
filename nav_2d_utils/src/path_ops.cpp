@@ -45,6 +45,34 @@ double poseDistance(const geometry_msgs::Pose2D& pose0, const geometry_msgs::Pos
   return hypot(pose0.x - pose1.x, pose0.y - pose1.y);
 }
 
+double poseDistanceSquared(const geometry_msgs::Pose2D& pose0, const geometry_msgs::Pose2D& pose1)
+{
+  double x_diff = pose0.x - pose1.x;
+  double y_diff = pose0.y - pose1.y;
+  return x_diff * x_diff + y_diff * y_diff;
+}
+
+unsigned int getClosestPoseIndex(const nav_2d_msgs::Path2D& plan, const geometry_msgs::Pose2D& query_pose)
+{
+  if (plan.poses.size() == 0)
+  {
+    throw std::runtime_error("Cannot run getClosestPoseIndex on plan with no poses.");
+  }
+
+  unsigned int closest_index = 0;
+  double closest_distance = poseDistanceSquared(plan.poses[0], query_pose);
+  for (unsigned int i = 1; i < plan.poses.size(); i++)
+  {
+    double distance = poseDistanceSquared(plan.poses[i], query_pose);
+    if (closest_distance > distance)
+    {
+      closest_index = i;
+      closest_distance = distance;
+    }
+  }
+  return closest_index;
+}
+
 double getPlanLength(const nav_2d_msgs::Path2D& plan, const unsigned int start_index)
 {
   double length = 0.0;
@@ -58,19 +86,7 @@ double getPlanLength(const nav_2d_msgs::Path2D& plan, const unsigned int start_i
 double getPlanLength(const nav_2d_msgs::Path2D& plan, const geometry_msgs::Pose2D& query_pose)
 {
   if (plan.poses.size() == 0) return 0.0;
-
-  unsigned int closest_index = 0;
-  double closest_distance = poseDistance(plan.poses[0], query_pose);
-  for (unsigned int i = 1; i < plan.poses.size(); i++)
-  {
-    double distance = poseDistance(plan.poses[i], query_pose);
-    if (closest_distance > distance)
-    {
-      closest_index = i;
-      closest_distance = distance;
-    }
-  }
-  return getPlanLength(plan, closest_index);
+  return getPlanLength(plan, getClosestPoseIndex(plan, query_pose));
 }
 
 nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_in, double resolution)
