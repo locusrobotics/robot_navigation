@@ -414,27 +414,31 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
   unsigned int closest_idx = 0;
   double min_dist = getSquareDistance(robot_pose.pose, global_plan_.poses[0]);
 
-  for (unsigned int i = 1; i < global_plan_.poses.size(); ++i) {
+  for (unsigned int i = 1; i < global_plan_.poses.size(); ++i)\
+  {
     double dist = getSquareDistance(robot_pose.pose, global_plan_.poses[i]);
-    if (dist < min_dist){
+    if (dist < min_dist)
+    {
       min_dist = dist;
       closest_idx = i;
-    }//if
-  }//for
+    }
+  }
 
-  for (unsigned int i = closest_idx; i >= 0 && i < global_plan_.poses.size(); --i) {
+  for (unsigned int i = closest_idx; i >= 0 && i < global_plan_.poses.size(); --i)
+  {
     double dist = getSquareDistance(robot_pose.pose, global_plan_.poses[i]);
-    if (dist > sq_dist_threshold){
+    if (dist > sq_dist_threshold)
+    {
       begin_within = i;
       break;
-    }//if
-  }//for
+    }
+  }
 
-  for (unsigned int i = begin_within; i < global_plan_.poses.size(); ++i) {
+  for (unsigned int i = begin_within; i < global_plan_.poses.size(); ++i)
+  {
     bool should_break = false;
     if (getSquareDistance(robot_pose.pose, global_plan_.poses[i]) > sq_dist_threshold)
     {
-
       if (transformed_plan.poses.size() == 0)
       {
         // we need to skip to a point on the plan that is within a certain distance of the robot
@@ -445,7 +449,7 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
         // we're done transforming points
         should_break = true;
       }
-    }//for
+    }
 
     // now we'll transform until points are outside of our distance threshold
     stamped_pose.pose = global_plan_.poses[i];
