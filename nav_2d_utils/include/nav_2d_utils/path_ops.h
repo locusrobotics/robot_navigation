@@ -40,6 +40,21 @@
 namespace nav_2d_utils
 {
 /**
+ * @brief Calculate the linear distance between two poses
+ */
+double poseDistance(const geometry_msgs::Pose2D& pose0, const geometry_msgs::Pose2D& pose1);
+
+/**
+ * @brief Calculate the length of the plan, starting from the given index
+ */
+double getPlanLength(const nav_2d_msgs::Path2D& plan, const unsigned int start_index = 0);
+
+/**
+ * @brief Calculate the length of the plan from the pose on the plan closest to the given pose
+ */
+double getPlanLength(const nav_2d_msgs::Path2D& plan, const geometry_msgs::Pose2D& query_pose);
+
+/**
  * @brief Increase plan resolution to match that of the costmap by adding points linearly between points
  *
  * @param global_plan_in input plan
@@ -47,6 +62,27 @@ namespace nav_2d_utils
  * @return Higher resolution plan
  */
 nav_2d_msgs::Path2D adjustPlanResolution(const nav_2d_msgs::Path2D& global_plan_in, double resolution);
+
+/**
+ * @brief Decrease the length of the plan by eliminating colinear points
+ *
+ * Uses the Ramer Douglas Peucker algorithm. Ignores theta values
+ *
+ * @param input_path Path to compress
+ * @param epsilon maximum allowable error. Increase for greater compression.
+ * @return Path2D with possibly fewer poses
+ */
+nav_2d_msgs::Path2D compressPlan(const nav_2d_msgs::Path2D& input_path, double epsilon = 0.1);
+
+/**
+ * @brief Convenience function to add a pose to a path in one line.
+ * @param path Path to add to
+ * @param x x-coordinate
+ * @param y y-coordinate
+ * @param theta theta (if needed)
+ */
+void addPose(nav_2d_msgs::Path2D& path, double x, double y, double theta = 0.0);
+
 }  // namespace nav_2d_utils
 
 #endif  // NAV_2D_UTILS_PATH_OPS_H

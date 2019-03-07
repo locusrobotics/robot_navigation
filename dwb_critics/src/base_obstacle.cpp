@@ -33,6 +33,7 @@
  */
 
 #include <dwb_critics/base_obstacle.h>
+#include <nav_grid/coordinate_conversion.h>
 #include <nav_core2/exceptions.h>
 #include <pluginlib/class_list_macros.h>
 
@@ -43,28 +44,28 @@ namespace dwb_critics
 
 void BaseObstacleCritic::onInit()
 {
-  costmap_ = costmap_ros_->getCostmap();
-  nh_->param("sum_scores", sum_scores_, false);
+  critic_nh_.param("sum_scores", sum_scores_, false);
 }
 
 double BaseObstacleCritic::scoreTrajectory(const dwb_msgs::Trajectory2D& traj)
 {
+  const nav_core2::Costmap& costmap = *costmap_;
   double score = 0.0;
   for (unsigned int i = 0; i < traj.poses.size(); ++i)
   {
-    double pose_score = scorePose(traj.poses[i]);
+    double pose_score = scorePose(costmap, traj.poses[i]);
     // Optimized/branchless version of if (sum_scores_) score += pose_score, else score = pose_score;
     score = static_cast<double>(sum_scores_) * score + pose_score;
   }
   return score;
 }
 
-double BaseObstacleCritic::scorePose(const geometry_msgs::Pose2D& pose)
+double BaseObstacleCritic::scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose)
 {
   unsigned int cell_x, cell_y;
-  if (!costmap_->worldToMap(pose.x, pose.y, cell_x, cell_y))
+  if (!worldToGridBounded(costmap.getInfo(), pose.x, pose.y, cell_x, cell_y))
     throw nav_core2::IllegalTrajectoryException(name_, "Trajectory Goes Off Grid.");
-  unsigned char cost = costmap_->getCost(cell_x, cell_y);
+  unsigned char cost = costmap(cell_x, cell_y);
   if (!isValidCost(cost))
     throw nav_core2::IllegalTrajectoryException(name_, "Trajectory Hits Obstacle.");
   return cost;
@@ -72,24 +73,26 @@ double BaseObstacleCritic::scorePose(const geometry_msgs::Pose2D& pose)
 
 bool BaseObstacleCritic::isValidCost(const unsigned char cost)
 {
-  return cost != costmap_2d::LETHAL_OBSTACLE && cost != costmap_2d::INSCRIBED_INFLATED_OBSTACLE
-                                             && cost != costmap_2d::NO_INFORMATION;
+  return cost != costmap_->LETHAL_OBSTACLE &&
+         cost != costmap_->INSCRIBED_INFLATED_OBSTACLE &&
+         cost != costmap_->NO_INFORMATION;
 }
 
-void BaseObstacleCritic::addGridScores(sensor_msgs::PointCloud& pc)
+void BaseObstacleCritic::addCriticVisualization(sensor_msgs::PointCloud& pc)
 {
   sensor_msgs::ChannelFloat32 grid_scores;
   grid_scores.name = name_;
 
-  unsigned int size_x = costmap_->getSizeInCellsX();
-  unsigned int size_y = costmap_->getSizeInCellsY();
+  const nav_core2::Costmap& costmap = *costmap_;
+  unsigned int size_x = costmap.getWidth();
+  unsigned int size_y = costmap.getHeight();
   grid_scores.values.resize(size_x * size_y);
   unsigned int i = 0;
   for (unsigned int cy = 0; cy < size_y; cy++)
   {
     for (unsigned int cx = 0; cx < size_x; cx++)
     {
-      grid_scores.values[i] = costmap_->getCost(cx, cy);
+      grid_scores.values[i] = costmap(cx, cy);
       i++;
     }
   }

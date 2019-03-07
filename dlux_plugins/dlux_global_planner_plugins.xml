@@ -1,0 +1,17 @@
+<library path="lib/libdlux_plugins">
+  <class type="dlux_plugins::AStar" base_class_type="dlux_global_planner::PotentialCalculator">
+    <description>Potential calculator that explores using a distance heuristic (A*) but not the kernel function</description>
+  </class>
+  <class type="dlux_plugins::Dijkstra" base_class_type="dlux_global_planner::PotentialCalculator">
+    <description>Potential calculator that explores the potential breadth first while using the kernel function</description>
+  </class>
+  <class type="dlux_plugins::VonNeumannPath" base_class_type="dlux_global_planner::Traceback">
+    <description>Traceback function that moves from cell to cell using only the four neighbors</description>
+  </class>
+  <class type="dlux_plugins::GridPath" base_class_type="dlux_global_planner::Traceback">
+    <description>Traceback function that moves from cell to cell using any of the eight neighbors</description>
+  </class>
+  <class type="dlux_plugins::GradientPath" base_class_type="dlux_global_planner::Traceback">
+    <description>Traceback function that creates a smooth gradient from the start to the goal</description>
+  </class>
+</library>

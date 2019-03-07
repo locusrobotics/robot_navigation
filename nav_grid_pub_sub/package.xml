@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>nav_grid_pub_sub</name>
+  <version>0.2.5</version>
+  <description>Publishers and Subscribers for nav_grid data.</description>
+
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>geometry_msgs</depend>
+  <depend>map_msgs</depend>
+  <depend>nav_2d_msgs</depend>
+  <depend>nav_2d_utils</depend>
+  <depend>nav_core2</depend>
+  <depend>nav_grid</depend>
+  <depend>nav_grid_iterators</depend>
+  <depend>nav_msgs</depend>
+  <depend>roscpp</depend>
+  <test_depend>roslint</test_depend>
+
+</package>

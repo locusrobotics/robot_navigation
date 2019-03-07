@@ -67,7 +67,14 @@ public:
    * @param tf TFListener pointer
    * @param costmap_ros Costmap pointer
    */
-  void initialize(std::string name, TFListenerPtr tf, CostmapROSPtr costmap_ros) override;
+  void initialize(const ros::NodeHandle& parent, const std::string& name,
+                  TFListenerPtr tf, nav_core2::Costmap::Ptr costmap) override;
+
+  /**
+   * @brief nav_core2 setGoalPose - Sets the global goal pose
+   * @param goal_pose The Goal Pose
+   */
+  void setGoalPose(const nav_2d_msgs::Pose2DStamped& goal_pose) override;
 
   /**
    * @brief nav_core2 setPlan - Sets the global plan
@@ -100,7 +107,7 @@ public:
    * @param velocity Current velocity
    * @return True if the robot should be considered as having reached the goal.
    */
-  bool isGoalReached(const nav_2d_msgs::Pose2DStamped& pose, const nav_2d_msgs::Twist2D& velocity);
+  bool isGoalReached(const nav_2d_msgs::Pose2DStamped& pose, const nav_2d_msgs::Twist2D& velocity) override;
 
   /**
    * @brief Score a given command. Can be used for testing.
@@ -113,8 +120,8 @@ public:
    * @param best_score If positive, the threshold for early termination
    * @return The full scoring of the input trajectory
    */
-  dwb_msgs::TrajectoryScore scoreTrajectory(const dwb_msgs::Trajectory2D& traj,
-                                            double best_score = -1);
+  virtual dwb_msgs::TrajectoryScore scoreTrajectory(const dwb_msgs::Trajectory2D& traj, double best_score = -1);
+
   /**
    * @brief Compute the best command given the current pose and velocity, with possible debug information
    *
@@ -124,31 +131,28 @@ public:
    *
    * @param pose      Current robot pose
    * @param velocity  Current robot velocity
-   * @param results   Output param, if not NULL, will be filled in with full evaluation results
+   * @param results   Output param, if not null, will be filled in with full evaluation results
    * @return          Best command
    */
-  nav_2d_msgs::Twist2DStamped computeVelocityCommands(const nav_2d_msgs::Pose2DStamped& pose,
-                                                      const nav_2d_msgs::Twist2D& velocity,
-                                                      std::shared_ptr<dwb_msgs::LocalPlanEvaluation>& results);
+  virtual nav_2d_msgs::Twist2DStamped computeVelocityCommands(const nav_2d_msgs::Pose2DStamped& pose,
+                                                              const nav_2d_msgs::Twist2D& velocity,
+                                                              std::shared_ptr<dwb_msgs::LocalPlanEvaluation>& results);
 
 
 protected:
   /**
-   * @brief Helper method for two common operations for the operating on the global_plan
+   * @brief Helper method for preparing for the core scoring algorithm
    *
-   * Transforms the global plan (stored in global_plan_) relative to the pose and saves it in
-   * transformed_plan and possibly publishes it. Then it takes the last pose and transforms it
-   * to match the local costmap's frame
+   * Runs the prepare method on all the critics with freshly transformed data
    */
-  void prepareGlobalPlan(const nav_2d_msgs::Pose2DStamped& pose, nav_2d_msgs::Path2D& transformed_plan,
-                         nav_2d_msgs::Pose2DStamped& goal_pose, bool publish_plan = true);
+  virtual void prepare(const nav_2d_msgs::Pose2DStamped& pose, const nav_2d_msgs::Twist2D& velocity);
 
   /**
    * @brief Iterate through all the twists and find the best one
    */
-  dwb_msgs::TrajectoryScore coreScoringAlgorithm(const geometry_msgs::Pose2D& pose,
-                                                 const nav_2d_msgs::Twist2D velocity,
-                                                 std::shared_ptr<dwb_msgs::LocalPlanEvaluation>& results);
+  virtual dwb_msgs::TrajectoryScore coreScoringAlgorithm(const geometry_msgs::Pose2D& pose,
+                                                         const nav_2d_msgs::Twist2D velocity,
+                                                         std::shared_ptr<dwb_msgs::LocalPlanEvaluation>& results);
 
   /**
    * @brief Transforms global plan into same frame as pose, clips far away poses and possibly prunes passed poses
@@ -160,11 +164,19 @@ protected:
    *     and the saved global_plan_. Technically, it iterates to a pose on the path that is within prune_distance_
    *     of the robot and erases all poses before that.
    */
-  nav_2d_msgs::Path2D transformGlobalPlan(const nav_2d_msgs::Pose2DStamped& pose);
+  virtual nav_2d_msgs::Path2D transformGlobalPlan(const nav_2d_msgs::Pose2DStamped& pose);
+
+  /**
+   * @brief Helper method to transform a given pose to the local costmap frame.
+   */
+  geometry_msgs::Pose2D transformPoseToLocal(const nav_2d_msgs::Pose2DStamped& pose);
+
   nav_2d_msgs::Path2D global_plan_;  ///< Saved Global Plan
+  nav_2d_msgs::Pose2DStamped goal_pose_;  ///< Saved Goal Pose
   bool prune_plan_;
   double prune_distance_;
   bool debug_trajectory_details_;
+  bool short_circuit_trajectory_evaluation_;
 
   // Plugin handling
   pluginlib::ClassLoader<TrajectoryGenerator> traj_gen_loader_;
@@ -186,13 +198,16 @@ protected:
    * @brief Load the critic parameters from the namespace
    * @param name The namespace of this planner.
    */
-  void loadCritics(const std::string name);
+  virtual void loadCritics(const std::string name);
 
   std::vector<std::string> default_critic_namespaces_;
 
-  CostmapROSPtr costmap_ros_;
+  nav_core2::Costmap::Ptr costmap_;
+  bool update_costmap_before_planning_;
   TFListenerPtr tf_;
   DWBPublisher pub_;
+
+  ros::NodeHandle planner_nh_;
 };
 
 }  // namespace dwb_local_planner

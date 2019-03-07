@@ -32,6 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <dwb_critics/rotate_to_goal.h>
+#include <dwb_local_planner/trajectory_utils.h>
 #include <nav_2d_utils/parameters.h>
 #include <nav_core2/exceptions.h>
 #include <pluginlib/class_list_macros.h>
@@ -46,23 +47,36 @@ PLUGINLIB_EXPORT_CLASS(dwb_critics::RotateToGoalCritic, dwb_local_planner::Traje
 namespace dwb_critics
 {
 
+inline double hypot_sq(double dx, double dy)
+{
+  return dx * dx + dy * dy;
+}
+
 void RotateToGoalCritic::onInit()
 {
-  xy_goal_tolerance_ = nav_2d_utils::searchAndGetParam(*nh_, "xy_goal_tolerance", 0.25);
+  xy_goal_tolerance_ = nav_2d_utils::searchAndGetParam(critic_nh_, "xy_goal_tolerance", 0.25);
   xy_goal_tolerance_sq_ = xy_goal_tolerance_ * xy_goal_tolerance_;
+  double stopped_xy_velocity = nav_2d_utils::searchAndGetParam(critic_nh_, "trans_stopped_velocity", 0.25);
+  stopped_xy_velocity_sq_ = stopped_xy_velocity * stopped_xy_velocity;
+  critic_nh_.param("slowing_factor", slowing_factor_, 5.0);
+  critic_nh_.param("lookahead_time", lookahead_time_, -1.0);
+  reset();
+}
+
+void RotateToGoalCritic::reset()
+{
+  in_window_ = false;
+  rotating_ = false;
 }
 
 bool RotateToGoalCritic::prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msgs::Twist2D& vel,
                                  const geometry_msgs::Pose2D& goal,
                                  const nav_2d_msgs::Path2D& global_plan)
 {
-  double dx = pose.x - goal.x,
-         dy = pose.y - goal.y;
-  double dxy_sq = dx * dx + dy * dy;
-  if (dxy_sq > xy_goal_tolerance_sq_)
-  {
-    in_window_ = false;
-  }
+  double dxy_sq = hypot_sq(pose.x - goal.x, pose.y - goal.y);
+  in_window_ = in_window_ || dxy_sq <= xy_goal_tolerance_sq_;
+  current_xy_speed_sq_ = hypot_sq(vel.x, vel.y);
+  rotating_ = rotating_ || (in_window_ && current_xy_speed_sq_ <= stopped_xy_velocity_sq_);
   goal_yaw_ = goal.theta;
   return true;
 }
@@ -74,6 +88,15 @@ double RotateToGoalCritic::scoreTrajectory(const dwb_msgs::Trajectory2D& traj)
   {
     return 0.0;
   }
+  else if (!rotating_)
+  {
+    double speed_sq = hypot_sq(traj.velocity.x, traj.velocity.y);
+    if (speed_sq >= current_xy_speed_sq_)
+    {
+      throw nav_core2::IllegalTrajectoryException(name_, "Not slowing down near goal.");
+    }
+    return speed_sq * slowing_factor_ + scoreRotation(traj);
+  }
 
   // If we're sufficiently close to the goal, any transforming velocity is invalid
   if (fabs(traj.velocity.x) > EPSILON || fabs(traj.velocity.y) > EPSILON)
@@ -81,13 +104,27 @@ double RotateToGoalCritic::scoreTrajectory(const dwb_msgs::Trajectory2D& traj)
     throw nav_core2::IllegalTrajectoryException(name_, "Nonrotation command near goal.");
   }
 
+  return scoreRotation(traj);
+}
+
+double RotateToGoalCritic::scoreRotation(const dwb_msgs::Trajectory2D& traj)
+{
   if (traj.poses.empty())
   {
     throw nav_core2::IllegalTrajectoryException(name_, "Empty trajectory.");
   }
 
-  double end_yaw = traj.poses.back().theta;
-  return angles::shortest_angular_distance(end_yaw, goal_yaw_);
+  double end_yaw;
+  if (lookahead_time_ >= 0.0)
+  {
+    geometry_msgs::Pose2D eval_pose = dwb_local_planner::projectPose(traj, lookahead_time_);
+    end_yaw = eval_pose.theta;
+  }
+  else
+  {
+    end_yaw = traj.poses.back().theta;
+  }
+  return fabs(angles::shortest_angular_distance(end_yaw, goal_yaw_));
 }
 
 } /* namespace dwb_critics */

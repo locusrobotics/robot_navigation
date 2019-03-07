@@ -35,6 +35,7 @@
 #define NAV_CORE2_GLOBAL_PLANNER_H
 
 #include <nav_core2/common.h>
+#include <nav_core2/costmap.h>
 #include <nav_2d_msgs/Path2D.h>
 #include <nav_2d_msgs/Pose2DStamped.h>
 #include <string>
@@ -56,10 +57,17 @@ public:
 
   /**
    * @brief  Initialization function for the GlobalPlanner
+   *
+   * ROS parameters/topics are expected to be in the parent/name namespace.
+   * It is suggested that all NodeHandles in the planner use the parent NodeHandle's callback queue.
+   *
+   * @param  parent NodeHandle to derive other NodeHandles from
    * @param  name The name of this planner
-   * @param  costmap_ros A pointer to the costmap
+   * @param  tf A pointer to a transform listener
+   * @param  costmap A pointer to the costmap
    */
-  virtual void initialize(std::string name, CostmapROSPtr costmap_ros) = 0;
+  virtual void initialize(const ros::NodeHandle& parent, const std::string& name,
+                          TFListenerPtr tf, Costmap::Ptr costmap) = 0;
 
   /**
    * @brief Run the global planner to make a plan starting at the start and ending at the goal.

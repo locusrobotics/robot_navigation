@@ -35,6 +35,7 @@
 #define NAV_CORE2_LOCAL_PLANNER_H
 
 #include <nav_core2/common.h>
+#include <nav_core2/costmap.h>
 #include <nav_2d_msgs/Path2D.h>
 #include <nav_2d_msgs/Pose2DStamped.h>
 #include <nav_2d_msgs/Twist2D.h>
@@ -58,14 +59,26 @@ public:
 
   /**
    * @brief Constructs the local planner
+   *
+   * ROS parameters/topics are expected to be in the parent/name namespace.
+   * It is suggested that all NodeHandles in the planner use the parent NodeHandle's callback queue.
+   *
+   * @param parent NodeHandle to derive other NodeHandles from
    * @param name The name to give this instance of the local planner
    * @param tf A pointer to a transform listener
-   * @param costmap_ros The cost map to use for assigning costs to local plans
+   * @param costmap A pointer to the costmap
    */
-  virtual void initialize(std::string name, TFListenerPtr tf, CostmapROSPtr costmap_ros) = 0;
+  virtual void initialize(const ros::NodeHandle& parent, const std::string& name,
+                          TFListenerPtr tf, Costmap::Ptr costmap) = 0;
 
   /**
-   * @brief Sets the global plan for this local planner. The last pose should be the global goal pose.
+   * @brief Sets the global goal for this local planner.
+   * @param goal_pose The Goal Pose
+   */
+  virtual void setGoalPose(const nav_2d_msgs::Pose2DStamped& goal_pose) = 0;
+
+  /**
+   * @brief Sets the global plan for this local planner.
    *
    * @param path The global plan
    */
@@ -88,7 +101,6 @@ public:
    * @brief Check to see whether the robot has reached its goal
    *
    * This tests whether the robot has fully reached the goal, given the current pose and velocity.
-   * The goal that it is checking against should be passed in via setPlan.
    *
    * @param query_pose The pose to check, in local costmap coordinates.
    * @param velocity   Velocity to check

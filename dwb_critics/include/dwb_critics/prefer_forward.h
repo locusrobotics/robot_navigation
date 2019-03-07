@@ -57,7 +57,7 @@ public:
   void onInit() override;
   double scoreTrajectory(const dwb_msgs::Trajectory2D& traj) override;
 
-private:
+protected:
   double penalty_, strafe_x_, strafe_theta_, theta_scale_;
 };
 

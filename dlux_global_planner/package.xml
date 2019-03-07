@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>dlux_global_planner</name>
+  <version>0.2.5</version>
+  <description>
+    Plugin based global planner implementing the nav_core2::GlobalPlanner interface.
+  </description>
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_2d_msgs</depend>
+  <depend>nav_2d_utils</depend>
+  <depend>nav_core2</depend>
+  <depend>nav_grid</depend>
+  <depend>nav_grid_pub_sub</depend>
+  <depend>nav_msgs</depend>
+  <depend>pluginlib</depend>
+  <depend>roscpp</depend>
+  <depend>visualization_msgs</depend>
+  <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
+  <test_depend>rosunit</test_depend>
+  <export>
+    <nav_core2 plugin="${prefix}/nav_core2_plugins.xml"/>
+  </export>
+</package>

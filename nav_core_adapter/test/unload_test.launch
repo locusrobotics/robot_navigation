@@ -1,0 +1,3 @@
+<launch>
+  <test time-limit="10" test-name="unload_test" pkg="nav_core_adapter" type="unload_test" />
+</launch>

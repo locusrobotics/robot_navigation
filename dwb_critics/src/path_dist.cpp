@@ -32,6 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <dwb_critics/path_dist.h>
+#include <nav_grid/coordinate_conversion.h>
 #include <pluginlib/class_list_macros.h>
 #include <nav_2d_utils/path_ops.h>
 #include <vector>
@@ -43,10 +44,11 @@ bool PathDistCritic::prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msg
                              const nav_2d_msgs::Path2D& global_plan)
 {
   reset();
+  const nav_core2::Costmap& costmap = *costmap_;
+  const nav_grid::NavGridInfo& info = costmap.getInfo();
   bool started_path = false;
 
-  nav_2d_msgs::Path2D adjusted_global_plan =
-    nav_2d_utils::adjustPlanResolution(global_plan, costmap_->getResolution());
+  nav_2d_msgs::Path2D adjusted_global_plan = nav_2d_utils::adjustPlanResolution(global_plan, info.resolution);
 
   if (adjusted_global_plan.poses.size() != global_plan.poses.size())
   {
@@ -61,10 +63,9 @@ bool PathDistCritic::prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msg
     double g_x = adjusted_global_plan.poses[i].x;
     double g_y = adjusted_global_plan.poses[i].y;
     unsigned int map_x, map_y;
-    if (costmap_->worldToMap(g_x, g_y, map_x, map_y) && costmap_->getCost(map_x, map_y) != costmap_2d::NO_INFORMATION)
+    if (worldToGridBounded(info, g_x, g_y, map_x, map_y) && costmap(map_x, map_y) != costmap.NO_INFORMATION)
     {
-      int index = costmap_->getIndex(map_x, map_y);
-      cell_values_[index] = 0.0;
+      cell_values_.setValue(map_x, map_y, 0.0);
       queue_->enqueueCell(map_x, map_y);
       started_path = true;
     }

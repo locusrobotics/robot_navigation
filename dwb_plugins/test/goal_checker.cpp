@@ -44,6 +44,7 @@ void checkMacro(dwb_local_planner::GoalChecker& gc,
                 double xv, double yv, double thetav,
                 bool expected_result)
 {
+  gc.reset();
   geometry_msgs::Pose2D pose0, pose1;
   pose0.x = x0;
   pose0.y = y0;

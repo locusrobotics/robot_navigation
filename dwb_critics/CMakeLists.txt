@@ -5,13 +5,13 @@ set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED COMPONENTS
   angles
-  costmap_2d
   costmap_queue
   dwb_local_planner
   geometry_msgs
   nav_2d_msgs
   nav_2d_utils
   nav_core2
+  nav_grid_iterators
   pluginlib
   roscpp
   sensor_msgs
@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS angles costmap_2d costmap_queue dwb_local_planner geometry_msgs nav_2d_msgs nav_2d_utils nav_core2 pluginlib roscpp sensor_msgs
+    CATKIN_DEPENDS angles costmap_queue dwb_local_planner geometry_msgs nav_2d_msgs nav_2d_utils nav_core2 nav_grid_iterators pluginlib roscpp sensor_msgs
 )
 
 include_directories(
@@ -44,6 +44,12 @@ add_library(${PROJECT_NAME}
 )
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(roslint REQUIRED)
+  roslint_cpp()
+  roslint_add_test()
+endif()
 
 install(TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

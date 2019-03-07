@@ -1,0 +1,8 @@
+global_costmap:
+  plugins:
+    - {name: static_layer, type: 'costmap_2d::StaticLayer'}
+  static_layer:
+      trinary_costmap: false
+planner:
+  publish_potential: true
+  print_statistics: true

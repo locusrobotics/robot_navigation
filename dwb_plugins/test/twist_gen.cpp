@@ -50,7 +50,7 @@ void checkLimits(const std::vector<nav_2d_msgs::Twist2D>& twists,
                  double exp_max_xy = -1.0,
                  double exp_min_xy = -1.0, double exp_min_speed_theta = -1.0)
 {
-  ASSERT_GT(twists.size(), 0);
+  ASSERT_GT(twists.size(), 0U);
   nav_2d_msgs::Twist2D first = twists[0];
 
   double min_x = first.x, max_x = first.x, min_y = first.y, max_y = first.y;
@@ -80,7 +80,9 @@ void checkLimits(const std::vector<nav_2d_msgs::Twist2D>& twists,
   EXPECT_DOUBLE_EQ(min_theta, exp_min_theta);
   EXPECT_DOUBLE_EQ(max_theta, exp_max_theta);
   if (exp_max_xy >= 0)
+  {
     EXPECT_DOUBLE_EQ(max_xy, exp_max_xy);
+  }
 }
 
 TEST(VelocityIterator, standard_gen)
@@ -89,7 +91,7 @@ TEST(VelocityIterator, standard_gen)
   StandardTrajectoryGenerator gen;
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
-  EXPECT_EQ(twists.size(), 1926);
+  EXPECT_EQ(twists.size(), 1926U);
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0, 0.55, 0.1, 0.4);
 }
 
@@ -102,7 +104,7 @@ TEST(VelocityIterator, max_xy)
 
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // Expect more twists since max_speed_xy is now beyond feasible limits
-  EXPECT_EQ(twists.size(), 2010);
+  EXPECT_EQ(twists.size(), 2010U);
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0, hypot(0.55, 0.1));
 }
 
@@ -114,7 +116,7 @@ TEST(VelocityIterator, min_xy)
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // Expect even more since theres no min_speed_xy
-  EXPECT_EQ(twists.size(), 2015);
+  EXPECT_EQ(twists.size(), 2015U);
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0);
 }
 
@@ -126,7 +128,7 @@ TEST(VelocityIterator, min_theta)
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // Expect even more since theres no min_speed_xy
-  EXPECT_EQ(twists.size(), 2015);
+  EXPECT_EQ(twists.size(), 2015U);
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0);
 }
 
@@ -140,7 +142,7 @@ TEST(VelocityIterator, no_limits)
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // vx_samples * vtheta_samples * vy_samples + added zero theta samples - (0,0,0)
-  EXPECT_EQ(twists.size(), 20 * 20 * 5 + 100 - 1);
+  EXPECT_EQ(twists.size(), static_cast<unsigned int>(20 * 20 * 5 + 100 - 1));
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0, hypot(0.55, 0.1), 0.0, 0.0);
 }
 
@@ -157,7 +159,7 @@ TEST(VelocityIterator, no_limits_samples)
   StandardTrajectoryGenerator gen;
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
-  EXPECT_EQ(twists.size(), x_samples * y_samples * theta_samples - 1);
+  EXPECT_EQ(twists.size(), static_cast<unsigned int>(x_samples * y_samples * theta_samples - 1));
   checkLimits(twists, 0.0, 0.55, -0.1, 0.1, -1.0, 1.0, hypot(0.55, 0.1), 0.0, 0.0);
 }
 
@@ -186,7 +188,7 @@ TEST(VelocityIterator, dwa_gen)
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
   // Same as no-limits since everything is within our velocity limits
-  EXPECT_EQ(twists.size(), 20 * 20 * 5 + 100 - 1);
+  EXPECT_EQ(twists.size(), static_cast<unsigned int>(20 * 20 * 5 + 100 - 1));
   checkLimits(twists, 0.0, 0.125, -0.1, 0.1, -0.16, 0.16, hypot(0.125, 0.1), 0.0, 0.1);
 }
 
@@ -197,7 +199,7 @@ TEST(VelocityIterator, dwa_gen_no_param)
   dwb_plugins::LimitedAccelGenerator gen;
   gen.initialize(nh);
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(zero);
-  EXPECT_EQ(twists.size(), 20 * 20 * 5 + 100 - 1);
+  EXPECT_EQ(twists.size(), static_cast<unsigned int>(20 * 20 * 5 + 100 - 1));
   checkLimits(twists, 0.0, 0.125, -0.1, 0.1, -0.16, 0.16, hypot(0.125, 0.1), 0.0, 0.1);
 }
 
@@ -213,7 +215,7 @@ TEST(VelocityIterator, nonzero)
   initial.y = -0.08;
   initial.theta = 0.05;
   std::vector<nav_2d_msgs::Twist2D> twists = gen.getTwists(initial);
-  EXPECT_EQ(twists.size(), 2519);
+  EXPECT_EQ(twists.size(), 2519U);
   checkLimits(twists, 0.0, 0.225, -0.1, 0.045, -0.11000000000000003, 0.21,
                       0.24622144504490268, 0.0, 0.1);
 }
@@ -246,14 +248,35 @@ void matchTwist(const nav_2d_msgs::Twist2D& a, const double x, const double y, c
   EXPECT_DOUBLE_EQ(a.theta, theta);
 }
 
+const double DEFAULT_SIM_TIME = 1.7;
+
 TEST(TrajectoryGenerator, basic)
 {
   ros::NodeHandle nh("basic");
   StandardTrajectoryGenerator gen;
+  nh.setParam("linear_granularity", 0.5);
   gen.initialize(nh);
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, forward, forward);
   matchTwist(res.velocity, forward);
-  EXPECT_DOUBLE_EQ(res.duration.toSec(), 1.7);
+  EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), DEFAULT_SIM_TIME);
+  int n = res.poses.size();
+  EXPECT_EQ(n, 3);
+  ASSERT_GT(n, 0);
+
+  matchPose(res.poses[0], origin);
+  matchPose(res.poses[n - 1], DEFAULT_SIM_TIME * forward.x, 0, 0);
+}
+
+TEST(TrajectoryGenerator, basic_no_last_point)
+{
+  ros::NodeHandle nh("basic_no_last_point");
+  StandardTrajectoryGenerator gen;
+  nh.setParam("include_last_point", false);
+  nh.setParam("linear_granularity", 0.5);
+  gen.initialize(nh);
+  dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, forward, forward);
+  matchTwist(res.velocity, forward);
+  EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), DEFAULT_SIM_TIME / 2);
   int n = res.poses.size();
   EXPECT_EQ(n, 2);
   ASSERT_GT(n, 0);
@@ -266,14 +289,15 @@ TEST(TrajectoryGenerator, too_slow)
 {
   ros::NodeHandle nh("too_slow");
   StandardTrajectoryGenerator gen;
+  nh.setParam("linear_granularity", 0.5);
   gen.initialize(nh);
   nav_2d_msgs::Twist2D cmd;
   cmd.x = 0.2;
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, cmd, cmd);
   matchTwist(res.velocity, cmd);
-  EXPECT_DOUBLE_EQ(res.duration.toSec(), 1.7);
+  EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), DEFAULT_SIM_TIME);
   int n = res.poses.size();
-  EXPECT_EQ(n, 1);
+  EXPECT_EQ(n, 2);
   ASSERT_GT(n, 0);
 
   matchPose(res.poses[0], origin);
@@ -283,25 +307,28 @@ TEST(TrajectoryGenerator, holonomic)
 {
   ros::NodeHandle nh("holonomic");
   StandardTrajectoryGenerator gen;
+  nh.setParam("linear_granularity", 0.5);
   gen.initialize(nh);
   nav_2d_msgs::Twist2D cmd;
   cmd.x = 0.3;
   cmd.y = 0.2;
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, cmd, cmd);
   matchTwist(res.velocity, cmd);
-  EXPECT_DOUBLE_EQ(res.duration.toSec(), 1.7);
+  EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), DEFAULT_SIM_TIME);
   int n = res.poses.size();
-  EXPECT_EQ(n, 2);
+  EXPECT_EQ(n, 3);
   ASSERT_GT(n, 0);
 
   matchPose(res.poses[0], origin);
-  matchPose(res.poses[n - 1], 0.255, 0.17, 0);
+  matchPose(res.poses[n - 1], cmd.x*DEFAULT_SIM_TIME, cmd.y*DEFAULT_SIM_TIME, 0);
 }
 
 TEST(TrajectoryGenerator, twisty)
 {
   ros::NodeHandle nh("twisty");
   StandardTrajectoryGenerator gen;
+  nh.setParam("linear_granularity", 0.5);
+  nh.setParam("angular_granularity", 0.025);
   gen.initialize(nh);
   nav_2d_msgs::Twist2D cmd;
   cmd.x = 0.3;
@@ -309,30 +336,33 @@ TEST(TrajectoryGenerator, twisty)
   cmd.theta = 0.111;
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, cmd, cmd);
   matchTwist(res.velocity, cmd);
-  EXPECT_DOUBLE_EQ(res.duration.toSec(), 1.7);
+  EXPECT_NEAR(res.time_offsets.back().toSec(), DEFAULT_SIM_TIME, 1.0E-5);
+              // Given the number of poses, the resulting time is slightly less precise
   int n = res.poses.size();
-  EXPECT_EQ(n, 8);
+  EXPECT_EQ(n, 9);
   ASSERT_GT(n, 0);
 
   matchPose(res.poses[0], origin);
-  matchPose(res.poses[n - 1], 0.4656489295054273, -0.2649090438962528, 0.16511250000000002);
+  matchPose(res.poses[n - 1], 0.5355173615993063, -0.29635287789821596, cmd.theta * DEFAULT_SIM_TIME);
 }
 
 TEST(TrajectoryGenerator, sim_time)
 {
   ros::NodeHandle nh("sim_time");
-  nh.setParam("sim_time", 2.5);
+  const double sim_time = 2.5;
+  nh.setParam("sim_time", sim_time);
+  nh.setParam("linear_granularity", 0.5);
   StandardTrajectoryGenerator gen;
   gen.initialize(nh);
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, forward, forward);
   matchTwist(res.velocity, forward);
-  EXPECT_DOUBLE_EQ(res.duration.toSec(), 2.5);
+  EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), sim_time);
   int n = res.poses.size();
-  EXPECT_EQ(n, 2);
+  EXPECT_EQ(n, 3);
   ASSERT_GT(n, 0);
 
   matchPose(res.poses[0], origin);
-  matchPose(res.poses[n - 1], 0.375, 0, 0);
+  matchPose(res.poses[n - 1], sim_time * forward.x, 0, 0);
 }
 
 TEST(TrajectoryGenerator, accel)
@@ -348,13 +378,14 @@ TEST(TrajectoryGenerator, accel)
 
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, zero, forward);
   matchTwist(res.velocity, forward);
-  EXPECT_DOUBLE_EQ(res.duration.toSec(), 5.0);
-  ASSERT_EQ(res.poses.size(), 5);
+  EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), 5.0);
+  ASSERT_EQ(res.poses.size(), 6U);
   matchPose(res.poses[0], origin);
   matchPose(res.poses[1], 0.1, 0, 0);
   matchPose(res.poses[2], 0.3, 0, 0);
   matchPose(res.poses[3], 0.6, 0, 0);
   matchPose(res.poses[4], 0.9, 0, 0);
+  matchPose(res.poses[5], 1.2, 0, 0);
 }
 
 TEST(TrajectoryGenerator, dwa)
@@ -372,13 +403,14 @@ TEST(TrajectoryGenerator, dwa)
 
   dwb_msgs::Trajectory2D res = gen.generateTrajectory(origin, zero, forward);
   matchTwist(res.velocity, forward);
-  EXPECT_DOUBLE_EQ(res.duration.toSec(), 5.0);
-  ASSERT_EQ(res.poses.size(), 5);
+  EXPECT_DOUBLE_EQ(res.time_offsets.back().toSec(), 5.0);
+  ASSERT_EQ(res.poses.size(), 6U);
   matchPose(res.poses[0], origin);
   matchPose(res.poses[1], 0.3, 0, 0);
   matchPose(res.poses[2], 0.6, 0, 0);
   matchPose(res.poses[3], 0.9, 0, 0);
   matchPose(res.poses[4], 1.2, 0, 0);
+  matchPose(res.poses[5], 1.5, 0, 0);
 }
 
 int main(int argc, char **argv)

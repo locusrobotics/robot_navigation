@@ -1,0 +1,4 @@
+string new_plugin
+---
+bool success
+string message

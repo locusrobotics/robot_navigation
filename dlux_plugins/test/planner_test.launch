@@ -1,0 +1,5 @@
+<launch>
+  <!-- Planner Test contains 6 configurations, each of which can take over a minute on a shiny developer laptop. -->
+  <!-- Conservatively, we limit each configuration to 10 minutes, allowing for the slowness of buildfarms, etc.   -->
+  <test test-name="planner_test" pkg="dlux_plugins" type="planner_test" time-limit="3600"/>
+</launch>

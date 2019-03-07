@@ -1,0 +1,19 @@
+title Single threaded version
+participant Main Thread as ml
+participant Local Planner as lp
+participant Local Costmap as lc
+participant Global Planner as gp
+participant Global Costmap as gc
+ml -> +gc: requestGlobalCostmapUpdate
+gc -> -ml: onGlobalCostmapUpdate
+ml -> +gp: requestGlobalPlan
+gp -> -ml: onNewGlobalPlan
+ml -> lp: setPlan
+ml -> +lc: requestLocalCostmapUpdate
+lc -> -ml: onLocalCostmapUpdate
+ml -> +lp: requestLocalPlan
+lp -> -ml: onNewLocalPlan
+ml -> +lc: doCostmapUpdate
+lc -> -ml: onLocalCostmapUpdate
+ml -> +lp: requestLocalPlan
+lp -> -ml: onNewLocalPlan

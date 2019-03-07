@@ -47,6 +47,16 @@ geometry_msgs::Twist twist2Dto3D(const nav_2d_msgs::Twist2D& cmd_vel_2d)
   return cmd_vel;
 }
 
+
+nav_2d_msgs::Twist2D twist3Dto2D(const geometry_msgs::Twist& cmd_vel)
+{
+  nav_2d_msgs::Twist2D cmd_vel_2d;
+  cmd_vel_2d.x = cmd_vel.linear.x;
+  cmd_vel_2d.y = cmd_vel.linear.y;
+  cmd_vel_2d.theta = cmd_vel.angular.z;
+  return cmd_vel_2d;
+}
+
 nav_2d_msgs::Pose2DStamped stampedPoseToPose2D(const tf::Stamped<tf::Pose>& pose)
 {
   nav_2d_msgs::Pose2DStamped pose2d;
@@ -95,6 +105,20 @@ geometry_msgs::PoseStamped pose2DToPoseStamped(const geometry_msgs::Pose2D& pose
   pose.pose.position.y = pose2d.y;
   pose.pose.orientation = tf::createQuaternionMsgFromYaw(pose2d.theta);
   return pose;
+}
+
+nav_2d_msgs::Path2D pathToPath(const nav_msgs::Path& path)
+{
+  nav_2d_msgs::Path2D path2d;
+  path2d.header = path.header;
+  nav_2d_msgs::Pose2DStamped stamped_2d;
+  path2d.poses.resize(path.poses.size());
+  for (unsigned int i = 0; i < path.poses.size(); i++)
+  {
+    stamped_2d = poseStampedToPose2D(path.poses[i]);
+    path2d.poses[i] = stamped_2d.pose;
+  }
+  return path2d;
 }
 
 nav_msgs::Path posesToPath(const std::vector<geometry_msgs::PoseStamped>& poses)
@@ -158,5 +182,73 @@ nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d)
   }
   return path;
 }
+
+nav_2d_msgs::NavGridInfo toMsg(const nav_grid::NavGridInfo& info)
+{
+  nav_2d_msgs::NavGridInfo msg;
+  msg.width = info.width;
+  msg.height = info.height;
+  msg.resolution = info.resolution;
+  msg.frame_id = info.frame_id;
+  msg.origin_x = info.origin_x;
+  msg.origin_y = info.origin_y;
+  return msg;
+}
+
+nav_grid::NavGridInfo fromMsg(const nav_2d_msgs::NavGridInfo& msg)
+{
+  nav_grid::NavGridInfo info;
+  info.width = msg.width;
+  info.height = msg.height;
+  info.resolution = msg.resolution;
+  info.frame_id = msg.frame_id;
+  info.origin_x = msg.origin_x;
+  info.origin_y = msg.origin_y;
+  return info;
+}
+
+nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata)
+{
+  nav_grid::NavGridInfo info;
+  info.resolution = metadata.resolution;
+  info.width = metadata.width;
+  info.height = metadata.height;
+  info.origin_x = metadata.origin.position.x;
+  info.origin_y = metadata.origin.position.y;
+  if (std::abs(tf::getYaw(metadata.origin.orientation)) > 1e-5)
+  {
+    ROS_WARN_NAMED("nav_2d_utils",
+                   "Conversion from MapMetaData to NavGridInfo encountered a non-zero rotation. Ignoring.");
+  }
+  return info;
+}
+
+nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info)
+{
+  nav_msgs::MapMetaData metadata;
+  metadata.resolution = info.resolution;
+  metadata.width = info.width;
+  metadata.height = info.height;
+  metadata.origin.position.x = info.origin_x;
+  metadata.origin.position.y = info.origin_y;
+  metadata.origin.orientation.w = 1.0;
+  return metadata;
+}
+
+nav_2d_msgs::UIntBounds toMsg(const nav_core2::UIntBounds& bounds)
+{
+  nav_2d_msgs::UIntBounds msg;
+  msg.min_x = bounds.getMinX();
+  msg.min_y = bounds.getMinY();
+  msg.max_x = bounds.getMaxX();
+  msg.max_y = bounds.getMaxY();
+  return msg;
+}
+
+nav_core2::UIntBounds fromMsg(const nav_2d_msgs::UIntBounds& msg)
+{
+  return nav_core2::UIntBounds(msg.min_x, msg.min_y, msg.max_x, msg.max_y);
+}
+
 
 }  // namespace nav_2d_utils

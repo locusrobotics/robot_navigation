@@ -55,29 +55,35 @@ DWBLocalPlanner::DWBLocalPlanner() :
 {
 }
 
-void DWBLocalPlanner::initialize(std::string name, TFListenerPtr tf, CostmapROSPtr costmap_ros)
+void DWBLocalPlanner::initialize(const ros::NodeHandle& parent, const std::string& name,
+                                 TFListenerPtr tf, nav_core2::Costmap::Ptr costmap)
 {
   tf_ = tf;
-  costmap_ros_ = costmap_ros;
-  ros::NodeHandle private_nh("~/" + name);
-  private_nh.param("prune_plan", prune_plan_, true);
-  private_nh.param("prune_distance", prune_distance_, 1.0);
-  private_nh.param("debug_trajectory_details", debug_trajectory_details_, false);
-  pub_.initialize(private_nh);
+  costmap_ = costmap;
+  planner_nh_ = ros::NodeHandle(parent, name);
+
+  // This is needed when using the CostmapAdapter to ensure that the costmap's info matches the rolling window
+  planner_nh_.param("update_costmap_before_planning", update_costmap_before_planning_, true);
+
+  planner_nh_.param("prune_plan", prune_plan_, true);
+  planner_nh_.param("prune_distance", prune_distance_, 1.0);
+  planner_nh_.param("short_circuit_trajectory_evaluation", short_circuit_trajectory_evaluation_, true);
+  planner_nh_.param("debug_trajectory_details", debug_trajectory_details_, false);
+  pub_.initialize(planner_nh_);
 
   // Plugins
   std::string traj_generator_name;
-  private_nh.param("trajectory_generator_name", traj_generator_name,
-                   getBackwardsCompatibleDefaultGenerator(private_nh));
+  planner_nh_.param("trajectory_generator_name", traj_generator_name,
+                    getBackwardsCompatibleDefaultGenerator(planner_nh_));
   ROS_INFO_NAMED("DWBLocalPlanner", "Using Trajectory Generator \"%s\"", traj_generator_name.c_str());
   traj_generator_ = std::move(traj_gen_loader_.createUniqueInstance(traj_generator_name));
-  traj_generator_->initialize(private_nh);
+  traj_generator_->initialize(planner_nh_);
 
   std::string goal_checker_name;
-  private_nh.param("goal_checker_name", goal_checker_name, std::string("dwb_plugins::SimpleGoalChecker"));
+  planner_nh_.param("goal_checker_name", goal_checker_name, std::string("dwb_plugins::SimpleGoalChecker"));
   ROS_INFO_NAMED("DWBLocalPlanner", "Using Goal Checker \"%s\"", goal_checker_name.c_str());
   goal_checker_ = std::move(goal_checker_loader_.createUniqueInstance(goal_checker_name));
-  goal_checker_->initialize(private_nh);
+  goal_checker_->initialize(planner_nh_);
 
   loadCritics(name);
 }
@@ -105,59 +111,66 @@ std::string DWBLocalPlanner::resolveCriticClassName(std::string base_name)
 
 void DWBLocalPlanner::loadCritics(const std::string name)
 {
-  ros::NodeHandle private_nh("~/" + name);
-
-  private_nh.param("default_critic_namespaces", default_critic_namespaces_);
+  planner_nh_.param("default_critic_namespaces", default_critic_namespaces_);
   if (default_critic_namespaces_.size() == 0)
   {
     default_critic_namespaces_.push_back("dwb_critics");
   }
 
-  if (!private_nh.hasParam("critics"))
+  if (!planner_nh_.hasParam("critics"))
   {
-    loadBackwardsCompatibleParameters(private_nh);
+    loadBackwardsCompatibleParameters(planner_nh_);
   }
 
   std::vector<std::string> critic_names;
-  private_nh.getParam("critics", critic_names);
+  planner_nh_.getParam("critics", critic_names);
   for (unsigned int i = 0; i < critic_names.size(); i++)
   {
     std::string plugin_name = critic_names[i];
     std::string plugin_class;
-    private_nh.param(plugin_name + "/class", plugin_class, plugin_name);
+    planner_nh_.param(plugin_name + "/class", plugin_class, plugin_name);
     plugin_class = resolveCriticClassName(plugin_class);
 
     TrajectoryCritic::Ptr plugin = std::move(critic_loader_.createUniqueInstance(plugin_class));
     ROS_INFO_NAMED("DWBLocalPlanner", "Using critic \"%s\" (%s)", plugin_name.c_str(), plugin_class.c_str());
     critics_.push_back(plugin);
-    plugin->initialize(plugin_name, name, costmap_ros_);
+    plugin->initialize(planner_nh_, plugin_name, costmap_);
   }
 }
 
 bool DWBLocalPlanner::isGoalReached(const nav_2d_msgs::Pose2DStamped& pose, const nav_2d_msgs::Twist2D& velocity)
 {
-  if (global_plan_.poses.size() == 0)
+  if (goal_pose_.header.frame_id == "")
   {
     ROS_WARN_NAMED("DWBLocalPlanner", "Cannot check if the goal is reached without the goal being set!");
     return false;
   }
 
-  nav_2d_msgs::Pose2DStamped local_start_pose, goal_pose, local_goal_pose;
-  nav_2d_utils::transformPose(tf_, costmap_ros_->getGlobalFrameID(), pose, local_start_pose);
-  goal_pose.header.frame_id = global_plan_.header.frame_id;
-  goal_pose.pose = global_plan_.poses.back();
-  nav_2d_utils::transformPose(tf_, costmap_ros_->getGlobalFrameID(), goal_pose, local_goal_pose);
+  // Update time stamp of goal pose
+  goal_pose_.header.stamp = pose.header.stamp;
 
-  return goal_checker_->isGoalReached(local_start_pose.pose, local_goal_pose.pose, velocity);
+  bool ret = goal_checker_->isGoalReached(transformPoseToLocal(pose), transformPoseToLocal(goal_pose_), velocity);
+  if (ret)
+  {
+    ROS_INFO_THROTTLE_NAMED(1.0, "DWBLocalPlanner", "Goal reached!");
+  }
+  return ret;
 }
 
-void DWBLocalPlanner::setPlan(const nav_2d_msgs::Path2D& path)
+void DWBLocalPlanner::setGoalPose(const nav_2d_msgs::Pose2DStamped& goal_pose)
 {
+  ROS_INFO_NAMED("DWBLocalPlanner", "New Goal Received.");
+  goal_pose_ = goal_pose;
+  traj_generator_->reset();
+  goal_checker_->reset();
   for (TrajectoryCritic::Ptr critic : critics_)
   {
     critic->reset();
   }
+}
 
+void DWBLocalPlanner::setPlan(const nav_2d_msgs::Path2D& path)
+{
   pub_.publishGlobalPlan(path);
   global_plan_ = path;
 }
@@ -177,25 +190,38 @@ nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2
     pub_.publishEvaluation(results);
     return cmd_vel;
   }
-  catch(const nav_core2::PlannerException& e)
+  catch (const nav_core2::PlannerException& e)
   {
     pub_.publishEvaluation(results);
     throw;
   }
 }
 
-void DWBLocalPlanner::prepareGlobalPlan(const nav_2d_msgs::Pose2DStamped& pose, nav_2d_msgs::Path2D& transformed_plan,
-                                        nav_2d_msgs::Pose2DStamped& goal_pose, bool publish_plan)
+void DWBLocalPlanner::prepare(const nav_2d_msgs::Pose2DStamped& pose, const nav_2d_msgs::Twist2D& velocity)
 {
-  transformed_plan = transformGlobalPlan(pose);
-  if (publish_plan)
+  if (update_costmap_before_planning_)
   {
-    pub_.publishTransformedPlan(transformed_plan);
+    costmap_->update();
   }
 
-  goal_pose.header.frame_id = global_plan_.header.frame_id;
-  goal_pose.pose = global_plan_.poses.back();
-  nav_2d_utils::transformPose(tf_, costmap_ros_->getGlobalFrameID(), goal_pose, goal_pose);
+  nav_2d_msgs::Path2D transformed_plan = transformGlobalPlan(pose);
+  pub_.publishTransformedPlan(transformed_plan);
+
+  // Update time stamp of goal pose
+  goal_pose_.header.stamp = pose.header.stamp;
+
+  geometry_msgs::Pose2D local_start_pose = transformPoseToLocal(pose),
+                        local_goal_pose = transformPoseToLocal(goal_pose_);
+
+  pub_.publishInputParams(costmap_->getInfo(), local_start_pose, velocity, local_goal_pose);
+
+  for (TrajectoryCritic::Ptr critic : critics_)
+  {
+    if (!critic->prepare(local_start_pose, velocity, local_goal_pose, transformed_plan))
+    {
+      ROS_WARN_NAMED("DWBLocalPlanner", "Critic \"%s\" failed to prepare", critic->getName().c_str());
+    }
+  }
 }
 
 nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2d_msgs::Pose2DStamped& pose,
@@ -207,18 +233,7 @@ nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2
     results->header.stamp = ros::Time::now();
   }
 
-  nav_2d_msgs::Path2D transformed_plan;
-  nav_2d_msgs::Pose2DStamped goal_pose;
-
-  prepareGlobalPlan(pose, transformed_plan, goal_pose);
-
-  for (TrajectoryCritic::Ptr critic : critics_)
-  {
-    if (critic->prepare(pose.pose, velocity, goal_pose.pose, transformed_plan) == false)
-    {
-      ROS_WARN_NAMED("DWBLocalPlanner", "A scoring function failed to prepare");
-    }
-  }
+  prepare(pose, velocity);
 
   try
   {
@@ -229,18 +244,18 @@ nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2
     cmd_vel.header.stamp = ros::Time::now();
     cmd_vel.velocity = best.traj.velocity;
 
-    // debrief stateful scoring functions
+    // debrief stateful critics
     for (TrajectoryCritic::Ptr critic : critics_)
     {
       critic->debrief(cmd_vel.velocity);
     }
 
     pub_.publishLocalPlan(pose.header, best.traj);
-    pub_.publishCostGrid(costmap_ros_, critics_);
+    pub_.publishCostGrid(costmap_, critics_);
 
     return cmd_vel;
   }
-  catch(const NoLegalTrajectoriesException& e)
+  catch (const NoLegalTrajectoriesException& e)
   {
     nav_2d_msgs::Twist2D empty_cmd;
     dwb_msgs::Trajectory2D empty_traj;
@@ -250,7 +265,7 @@ nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2
       critic->debrief(empty_cmd);
     }
     pub_.publishLocalPlan(pose.header, empty_traj);
-    pub_.publishCostGrid(costmap_ros_, critics_);
+    pub_.publishCostGrid(costmap_, critics_);
 
     throw;
   }
@@ -298,7 +313,7 @@ dwb_msgs::TrajectoryScore DWBLocalPlanner::coreScoringAlgorithm(const geometry_m
         }
       }
     }
-    catch(const nav_core2::IllegalTrajectoryException& e)
+    catch (const nav_core2::IllegalTrajectoryException& e)
     {
       if (results)
       {
@@ -354,7 +369,7 @@ dwb_msgs::TrajectoryScore DWBLocalPlanner::scoreTrajectory(const dwb_msgs::Traje
     cs.raw_score = critic_score;
     score.scores.push_back(cs);
     score.total += critic_score * cs.scale;
-    if (best_score > 0 && score.total > best_score)
+    if (short_circuit_trajectory_evaluation_ && best_score > 0 && score.total > best_score)
     {
       // since we keep adding positives, once we are worse than the best, we will stay worse
       break;
@@ -386,13 +401,11 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
     throw nav_core2::PlannerTFException("Unable to transform robot pose into global plan's frame");
   }
 
-  transformed_plan.header.frame_id = costmap_ros_->getGlobalFrameID();
+  transformed_plan.header.frame_id = costmap_->getFrameId();
   transformed_plan.header.stamp = pose.header.stamp;
 
   // we'll discard points on the plan that are outside the local costmap
-  costmap_2d::Costmap2D* costmap = costmap_ros_->getCostmap();
-  double dist_threshold = std::max(costmap->getSizeInCellsX(), costmap->getSizeInCellsY())
-                          * costmap->getResolution() / 2.0;
+  double dist_threshold = std::max(costmap_->getWidth(), costmap_->getHeight()) * costmap_->getResolution() / 2.0;
   double sq_dist_threshold = dist_threshold * dist_threshold;
   nav_2d_msgs::Pose2DStamped stamped_pose;
   stamped_pose.header.frame_id = global_plan_.header.frame_id;
@@ -436,10 +449,7 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
 
     // now we'll transform until points are outside of our distance threshold
     stamped_pose.pose = global_plan_.poses[i];
-
-    nav_2d_msgs::Pose2DStamped newer_pose;
-    nav_2d_utils::transformPose(tf_, costmap_ros_->getGlobalFrameID(), stamped_pose, newer_pose);
-    transformed_plan.poses.push_back(newer_pose.pose);
+    transformed_plan.poses.push_back(transformPoseToLocal(stamped_pose));
     if (should_break) break;
   }
 
@@ -448,6 +458,13 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
   // Otherwise it may take a few iterations to converge to the proper behavior
   if (prune_plan_)
   {
+    // let's get the pose of the robot in the frame of the transformed_plan/costmap
+    nav_2d_msgs::Pose2DStamped costmap_pose;
+    if (!nav_2d_utils::transformPose(tf_, transformed_plan.header.frame_id, pose, costmap_pose))
+    {
+      throw nav_core2::PlannerTFException("Unable to transform robot pose into costmap's frame");
+    }
+
     ROS_ASSERT(global_plan_.poses.size() >= transformed_plan.poses.size());
     std::vector<geometry_msgs::Pose2D>::iterator it = transformed_plan.poses.begin();
     std::vector<geometry_msgs::Pose2D>::iterator global_it = global_plan_.poses.begin();
@@ -456,10 +473,10 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
     {
       const geometry_msgs::Pose2D& w = *it;
       // Fixed error bound of 1 meter for now. Can reduce to a portion of the map size or based on the resolution
-      if (getSquareDistance(robot_pose.pose, w) < sq_prune_dist)
+      if (getSquareDistance(costmap_pose.pose, w) < sq_prune_dist)
       {
         ROS_DEBUG_NAMED("DWBLocalPlanner", "Nearest waypoint to <%f, %f> is <%f, %f>\n",
-                                           robot_pose.pose.x, robot_pose.pose.y, w.x, w.y);
+                                           costmap_pose.pose.x, costmap_pose.pose.y, w.x, w.y);
         break;
       }
       it = transformed_plan.poses.erase(it);
@@ -473,6 +490,11 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
     throw nav_core2::PlannerException("Resulting plan has 0 poses in it.");
   }
   return transformed_plan;
+}
+
+geometry_msgs::Pose2D DWBLocalPlanner::transformPoseToLocal(const nav_2d_msgs::Pose2DStamped& pose)
+{
+  return nav_2d_utils::transformStampedPose(tf_, pose, costmap_->getFrameId());
 }
 
 }  // namespace dwb_local_planner

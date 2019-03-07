@@ -37,6 +37,7 @@
 
 #include <nav_core/base_global_planner.h>
 #include <nav_core2/global_planner.h>
+#include <nav_core_adapter/costmap_adapter.h>
 #include <pluginlib/class_loader.h>
 #include <string>
 #include <vector>
@@ -54,16 +55,20 @@ public:
   GlobalPlannerAdapter();
 
   // Standard ROS Global Planner Interface
-  void initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros);
+  void initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros) override;
   bool makePlan(const geometry_msgs::PoseStamped& start,
-                const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan);
+                const geometry_msgs::PoseStamped& goal, std::vector<geometry_msgs::PoseStamped>& plan) override;
 
 protected:
   // Plugin handling
   pluginlib::ClassLoader<nav_core2::GlobalPlanner> planner_loader_;
   boost::shared_ptr<nav_core2::GlobalPlanner> planner_;
+  ros::Publisher path_pub_;
 
-  CostmapROSPtr costmap_ros_;
+  TFListenerPtr tf_;
+
+  std::shared_ptr<CostmapAdapter> costmap_adapter_;
+  costmap_2d::Costmap2DROS* costmap_ros_;
 };
 
 }  // namespace nav_core_adapter

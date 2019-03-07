@@ -76,10 +76,12 @@ public:
    */
   void publishEvaluation(std::shared_ptr<dwb_msgs::LocalPlanEvaluation> results);
   void publishLocalPlan(const std_msgs::Header& header, const dwb_msgs::Trajectory2D& traj);
-  void publishCostGrid(const CostmapROSPtr costmap_ros, const std::vector<TrajectoryCritic::Ptr> critics);
+  void publishCostGrid(const nav_core2::Costmap::Ptr costmap, const std::vector<TrajectoryCritic::Ptr> critics);
   void publishGlobalPlan(const nav_2d_msgs::Path2D plan);
   void publishTransformedPlan(const nav_2d_msgs::Path2D plan);
   void publishLocalPlan(const nav_2d_msgs::Path2D plan);
+  void publishInputParams(const nav_grid::NavGridInfo& info, const geometry_msgs::Pose2D& start_pose,
+                          const nav_2d_msgs::Twist2D& velocity, const geometry_msgs::Pose2D& goal_pose);
 
 protected:
   void publishTrajectories(const dwb_msgs::LocalPlanEvaluation& results);
@@ -89,13 +91,14 @@ protected:
 
   // Flags for turning on/off publishing specific components
   bool publish_evaluation_, publish_global_plan_, publish_transformed_, publish_local_plan_, publish_trajectories_;
-  bool publish_cost_grid_pc_;
+  bool publish_cost_grid_pc_, publish_input_params_;
 
-  // Previously published marker count for removing markers as needed
-  int prev_marker_count_;
+  // Marker Lifetime
+  ros::Duration marker_lifetime_;
 
   // Publisher Objects
-  ros::Publisher eval_pub_, global_pub_, transformed_pub_, local_pub_, marker_pub_, cost_grid_pc_pub_;
+  ros::Publisher eval_pub_, global_pub_, transformed_pub_, local_pub_, marker_pub_, cost_grid_pc_pub_,
+                 info_pub_, pose_pub_, goal_pub_, velocity_pub_;
 };
 
 }  // namespace dwb_local_planner

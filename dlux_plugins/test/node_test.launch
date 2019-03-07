@@ -1,0 +1,591 @@
+
+<launch>
+  <arg name="rviz" default="true" />
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find dlux_plugins)/test/map.yaml" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dlux_plugins)/test/rviz.rviz" if="$(arg rviz)" />
+  <node name="static_tf0" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 /map /base_link 1000"/>
+
+
+  <node name="DijkstraVonNeumann" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::Dijkstra"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    red: 0.2
+    green: 0.4
+    blue: 0.8
+    marker_ns: "DijkstraVonNeumann/"
+    </rosparam>
+  </node>
+
+
+  <node name="DijkstraGrid" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::Dijkstra"
+    planner/traceback: "dlux_plugins::GridPath"
+    red: 0.862745098039
+    green: 0.223529411765
+    blue: 0.0705882352941
+    marker_ns: "DijkstraGrid/"
+    </rosparam>
+  </node>
+
+
+  <node name="DijkstraGradientStep" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::Dijkstra"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/grid_step_near_high: True
+    red: 1.0
+    green: 0.6
+    blue: 0.0
+    marker_ns: "DijkstraGradientStep/"
+    </rosparam>
+  </node>
+
+
+  <node name="DijkstraGradient" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::Dijkstra"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/grid_step_near_high: False
+    red: 0.0627450980392
+    green: 0.588235294118
+    blue: 0.0941176470588
+    marker_ns: "DijkstraGradient/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarVonNeumannManK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: True
+    red: 0.6
+    green: 0.0
+    blue: 0.6
+    marker_ns: "AStarVonNeumannManK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarVonNeumannK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: False
+    red: 0.23137254902
+    green: 0.243137254902
+    blue: 0.674509803922
+    marker_ns: "AStarVonNeumannK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarVonNeumannMan" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: True
+    red: 0.0
+    green: 0.6
+    blue: 0.776470588235
+    marker_ns: "AStarVonNeumannMan/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarVonNeumann" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: False
+    red: 0.866666666667
+    green: 0.266666666667
+    blue: 0.466666666667
+    marker_ns: "AStarVonNeumann/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarVonNeumannManThreshK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: True
+    red: 0.4
+    green: 0.666666666667
+    blue: 0.0
+    marker_ns: "AStarVonNeumannManThreshK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarVonNeumannThreshK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: False
+    red: 0.721568627451
+    green: 0.180392156863
+    blue: 0.180392156863
+    marker_ns: "AStarVonNeumannThreshK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarVonNeumannManThresh" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: True
+    red: 0.192156862745
+    green: 0.388235294118
+    blue: 0.58431372549
+    marker_ns: "AStarVonNeumannManThresh/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarVonNeumannThresh" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::VonNeumannPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: False
+    red: 0.6
+    green: 0.266666666667
+    blue: 0.6
+    marker_ns: "AStarVonNeumannThresh/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGridManK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GridPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: True
+    red: 0.133333333333
+    green: 0.666666666667
+    blue: 0.6
+    marker_ns: "AStarGridManK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGridK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GridPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: False
+    red: 0.666666666667
+    green: 0.666666666667
+    blue: 0.0666666666667
+    marker_ns: "AStarGridK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGridMan" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GridPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: True
+    red: 0.4
+    green: 0.2
+    blue: 0.8
+    marker_ns: "AStarGridMan/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGrid" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GridPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: False
+    red: 0.901960784314
+    green: 0.450980392157
+    blue: 0.0
+    marker_ns: "AStarGrid/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGridManThreshK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GridPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: True
+    red: 0.545098039216
+    green: 0.0274509803922
+    blue: 0.0274509803922
+    marker_ns: "AStarGridManThreshK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGridThreshK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GridPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: False
+    red: 0.196078431373
+    green: 0.572549019608
+    blue: 0.38431372549
+    marker_ns: "AStarGridThreshK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGridManThresh" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GridPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: True
+    red: 0.333333333333
+    green: 0.454901960784
+    blue: 0.650980392157
+    marker_ns: "AStarGridManThresh/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGridThresh" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GridPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: False
+    red: 0.23137254902
+    green: 0.243137254902
+    blue: 0.674509803922
+    marker_ns: "AStarGridThresh/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientStepManK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: True
+    planner/grid_step_near_high: True
+    red: 0.2
+    green: 0.4
+    blue: 0.8
+    marker_ns: "AStarGradientStepManK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientManK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: True
+    planner/grid_step_near_high: False
+    red: 0.862745098039
+    green: 0.223529411765
+    blue: 0.0705882352941
+    marker_ns: "AStarGradientManK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientStepK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: False
+    planner/grid_step_near_high: True
+    red: 1.0
+    green: 0.6
+    blue: 0.0
+    marker_ns: "AStarGradientStepK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: False
+    planner/grid_step_near_high: False
+    red: 0.0627450980392
+    green: 0.588235294118
+    blue: 0.0941176470588
+    marker_ns: "AStarGradientK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientStepMan" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: True
+    planner/grid_step_near_high: True
+    red: 0.6
+    green: 0.0
+    blue: 0.6
+    marker_ns: "AStarGradientStepMan/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientMan" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: True
+    planner/grid_step_near_high: False
+    red: 0.23137254902
+    green: 0.243137254902
+    blue: 0.674509803922
+    marker_ns: "AStarGradientMan/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientStep" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: False
+    planner/grid_step_near_high: True
+    red: 0.0
+    green: 0.6
+    blue: 0.776470588235
+    marker_ns: "AStarGradientStep/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradient" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 0.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: False
+    planner/grid_step_near_high: False
+    red: 0.866666666667
+    green: 0.266666666667
+    blue: 0.466666666667
+    marker_ns: "AStarGradient/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientStepManThreshK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: True
+    planner/grid_step_near_high: True
+    red: 0.4
+    green: 0.666666666667
+    blue: 0.0
+    marker_ns: "AStarGradientStepManThreshK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientManThreshK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: True
+    planner/grid_step_near_high: False
+    red: 0.721568627451
+    green: 0.180392156863
+    blue: 0.180392156863
+    marker_ns: "AStarGradientManThreshK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientStepThreshK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: False
+    planner/grid_step_near_high: True
+    red: 0.192156862745
+    green: 0.388235294118
+    blue: 0.58431372549
+    marker_ns: "AStarGradientStepThreshK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientThreshK" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: True
+    planner/manhattan_heuristic: False
+    planner/grid_step_near_high: False
+    red: 0.6
+    green: 0.266666666667
+    blue: 0.6
+    marker_ns: "AStarGradientThreshK/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientStepManThresh" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: True
+    planner/grid_step_near_high: True
+    red: 0.133333333333
+    green: 0.666666666667
+    blue: 0.6
+    marker_ns: "AStarGradientStepManThresh/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientManThresh" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: True
+    planner/grid_step_near_high: False
+    red: 0.666666666667
+    green: 0.666666666667
+    blue: 0.0666666666667
+    marker_ns: "AStarGradientManThresh/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientStepThresh" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: False
+    planner/grid_step_near_high: True
+    red: 0.4
+    green: 0.2
+    blue: 0.8
+    marker_ns: "AStarGradientStepThresh/"
+    </rosparam>
+  </node>
+
+
+  <node name="AStarGradientThresh" pkg="dlux_global_planner" type="planner_node" output="screen">
+    <rosparam command="load" file="$(find dlux_plugins)/test/common.yaml" />
+    <rosparam>
+    planner/potential_calculator: "dlux_plugins::AStar"
+    planner/traceback: "dlux_plugins::GradientPath"
+    planner/minimum_requeue_change: 1.0
+    planner/use_kernel: False
+    planner/manhattan_heuristic: False
+    planner/grid_step_near_high: False
+    red: 0.901960784314
+    green: 0.450980392157
+    blue: 0.0
+    marker_ns: "AStarGradientThresh/"
+    </rosparam>
+  </node>
+
+</launch>

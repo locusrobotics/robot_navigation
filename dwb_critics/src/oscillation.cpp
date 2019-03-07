@@ -93,10 +93,10 @@ bool OscillationCritic::CommandTrend::hasSignFlipped()
 
 void OscillationCritic::onInit()
 {
-  oscillation_reset_dist_ = nav_2d_utils::searchAndGetParam(*nh_, "oscillation_reset_dist", 0.05);
+  oscillation_reset_dist_ = nav_2d_utils::searchAndGetParam(critic_nh_, "oscillation_reset_dist", 0.05);
   oscillation_reset_dist_sq_ = oscillation_reset_dist_ * oscillation_reset_dist_;
-  oscillation_reset_angle_ = nav_2d_utils::searchAndGetParam(*nh_, "oscillation_reset_angle", 0.2);
-  oscillation_reset_time_ = nav_2d_utils::searchAndGetParam(*nh_, "oscillation_reset_time", -1.0);
+  oscillation_reset_angle_ = nav_2d_utils::searchAndGetParam(critic_nh_, "oscillation_reset_angle", 0.2);
+  oscillation_reset_time_ = nav_2d_utils::searchAndGetParam(critic_nh_, "oscillation_reset_time", -1.0);
 
   /**
    * Historical Parameter Loading
@@ -106,19 +106,19 @@ void OscillationCritic::onInit()
    * Otherwise, set x_only_threshold_ to 0.05
    */
   std::string resolved_name;
-  if (nh_->hasParam("x_only_threshold"))
+  if (critic_nh_.hasParam("x_only_threshold"))
   {
-    nh_->param("x_only_threshold", x_only_threshold_);
+    critic_nh_.getParam("x_only_threshold", x_only_threshold_);
   }
-  else if (nh_->searchParam("min_speed_xy", resolved_name))
+  else if (critic_nh_.searchParam("min_speed_xy", resolved_name))
   {
-    nh_->param(resolved_name, x_only_threshold_);
+    critic_nh_.getParam(resolved_name, x_only_threshold_);
   }
-  else if (nh_->searchParam("min_trans_vel", resolved_name))
+  else if (critic_nh_.searchParam("min_trans_vel", resolved_name))
   {
     ROS_WARN_NAMED("OscillationCritic", "Parameter min_trans_vel is deprecated. "
                                         "Please use the name min_speed_xy or x_only_threshold instead.");
-    nh_->param(resolved_name, x_only_threshold_);
+    critic_nh_.getParam(resolved_name, x_only_threshold_);
   }
   else
   {

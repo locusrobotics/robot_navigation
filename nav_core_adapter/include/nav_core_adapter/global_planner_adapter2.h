@@ -54,15 +54,18 @@ public:
   GlobalPlannerAdapter2();
 
   // Nav Core 2 Global Planner Interface
-  void initialize(std::string name, CostmapROSPtr costmap_ros);
-  nav_2d_msgs::Path2D makePlan(const nav_2d_msgs::Pose2DStamped& start, const nav_2d_msgs::Pose2DStamped& goal);
+  void initialize(const ros::NodeHandle& parent, const std::string& name,
+                  TFListenerPtr tf, nav_core2::Costmap::Ptr costmap) override;
+  nav_2d_msgs::Path2D makePlan(const nav_2d_msgs::Pose2DStamped& start,
+                               const nav_2d_msgs::Pose2DStamped& goal) override;
 
 protected:
   // Plugin handling
   pluginlib::ClassLoader<nav_core::BaseGlobalPlanner> planner_loader_;
   boost::shared_ptr<nav_core::BaseGlobalPlanner> planner_;
 
-  CostmapROSPtr costmap_ros_;
+  costmap_2d::Costmap2DROS* costmap_ros_;
+  nav_core2::Costmap::Ptr costmap_;
 };
 
 }  // namespace nav_core_adapter

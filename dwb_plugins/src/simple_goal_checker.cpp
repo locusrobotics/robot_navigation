@@ -40,7 +40,7 @@ namespace dwb_plugins
 {
 
 SimpleGoalChecker::SimpleGoalChecker() :
-  xy_goal_tolerance_(0.25), yaw_goal_tolerance_(0.25), xy_goal_tolerance_sq_(0.0625)
+  xy_goal_tolerance_(0.25), yaw_goal_tolerance_(0.25), stateful_(true), check_xy_(true), xy_goal_tolerance_sq_(0.0625)
 {
 }
 
@@ -48,17 +48,32 @@ void SimpleGoalChecker::initialize(const ros::NodeHandle& nh)
 {
   nh.param("xy_goal_tolerance", xy_goal_tolerance_, 0.25);
   nh.param("yaw_goal_tolerance", yaw_goal_tolerance_, 0.25);
+  nh.param("stateful", stateful_, true);
   xy_goal_tolerance_sq_ = xy_goal_tolerance_ * xy_goal_tolerance_;
+}
+
+void SimpleGoalChecker::reset()
+{
+  check_xy_ = true;
 }
 
 bool SimpleGoalChecker::isGoalReached(const geometry_msgs::Pose2D& query_pose, const geometry_msgs::Pose2D& goal_pose,
                                       const nav_2d_msgs::Twist2D& velocity)
 {
-  double dx = query_pose.x - goal_pose.x,
-         dy = query_pose.y - goal_pose.y;
-  if (dx * dx + dy * dy > xy_goal_tolerance_sq_)
+  if (check_xy_)
   {
-    return false;
+    double dx = query_pose.x - goal_pose.x,
+           dy = query_pose.y - goal_pose.y;
+    if (dx * dx + dy * dy > xy_goal_tolerance_sq_)
+    {
+      return false;
+    }
+    // We are within the window
+    // If we are stateful, change the state.
+    if (stateful_)
+    {
+      check_xy_ = false;
+    }
   }
   double dyaw = angles::shortest_angular_distance(query_pose.theta, goal_pose.theta);
   return fabs(dyaw) < yaw_goal_tolerance_;

@@ -1,0 +1,45 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+Visualization Manager:
+  Displays:
+    - Alpha: 1
+      Class: rviz/Map
+      Enabled: true
+      Name: Static Map
+      Topic: /map
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualization_marker
+      Name: Markers
+      Value: true
+    - Alpha: 0.5
+      Class: rviz/Map
+      Color Scheme: map
+      Enabled: false
+      Name: Potential Map
+      Topic: /astar_grad/planner/potential
+      Value: false
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: map
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/MoveCamera
+    - Class: rviz/SetInitialPose
+      Topic: /initialpose
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+  Value: true
+  Views:
+    Current:
+      Angle: 0
+      Class: rviz/TopDownOrtho
+      Name: Current View
+      Scale: 30
+      Value: TopDownOrtho (rviz)
+      X: 7.5
+      Y: 7.5

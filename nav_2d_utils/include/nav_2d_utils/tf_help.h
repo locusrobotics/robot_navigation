@@ -51,10 +51,12 @@ namespace nav_2d_utils
  * @param frame Frame to transform the pose into
  * @param in_pose Pose to transform
  * @param out_pose Place to store the resulting transformed pose
+ * @param extrapolation_fallback If true, if there is an ExtrapolationException, allow looking up the latest timestamp instead.
  * @return True if successful transform
  */
 bool transformPose(const TFListenerPtr tf, const std::string frame,
-                   const geometry_msgs::PoseStamped& in_pose, geometry_msgs::PoseStamped& out_pose)
+                   const geometry_msgs::PoseStamped& in_pose, geometry_msgs::PoseStamped& out_pose,
+                   const bool extrapolation_fallback = true)
 {
   if (in_pose.header.frame_id == frame)
   {
@@ -65,6 +67,16 @@ bool transformPose(const TFListenerPtr tf, const std::string frame,
   try
   {
     tf->transformPose(frame, in_pose, out_pose);
+    return true;
+  }
+  catch (tf::ExtrapolationException& ex)
+  {
+    if (!extrapolation_fallback)
+      throw;
+    geometry_msgs::PoseStamped latest_in_pose;
+    latest_in_pose.header.frame_id = in_pose.header.frame_id;
+    latest_in_pose.pose = in_pose.pose;
+    tf->transformPose(frame, latest_in_pose, out_pose);
     return true;
   }
   catch (tf::TransformException& ex)
@@ -83,20 +95,30 @@ bool transformPose(const TFListenerPtr tf, const std::string frame,
  * @param frame Frame to transform the pose into
  * @param in_pose Pose to transform
  * @param out_pose Place to store the resulting transformed pose
+ * @param extrapolation_fallback If true, if there is an ExtrapolationException, allow looking up the latest timestamp instead.
  * @return True if successful transform
  */
 bool transformPose(const TFListenerPtr tf, const std::string frame,
-                   const nav_2d_msgs::Pose2DStamped& in_pose, nav_2d_msgs::Pose2DStamped& out_pose)
+                   const nav_2d_msgs::Pose2DStamped& in_pose, nav_2d_msgs::Pose2DStamped& out_pose,
+                   const bool extrapolation_fallback = true)
 {
   geometry_msgs::PoseStamped in_3d_pose = pose2DToPoseStamped(in_pose);
   geometry_msgs::PoseStamped out_3d_pose;
 
-  bool ret = transformPose(tf, frame, in_3d_pose, out_3d_pose);
+  bool ret = transformPose(tf, frame, in_3d_pose, out_3d_pose, extrapolation_fallback);
   if (ret)
   {
     out_pose = poseStampedToPose2D(out_3d_pose);
   }
   return ret;
+}
+
+geometry_msgs::Pose2D transformStampedPose(const TFListenerPtr tf, const nav_2d_msgs::Pose2DStamped& pose,
+                                           const std::string& frame_id)
+{
+  nav_2d_msgs::Pose2DStamped local_pose;
+  nav_2d_utils::transformPose(tf, frame_id, pose, local_pose);
+  return local_pose.pose;
 }
 
 }  // namespace nav_2d_utils

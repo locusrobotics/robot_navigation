@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="global_oscillation_test" pkg="dlux_plugins" type="got" time-limit="300"/>
+</launch>

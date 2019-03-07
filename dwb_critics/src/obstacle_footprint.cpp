@@ -33,7 +33,10 @@
  */
 
 #include <dwb_critics/obstacle_footprint.h>
-#include <dwb_critics/line_iterator.h>
+#include <nav_grid/coordinate_conversion.h>
+#include <nav_grid_iterators/polygon_outline.h>
+#include <nav_2d_utils/polygons.h>
+#include <nav_2d_utils/footprint.h>
 #include <nav_core2/exceptions.h>
 #include <pluginlib/class_list_macros.h>
 #include <algorithm>
@@ -43,26 +46,17 @@ PLUGINLIB_EXPORT_CLASS(dwb_critics::ObstacleFootprintCritic, dwb_local_planner::
 
 namespace dwb_critics
 {
-Footprint getOrientedFootprint(const geometry_msgs::Pose2D& pose, const Footprint& footprint_spec)
+
+void ObstacleFootprintCritic::onInit()
 {
-  std::vector<geometry_msgs::Point> oriented_footprint;
-  oriented_footprint.resize(footprint_spec.size());
-  double cos_th = cos(pose.theta);
-  double sin_th = sin(pose.theta);
-  for (unsigned int i = 0; i < footprint_spec.size(); ++i)
-  {
-    geometry_msgs::Point& new_pt = oriented_footprint[i];
-    new_pt.x = pose.x + footprint_spec[i].x * cos_th - footprint_spec[i].y * sin_th;
-    new_pt.y = pose.y + footprint_spec[i].x * sin_th + footprint_spec[i].y * cos_th;
-  }
-  return oriented_footprint;
+  BaseObstacleCritic::onInit();
+  footprint_spec_ = nav_2d_utils::footprintFromParams(critic_nh_);
 }
 
 bool ObstacleFootprintCritic::prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msgs::Twist2D& vel,
                                       const geometry_msgs::Pose2D& goal, const nav_2d_msgs::Path2D& global_plan)
 {
-  footprint_spec_ = costmap_ros_->getRobotFootprint();
-  if (footprint_spec_.size() == 0)
+  if (footprint_spec_.points.size() == 0)
   {
     ROS_ERROR_NAMED("ObstacleFootprintCritic", "Footprint spec is empty, maybe missing call to setFootprint?");
     return false;
@@ -70,82 +64,36 @@ bool ObstacleFootprintCritic::prepare(const geometry_msgs::Pose2D& pose, const n
   return true;
 }
 
-double ObstacleFootprintCritic::scorePose(const geometry_msgs::Pose2D& pose)
+double ObstacleFootprintCritic::scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose)
 {
   unsigned int cell_x, cell_y;
-  if (!costmap_->worldToMap(pose.x, pose.y, cell_x, cell_y))
+  if (!worldToGridBounded(costmap.getInfo(), pose.x, pose.y, cell_x, cell_y))
     throw nav_core2::IllegalTrajectoryException(name_, "Trajectory Goes Off Grid.");
-  return scorePose(pose, getOrientedFootprint(pose, footprint_spec_));
+  return scorePose(costmap, pose, nav_2d_utils::movePolygonToPose(footprint_spec_, pose));
 }
 
-double ObstacleFootprintCritic::scorePose(const geometry_msgs::Pose2D& pose, const Footprint& footprint)
+double ObstacleFootprintCritic::scorePose(const nav_core2::Costmap& costmap, const geometry_msgs::Pose2D& pose,
+                                          const nav_2d_msgs::Polygon2D& footprint)
 {
-  // now we really have to lay down the footprint in the costmap grid
-  unsigned int x0, x1, y0, y1;
-  double line_cost = 0.0;
-  double footprint_cost = 0.0;
-
-  // we need to rasterize each line in the footprint
-  for (unsigned int i = 0; i < footprint.size() - 1; ++i)
+  unsigned char footprint_cost = 0;
+  nav_grid::NavGridInfo info = costmap.getInfo();
+  for (nav_grid::Index index : nav_grid_iterators::PolygonOutline(&info, footprint))
   {
-    // get the cell coord of the first point
-    if (!costmap_->worldToMap(footprint[i].x, footprint[i].y, x0, y0))
-      throw nav_core2::IllegalTrajectoryException(name_, "Footprint Goes Off Grid.");
-
-    // get the cell coord of the second point
-    if (!costmap_->worldToMap(footprint[i + 1].x, footprint[i + 1].y, x1, y1))
-      throw nav_core2::IllegalTrajectoryException(name_, "Footprint Goes Off Grid.");
-
-    line_cost = lineCost(x0, x1, y0, y1);
-    footprint_cost = std::max(line_cost, footprint_cost);
+    unsigned char cost = costmap(index.x, index.y);
+    // if the cell is in an obstacle the path is invalid or unknown
+    if (cost == costmap.LETHAL_OBSTACLE)
+    {
+      throw nav_core2::IllegalTrajectoryException(name_, "Trajectory Hits Obstacle.");
+    }
+    else if (cost == costmap.NO_INFORMATION)
+    {
+      throw nav_core2::IllegalTrajectoryException(name_, "Trajectory Hits Unknown Region.");
+    }
+    footprint_cost = std::max(cost, footprint_cost);
   }
-
-  // we also need to connect the first point in the footprint to the last point
-  // get the cell coord of the last point
-  if (!costmap_->worldToMap(footprint.back().x, footprint.back().y, x0, y0))
-    throw nav_core2::IllegalTrajectoryException(name_, "Footprint Goes Off Grid.");
-
-  // get the cell coord of the first point
-  if (!costmap_->worldToMap(footprint.front().x, footprint.front().y, x1, y1))
-    throw nav_core2::IllegalTrajectoryException(name_, "Footprint Goes Off Grid.");
-
-  line_cost = lineCost(x0, x1, y0, y1);
-  footprint_cost = std::max(line_cost, footprint_cost);
 
   // if all line costs are legal... then we can return that the footprint is legal
   return footprint_cost;
-}
-
-double ObstacleFootprintCritic::lineCost(int x0, int x1, int y0, int y1)
-{
-  double line_cost = 0.0;
-  double point_cost = -1.0;
-
-  for (LineIterator line(x0, y0, x1, y1); line.isValid(); line.advance())
-  {
-    point_cost = pointCost(line.getX(), line.getY());   // Score the current point
-
-    if (line_cost < point_cost)
-      line_cost = point_cost;
-  }
-
-  return line_cost;
-}
-
-double ObstacleFootprintCritic::pointCost(int x, int y)
-{
-  unsigned char cost = costmap_->getCost(x, y);
-  // if the cell is in an obstacle the path is invalid or unknown
-  if (cost == costmap_2d::LETHAL_OBSTACLE)
-  {
-    throw nav_core2::IllegalTrajectoryException(name_, "Trajectory Hits Obstacle.");
-  }
-  else if (cost == costmap_2d::NO_INFORMATION)
-  {
-    throw nav_core2::IllegalTrajectoryException(name_, "Trajectory Hits Unknown Region.");
-  }
-
-  return cost;
 }
 
 }  // namespace dwb_critics

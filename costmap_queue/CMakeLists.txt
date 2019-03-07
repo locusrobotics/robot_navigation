@@ -4,13 +4,13 @@ project(costmap_queue)
 set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED COMPONENTS
-  costmap_2d
+  nav_core2
   roscpp
 )
 
 catkin_package(
     INCLUDE_DIRS include
-    CATKIN_DEPENDS costmap_2d roscpp
+    CATKIN_DEPENDS nav_core2 roscpp
     LIBRARIES ${PROJECT_NAME}
 )
 
@@ -28,9 +28,10 @@ if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(mbq_test test/mbq_test.cpp)
   target_link_libraries(mbq_test ${catkin_LIBRARIES})
 
-  catkin_add_gtest(utest test/utest.cpp)
-  target_link_libraries(utest ${PROJECT_NAME} ${catkin_LIBRARIES})
-  find_package(catkin REQUIRED COMPONENTS roslint)
+  catkin_add_gtest(${PROJECT_NAME}_utest test/utest.cpp)
+  target_link_libraries(${PROJECT_NAME}_utest ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+  find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
 endif (CATKIN_ENABLE_TESTING)

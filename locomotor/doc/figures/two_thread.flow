@@ -1,0 +1,32 @@
+title Two threaded version
+
+participant Local Costmap as lc
+participant Local Planner as lp
+participant Local Thread as ml
+participant Global Thread as gt
+participant Global Planner as gp
+participant Global Costmap as gc
+
+gt -> +gc: requestGlobalCostmapUpdate
+gc -> -gt: onGlobalCostmapUpdate
+gt -> +gp: requestGlobalPlan
+gp -> -ml: onNewGlobalPlan
+ml -> lp: setPlan
+ml -> +lc: requestLocalCostmapUpdate
+gt -> +gc: requestGlobalCostmapUpdate
+lc -> -ml: onLocalCostmapUpdate
+ml -> +lp: requestLocalPlan
+lp -> -ml: onNewLocalPlan
+ml -> +lc: requestLocalCostmapUpdate
+gc -> -gt: onGlobalCostmapUpdate
+gt -> +gp: requestGlobalPlan
+lc -> -ml: onLocalCostmapUpdate
+ml -> +lp: requestLocalPlan
+gp -> -ml: onNewGlobalPlan
+lp -> -ml: onNewLocalPlan
+ml -> lp: setPlan
+ml -> +lc: requestLocalCostmapUpdate
+gt -> +gc: requestGlobalCostmapUpdate
+lc -> -ml: onLocalCostmapUpdate
+ml -> +lp: requestLocalPlan
+lp -> -ml: onNewLocalPlan
