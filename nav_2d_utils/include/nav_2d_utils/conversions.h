@@ -35,30 +35,53 @@
 #ifndef NAV_2D_UTILS_CONVERSIONS_H
 #define NAV_2D_UTILS_CONVERSIONS_H
 
+#include <ros/ros.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Twist.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <nav_2d_msgs/Path2D.h>
 #include <nav_2d_msgs/Pose2DStamped.h>
+#include <nav_2d_msgs/NavGridInfo.h>
+#include <nav_2d_msgs/UIntBounds.h>
+#include <nav_msgs/MapMetaData.h>
 #include <nav_msgs/Path.h>
+#include <nav_grid/nav_grid.h>
+#include <nav_core2/bounds.h>
 #include <tf/tf.h>
 #include <vector>
 #include <string>
 
 namespace nav_2d_utils
 {
-
+// Twist Transformations
 geometry_msgs::Twist twist2Dto3D(const nav_2d_msgs::Twist2D& cmd_vel_2d);
+nav_2d_msgs::Twist2D twist3Dto2D(const geometry_msgs::Twist& cmd_vel);
+
+// Pose Transformations
 nav_2d_msgs::Pose2DStamped stampedPoseToPose2D(const tf::Stamped<tf::Pose>& pose);
 nav_2d_msgs::Pose2DStamped poseStampedToPose2D(const geometry_msgs::PoseStamped& pose);
 geometry_msgs::Pose pose2DToPose(const geometry_msgs::Pose2D& pose2d);
 geometry_msgs::PoseStamped pose2DToPoseStamped(const nav_2d_msgs::Pose2DStamped& pose2d);
 geometry_msgs::PoseStamped pose2DToPoseStamped(const geometry_msgs::Pose2D& pose2d,
                                                const std::string& frame, const ros::Time& stamp);
+
+// Path Transformations
+nav_2d_msgs::Path2D pathToPath(const nav_msgs::Path& path);
 nav_msgs::Path posesToPath(const std::vector<geometry_msgs::PoseStamped>& poses);
 nav_2d_msgs::Path2D posesToPath2D(const std::vector<geometry_msgs::PoseStamped>& poses);
 nav_msgs::Path poses2DToPath(const std::vector<geometry_msgs::Pose2D>& poses,
                              const std::string& frame, const ros::Time& stamp);
 nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d);
+
+// Info Transformations
+nav_2d_msgs::NavGridInfo toMsg(const nav_grid::NavGridInfo& info);
+nav_grid::NavGridInfo fromMsg(const nav_2d_msgs::NavGridInfo& msg);
+nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata);
+nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info);
+
+// Bounds Transformations
+nav_2d_msgs::UIntBounds toMsg(const nav_core2::UIntBounds& bounds);
+nav_core2::UIntBounds fromMsg(const nav_2d_msgs::UIntBounds& msg);
 
 }  // namespace nav_2d_utils
 

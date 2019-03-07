@@ -37,6 +37,7 @@
 
 #include <nav_core/base_local_planner.h>
 #include <nav_core2/local_planner.h>
+#include <nav_core_adapter/costmap_adapter.h>
 #include <nav_2d_utils/odom_subscriber.h>
 #include <pluginlib/class_loader.h>
 #include <string>
@@ -55,16 +56,26 @@ public:
   LocalPlannerAdapter();
 
   // Standard ROS Local Planner Interface
-  void initialize(std::string name, tf::TransformListener* tf, costmap_2d::Costmap2DROS* costmap_ros);
-  bool computeVelocityCommands(geometry_msgs::Twist& cmd_vel);
-  bool isGoalReached();
-  bool setPlan(const std::vector<geometry_msgs::PoseStamped>& plan);
+  void initialize(std::string name, tf::TransformListener* tf, costmap_2d::Costmap2DROS* costmap_ros) override;
+  bool computeVelocityCommands(geometry_msgs::Twist& cmd_vel) override;
+  bool isGoalReached() override;
+  bool setPlan(const std::vector<geometry_msgs::PoseStamped>& plan) override;
 
 protected:
   /**
    * @brief Get the robot pose from the costmap and store as Pose2DStamped
    */
   bool getRobotPose(nav_2d_msgs::Pose2DStamped& pose2d);
+
+  /**
+   * @brief See if the back of the global plan matches the most recent goal pose
+   * @return True if the plan has changed
+   */
+  bool hasGoalChanged(const nav_2d_msgs::Pose2DStamped& new_goal);
+
+  // The most recent goal pose
+  nav_2d_msgs::Pose2DStamped last_goal_;
+  bool has_active_goal_;
 
   /**
    * @brief helper class for subscribing to odometry
@@ -77,7 +88,9 @@ protected:
 
   // Pointer Copies
   TFListenerPtr tf_;
-  CostmapROSPtr costmap_ros_;
+
+  std::shared_ptr<CostmapAdapter> costmap_adapter_;
+  costmap_2d::Costmap2DROS* costmap_ros_;
 };
 
 }  // namespace nav_core_adapter

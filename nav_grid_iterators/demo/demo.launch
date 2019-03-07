@@ -1,0 +1,4 @@
+<launch>
+  <node name="demo" pkg="nav_grid_iterators" type="demo" output="screen" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nav_grid_iterators)/demo/demo.rviz" />
+</launch>

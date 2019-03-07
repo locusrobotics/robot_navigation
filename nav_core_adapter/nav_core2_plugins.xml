@@ -1,5 +1,12 @@
-<library path="lib/libglobal_planner_adapter2">
-  <class type="nav_core_adapter::GlobalPlannerAdapter2" base_class_type="nav_core2::GlobalPlanner">
-    <description></description>
-  </class>
-</library>
+<class_libraries>
+  <library path="lib/libglobal_planner_adapter2">
+    <class type="nav_core_adapter::GlobalPlannerAdapter2" base_class_type="nav_core2::GlobalPlanner">
+      <description></description>
+    </class>
+  </library>
+  <library path="lib/libcostmap_adapter">
+    <class type="nav_core_adapter::CostmapAdapter" base_class_type="nav_core2::Costmap">
+      <description></description>
+    </class>
+  </library>
+</class_libraries>

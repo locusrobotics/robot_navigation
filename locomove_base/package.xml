@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>locomove_base</name>
+  <version>0.2.5</version>
+  <description>Extension of locomotor that implements move_base's functionality.</description>
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>locomotor</depend>
+  <depend>move_base_msgs</depend>
+  <depend>nav_2d_utils</depend>
+  <depend>nav_core</depend>
+  <depend>nav_core_adapter</depend>
+  <test_depend>roslint</test_depend>
+</package>

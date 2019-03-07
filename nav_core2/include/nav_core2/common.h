@@ -34,11 +34,9 @@
 #ifndef NAV_CORE2_COMMON_H
 #define NAV_CORE2_COMMON_H
 
-#include <costmap_2d/costmap_2d_ros.h>
 #include <tf/transform_listener.h>
 #include <memory>
 
-typedef std::shared_ptr<tf::TransformListener> TFListenerPtr;
-typedef std::shared_ptr<costmap_2d::Costmap2DROS> CostmapROSPtr;
+using TFListenerPtr = std::shared_ptr<tf::TransformListener>;
 
 #endif  // NAV_CORE2_COMMON_H

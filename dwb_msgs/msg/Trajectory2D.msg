@@ -2,7 +2,10 @@
 
 # Input Velocity
 nav_2d_msgs/Twist2D velocity
-# Time difference between first and last poses
-duration duration
+
 # Poses the robot will go to, given our kinematic model
 geometry_msgs/Pose2D[] poses
+
+# Time difference between the current pose and the poses in the trajectory.
+# Parallel array to poses. Length should be the same.
+duration[] time_offsets

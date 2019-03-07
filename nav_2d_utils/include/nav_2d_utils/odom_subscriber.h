@@ -36,6 +36,7 @@
 #define NAV_2D_UTILS_ODOM_SUBSCRIBER_H
 
 #include <ros/ros.h>
+#include <nav_2d_utils/conversions.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_2d_msgs/Twist2DStamped.h>
 #include <boost/thread/mutex.hpp>
@@ -73,9 +74,7 @@ protected:
     ROS_INFO_ONCE("odom received!");
     boost::mutex::scoped_lock lock(odom_mutex_);
     odom_vel_.header = msg->header;
-    odom_vel_.velocity.x = msg->twist.twist.linear.x;
-    odom_vel_.velocity.y = msg->twist.twist.linear.y;
-    odom_vel_.velocity.theta = msg->twist.twist.angular.z;
+    odom_vel_.velocity = twist3Dto2D(msg->twist.twist);
   }
 
   ros::Subscriber odom_sub_;

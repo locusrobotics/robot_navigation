@@ -36,11 +36,16 @@
 namespace costmap_queue
 {
 
-LimitedCostmapQueue::LimitedCostmapQueue(costmap_2d::Costmap2D& costmap, const int distance_limit) :
+LimitedCostmapQueue::LimitedCostmapQueue(nav_core2::Costmap& costmap, const int distance_limit) :
   CostmapQueue(costmap)
 {
   max_distance_ = distance_limit;
   reset();
+}
+
+int LimitedCostmapQueue::getMaxDistance() const
+{
+  return max_distance_;
 }
 
 bool LimitedCostmapQueue::validCellToQueue(const CellData& cell)

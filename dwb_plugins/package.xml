@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>dwb_plugins</name>
-  <version>0.1.0</version>
+  <version>0.2.5</version>
   <description>
       Standard implementations of the GoalChecker
       and TrajectoryGenerators for dwb_local_planner
@@ -21,6 +21,8 @@
   <depend>pluginlib</depend>
   <depend>roscpp</depend>
   <test_depend>roslint</test_depend>
+  <test_depend>rostest</test_depend>
+  <test_depend>rosunit</test_depend>
 
   <export>
     <dwb_local_planner plugin="${prefix}/plugins.xml"/>

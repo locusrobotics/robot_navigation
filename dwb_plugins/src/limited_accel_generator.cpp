@@ -46,7 +46,7 @@ void LimitedAccelGenerator::initialize(ros::NodeHandle& nh)
   StandardTrajectoryGenerator::initialize(nh);
   if (nh.hasParam("sim_period"))
   {
-    nh.param("sim_period", acceleration_time_);
+    nh.getParam("sim_period", acceleration_time_);
   }
   else
   {
@@ -81,25 +81,10 @@ void LimitedAccelGenerator::startNewIteration(const nav_2d_msgs::Twist2D& curren
   velocity_iterator_->startNewIteration(current_velocity, acceleration_time_);
 }
 
-dwb_msgs::Trajectory2D LimitedAccelGenerator::generateTrajectory(const geometry_msgs::Pose2D& start_pose,
-    const nav_2d_msgs::Twist2D& start_vel,
-    const nav_2d_msgs::Twist2D& cmd_vel)
+nav_2d_msgs::Twist2D LimitedAccelGenerator::computeNewVelocity(const nav_2d_msgs::Twist2D& cmd_vel,
+    const nav_2d_msgs::Twist2D& start_vel, const double dt)
 {
-  dwb_msgs::Trajectory2D traj;
-  traj.velocity = cmd_vel;
-  traj.duration = ros::Duration(sim_time_);
-  geometry_msgs::Pose2D pose = start_pose;
-
-  std::vector<double> steps = getTimeSteps(cmd_vel);
-  for (double dt : steps)
-  {
-    traj.poses.push_back(pose);
-
-    //  update the position using the constant cmd_vel
-    pose = computeNewPosition(pose, cmd_vel, dt);
-  }
-
-  return traj;
+  return cmd_vel;
 }
 
 }  // namespace dwb_plugins

@@ -84,8 +84,9 @@ protected:
    * @param dt amount of time in seconds
    * @return new velocity after dt seconds
    */
-  nav_2d_msgs::Twist2D computeNewVelocity(const nav_2d_msgs::Twist2D& cmd_vel, const nav_2d_msgs::Twist2D& start_vel,
-                                          const double dt);
+  virtual nav_2d_msgs::Twist2D computeNewVelocity(const nav_2d_msgs::Twist2D& cmd_vel,
+                                                  const nav_2d_msgs::Twist2D& start_vel,
+                                                  const double dt);
 
   /**
    * @brief Use the robot's kinematic model to predict new positions for the robot
@@ -95,8 +96,9 @@ protected:
    * @param dt amount of time in seconds
    * @return New pose after dt seconds
    */
-  geometry_msgs::Pose2D computeNewPosition(const geometry_msgs::Pose2D start_pose, const nav_2d_msgs::Twist2D& vel,
-                                           const double dt);
+  virtual geometry_msgs::Pose2D computeNewPosition(const geometry_msgs::Pose2D start_pose,
+                                                   const nav_2d_msgs::Twist2D& vel,
+                                                   const double dt);
 
 
   /**
@@ -111,7 +113,7 @@ protected:
    * Right now the vector contains a single value repeated many times, but this method could be overridden
    * to allow for dynamic spacing
    */
-  std::vector<double> getTimeSteps(const nav_2d_msgs::Twist2D& cmd_vel);
+  virtual std::vector<double> getTimeSteps(const nav_2d_msgs::Twist2D& cmd_vel);
 
   KinematicParameters::Ptr kinematics_;
   std::shared_ptr<VelocityIterator> velocity_iterator_;
@@ -123,6 +125,21 @@ protected:
   double time_granularity_;     ///< If discretizing by time, the amount of time between each point in the traj
   double linear_granularity_;   ///< If not discretizing by time, the amount of linear space between points
   double angular_granularity_;  ///< If not discretizing by time, the amount of angular space between points
+
+  /* Backwards Compatibility Parameter: include_last_point
+   *
+   * dwa had an off-by-one error built into it.
+   * It generated N trajectory points, where N = ceil(sim_time / time_delta).
+   * If for example, sim_time=3.0 and time_delta=1.5, it would generate trajectories with 2 points, which
+   * indeed were time_delta seconds apart. However, the points would be at t=0 and t=1.5, and thus the
+   * actual sim_time was much less than advertised.
+   *
+   * This is remedied by adding one final point at t=sim_time, but only if include_last_point_ is true.
+   *
+   * Nothing I could find actually used the time_delta variable or seemed to care that the trajectories
+   * were not projected out as far as they intended.
+   */
+  bool include_last_point_;
 };
 
 

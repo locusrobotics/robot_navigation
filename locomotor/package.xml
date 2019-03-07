@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>locomotor</name>
+  <version>0.2.5</version>
+  <description>Locomotor is an extensible path planning coordination engine that replaces move_base. The goal is to provide a mechanism for controlling what happens when the global and local planners succeed and fail. It leverages ROS callback queues to coordinate multiple threads.</description>
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+  <license>BSD</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>actionlib</depend>
+  <depend>geometry_msgs</depend>
+  <depend>locomotor_msgs</depend>
+  <depend>nav_2d_msgs</depend>
+  <depend>nav_2d_utils</depend>
+  <depend>nav_core2</depend>
+  <depend>nav_msgs</depend>
+  <depend>pluginlib</depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <test_depend>roslint</test_depend>
+</package>

@@ -38,41 +38,36 @@
 namespace costmap_queue
 {
 
-CostmapQueue::CostmapQueue(costmap_2d::Costmap2D& costmap, bool manhattan) :
-  MapBasedQueue(), costmap_(costmap), max_distance_(-1), manhattan_(manhattan), cached_max_distance_(-1)
+CostmapQueue::CostmapQueue(nav_core2::Costmap& costmap, bool manhattan) :
+  MapBasedQueue(false), costmap_(costmap), seen_(0), manhattan_(manhattan), cached_max_distance_(-1)
 {
   reset();
 }
 
 void CostmapQueue::reset()
 {
-  unsigned int size_x = costmap_.getSizeInCellsX(), size_y = costmap_.getSizeInCellsY();
-  if (seen_.size() != size_x * size_y)
-  {
-    seen_.resize(size_x * size_y);
-  }
-  std::fill(seen_.begin(), seen_.end(), false);
+  seen_.setInfo(costmap_.getInfo());
+  seen_.reset();
   computeCache();
   MapBasedQueue::reset();
 }
 
 void CostmapQueue::enqueueCell(unsigned int x, unsigned int y)
 {
-  unsigned int index = costmap_.getIndex(x, y);
-  enqueueCell(index, x, y, x, y);
+  enqueueCell(x, y, x, y);
 }
 
-void CostmapQueue::enqueueCell(unsigned int index, unsigned int cur_x, unsigned int cur_y,
+void CostmapQueue::enqueueCell(unsigned int cur_x, unsigned int cur_y,
                                unsigned int src_x, unsigned int src_y)
 {
-  if (seen_[index]) return;
+  if (seen_(cur_x, cur_y)) return;
 
   // we compute our distance table one cell further than the inflation radius dictates so we can make the check below
   double distance = distanceLookup(cur_x, cur_y, src_x, src_y);
-  CellData data(distance, index, cur_x, cur_y, src_x, src_y);
+  CellData data(distance, cur_x, cur_y, src_x, src_y);
   if (validCellToQueue(data))
   {
-    seen_[index] = true;
+    seen_.setValue(cur_x, cur_y, 1);
     enqueue(distance, data);
   }
 }
@@ -81,43 +76,37 @@ CellData CostmapQueue::getNextCell()
 {
   // get the highest priority cell and pop it off the priority queue
   CellData current_cell = front();
+  pop();
 
-  unsigned int index = current_cell.index_;
   unsigned int mx = current_cell.x_;
   unsigned int my = current_cell.y_;
   unsigned int sx = current_cell.src_x_;
   unsigned int sy = current_cell.src_y_;
 
   // attempt to put the neighbors of the current cell onto the queue
-  unsigned int size_x = costmap_.getSizeInCellsX();
   if (mx > 0)
-    enqueueCell(index - 1, mx - 1, my, sx, sy);
+    enqueueCell(mx - 1, my, sx, sy);
   if (my > 0)
-    enqueueCell(index - size_x, mx, my - 1, sx, sy);
-  if (mx < size_x - 1)
-    enqueueCell(index + 1, mx + 1, my, sx, sy);
-  if (my < costmap_.getSizeInCellsY() - 1)
-    enqueueCell(index + size_x, mx, my + 1, sx, sy);
+    enqueueCell(mx, my - 1, sx, sy);
+  if (mx < costmap_.getWidth() - 1)
+    enqueueCell(mx + 1, my, sx, sy);
+  if (my < costmap_.getHeight() - 1)
+    enqueueCell(mx, my + 1, sx, sy);
 
-  // pop once we have our cell info
-  pop();
   return current_cell;
 }
 
 void CostmapQueue::computeCache()
 {
-  if (max_distance_ == -1)
-  {
-    max_distance_ = std::max(costmap_.getSizeInCellsX(), costmap_.getSizeInCellsY());
-  }
-  if (max_distance_ == cached_max_distance_) return;
+  int max_distance = getMaxDistance();
+  if (max_distance == cached_max_distance_) return;
   cached_distances_.clear();
 
-  cached_distances_.resize(max_distance_ + 2);
+  cached_distances_.resize(max_distance + 2);
 
   for (unsigned int i = 0; i < cached_distances_.size(); ++i)
   {
-    cached_distances_[i].resize(max_distance_ + 2);
+    cached_distances_[i].resize(max_distance + 2);
     for (unsigned int j = 0; j < cached_distances_[i].size(); ++j)
     {
       if (manhattan_)
@@ -130,7 +119,7 @@ void CostmapQueue::computeCache()
       }
     }
   }
-  cached_max_distance_ = max_distance_;
+  cached_max_distance_ = max_distance;
 }
 
 }  // namespace costmap_queue

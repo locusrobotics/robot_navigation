@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>global_planner_tests</name>
+  <version>0.2.5</version>
+  <description>
+    A collection of tests for checking the validity and completeness of global planners.
+  </description>
+
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>map_server</depend>
+  <depend>nav_core2</depend>
+  <depend>nav_msgs</depend>
+  <depend>pluginlib</depend>
+  <depend>roscpp</depend>
+  <depend>yaml-cpp</depend>
+  <test_depend>roslint</test_depend>
+
+</package>

@@ -1,0 +1,5 @@
+<launch>
+  <!-- Full planner test tests over 35 different variations of the parameters.
+       It will take a LONG time to run. Thus it is not included in the regularly executed tests. -->
+  <test test-name="full_planner_test" pkg="dlux_plugins" type="full_planner_test" time-limit="3330"/>
+</launch>

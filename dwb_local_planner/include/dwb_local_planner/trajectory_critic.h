@@ -37,10 +37,12 @@
 
 #include <ros/ros.h>
 #include <nav_core2/common.h>
+#include <nav_core2/costmap.h>
 #include <geometry_msgs/Pose2D.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <nav_2d_msgs/Path2D.h>
 #include <dwb_msgs/Trajectory2D.h>
+#include <sensor_msgs/PointCloud.h>
 #include <string>
 #include <vector>
 
@@ -66,14 +68,14 @@ namespace dwb_local_planner
  *       This can be used for stateful critics that monitor the trajectory through time.
  *
  *  Optionally, there is also a debugging mechanism for certain types of critics in the
- *  addGridScores method. If the score for a trajectory depends on its relationship to
- *  the costmap, addGridScores can provide that information to the dwb_local_planner
+ *  addCriticVisualization method. If the score for a trajectory depends on its relationship to
+ *  the costmap, addCriticVisualization can provide that information to the dwb_local_planner
  *  which will publish the grid scores as a PointCloud2.
  */
 class TrajectoryCritic
 {
 public:
-  typedef std::shared_ptr<dwb_local_planner::TrajectoryCritic> Ptr;
+  using Ptr = std::shared_ptr<dwb_local_planner::TrajectoryCritic>;
 
   virtual ~TrajectoryCritic() {}
 
@@ -81,19 +83,19 @@ public:
    * @brief Initialize the critic with appropriate pointers and parameters
    *
    * The name and costmap are stored as member variables.
-   * A NodeHandle is created using the combination of the parent namespace and the critic name
+   * A NodeHandle for the critic is created with the namespace of the planner NodeHandle
    *
+   * @param planner_nh Planner Nodehandle
    * @param name The name of this critic
-   * @param parent_namespace The namespace of the planner
    * @param costmap_ros Pointer to the costmap
    */
-  void initialize(std::string name, std::string parent_namespace, CostmapROSPtr costmap_ros)
+  void initialize(const ros::NodeHandle& planner_nh, std::string name, nav_core2::Costmap::Ptr costmap)
   {
     name_ = name;
-    costmap_ros_ = costmap_ros;
-    nh_ = std::make_shared<ros::NodeHandle>("~/" + parent_namespace + "/" + name_);
-    parent_nh_ = std::make_shared<ros::NodeHandle>("~/" + parent_namespace);
-    nh_->param("scale", scale_, 1.0);
+    costmap_ = costmap;
+    planner_nh_ = planner_nh;
+    critic_nh_ = ros::NodeHandle(planner_nh_, name_);
+    critic_nh_.param("scale", scale_, 1.0);
     onInit();
   }
 
@@ -102,7 +104,7 @@ public:
   /**
    * @brief Reset the state of the critic
    *
-   * Reset is called when the planner receives a new global plan.
+   * Reset is called when the planner receives a new global goal.
    * This can be used to discard information specific to one plan.
    */
   virtual void reset() {}
@@ -140,7 +142,7 @@ public:
   /**
    * @brief Add information to the given pointcloud for debugging costmap-grid based scores
    *
-   * addGridScores is an optional debugging mechanism for providing rich information
+   * addCriticVisualization is an optional debugging mechanism for providing rich information
    * about the cost for certain trajectories. Some critics will have scoring mechanisms
    * wherein there will be some score for each cell in the costmap. This could be as
    * straightforward as the cost in the costmap, or it could be the number of cells away
@@ -153,7 +155,7 @@ public:
    *
    * @param pc PointCloud to add channels to
    */
-  virtual void addGridScores(sensor_msgs::PointCloud& pc) {}
+  virtual void addCriticVisualization(sensor_msgs::PointCloud& pc) {}
 
   std::string getName()
   {
@@ -164,9 +166,9 @@ public:
   void setScale(const double scale) { scale_ = scale; }
 protected:
   std::string name_;
-  CostmapROSPtr costmap_ros_;
+  nav_core2::Costmap::Ptr costmap_;
   double scale_;
-  std::shared_ptr<ros::NodeHandle> nh_, parent_nh_;
+  ros::NodeHandle critic_nh_, planner_nh_;
 };
 
 }  // namespace dwb_local_planner

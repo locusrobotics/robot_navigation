@@ -1,0 +1,10 @@
+standard_prefix: package://global_planner_tests/maps/
+full_coverage_maps:
+  - empty.png
+  - smile.png
+  - smallloop.png
+  - unknown.png
+  - corner.png
+  - inflated.png
+no_coverage_maps:
+  - nopaths.png

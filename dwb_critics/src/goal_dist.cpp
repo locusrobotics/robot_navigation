@@ -32,6 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <dwb_critics/goal_dist.h>
+#include <nav_grid/coordinate_conversion.h>
 #include <pluginlib/class_list_macros.h>
 #include <nav_2d_utils/path_ops.h>
 #include <vector>
@@ -51,8 +52,7 @@ bool GoalDistCritic::prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msg
   }
 
   // Enqueue just the last pose
-  int index = costmap_->getIndex(local_goal_x, local_goal_y);
-  cell_values_[index] = 0.0;
+  cell_values_.setValue(local_goal_x, local_goal_y, 0.0);
   queue_->enqueueCell(local_goal_x, local_goal_y);
 
   propogateManhattanDistances();
@@ -62,7 +62,9 @@ bool GoalDistCritic::prepare(const geometry_msgs::Pose2D& pose, const nav_2d_msg
 
 bool GoalDistCritic::getLastPoseOnCostmap(const nav_2d_msgs::Path2D& global_plan, unsigned int& x, unsigned int& y)
 {
-  nav_2d_msgs::Path2D adjusted_global_plan = nav_2d_utils::adjustPlanResolution(global_plan, costmap_->getResolution());
+  const nav_core2::Costmap& costmap = *costmap_;
+  const nav_grid::NavGridInfo& info = costmap.getInfo();
+  nav_2d_msgs::Path2D adjusted_global_plan = nav_2d_utils::adjustPlanResolution(global_plan, info.resolution);
   bool started_path = false;
 
   // skip global path points until we reach the border of the local map
@@ -71,7 +73,7 @@ bool GoalDistCritic::getLastPoseOnCostmap(const nav_2d_msgs::Path2D& global_plan
     double g_x = adjusted_global_plan.poses[i].x;
     double g_y = adjusted_global_plan.poses[i].y;
     unsigned int map_x, map_y;
-    if (costmap_->worldToMap(g_x, g_y, map_x, map_y) && costmap_->getCost(map_x, map_y) != costmap_2d::NO_INFORMATION)
+    if (worldToGridBounded(info, g_x, g_y, map_x, map_y) && costmap(map_x, map_y) != costmap.NO_INFORMATION)
     {
       // Still on the costmap. Continue.
       x = map_x;
