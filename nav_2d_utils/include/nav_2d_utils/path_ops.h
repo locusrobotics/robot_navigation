@@ -45,6 +45,18 @@ namespace nav_2d_utils
 double poseDistance(const geometry_msgs::Pose2D& pose0, const geometry_msgs::Pose2D& pose1);
 
 /**
+ * @brief Calculate the square of the linear distance between two poses
+ */
+double poseDistanceSquared(const geometry_msgs::Pose2D& pose0, const geometry_msgs::Pose2D& pose1);
+
+/**
+ * @brief Calculate the index in the plan that is closest to query_pose
+ *
+ * Will throw a runtime error if plan has no poses.
+ */
+unsigned int getClosestPoseIndex(const nav_2d_msgs::Path2D& plan, const geometry_msgs::Pose2D& query_pose);
+
+/**
  * @brief Calculate the length of the plan, starting from the given index
  */
 double getPlanLength(const nav_2d_msgs::Path2D& plan, const unsigned int start_index = 0);

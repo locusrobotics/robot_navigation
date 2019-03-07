@@ -38,6 +38,7 @@
 #include <dwb_local_planner/illegal_trajectory_tracker.h>
 #include <nav_2d_utils/conversions.h>
 #include <nav_2d_utils/tf_help.h>
+#include <nav_2d_utils/path_ops.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <dwb_msgs/CriticScore.h>
 #include <pluginlib/class_list_macros.h>
@@ -379,12 +380,7 @@ dwb_msgs::TrajectoryScore DWBLocalPlanner::scoreTrajectory(const dwb_msgs::Traje
   return score;
 }
 
-double getSquareDistance(const geometry_msgs::Pose2D& pose_a, const geometry_msgs::Pose2D& pose_b)
-{
-  double x_diff = pose_a.x - pose_b.x;
-  double y_diff = pose_a.y - pose_b.y;
-  return x_diff * x_diff + y_diff * y_diff;
-}
+using nav_2d_utils::poseDistanceSquared;
 
 nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose2DStamped& pose)
 {
@@ -411,22 +407,11 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
   stamped_pose.header.frame_id = global_plan_.header.frame_id;
 
   unsigned int begin_within = 0;
-  unsigned int closest_idx = 0;
-  double min_dist = getSquareDistance(robot_pose.pose, global_plan_.poses[0]);
-
-  for (unsigned int i = 1; i < global_plan_.poses.size(); ++i)\
-  {
-    double dist = getSquareDistance(robot_pose.pose, global_plan_.poses[i]);
-    if (dist < min_dist)
-    {
-      min_dist = dist;
-      closest_idx = i;
-    }
-  }
+  unsigned int closest_idx = nav_2d_utils::getClosestPoseIndex(global_plan_, robot_pose.pose);
 
   for (unsigned int i = closest_idx; i >= 0 && i < global_plan_.poses.size(); --i)
   {
-    double dist = getSquareDistance(robot_pose.pose, global_plan_.poses[i]);
+    double dist = poseDistanceSquared(robot_pose.pose, global_plan_.poses[i]);
     if (dist > sq_dist_threshold)
     {
       begin_within = i;
@@ -437,7 +422,7 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
   for (unsigned int i = begin_within; i < global_plan_.poses.size(); ++i)
   {
     bool should_break = false;
-    if (getSquareDistance(robot_pose.pose, global_plan_.poses[i]) > sq_dist_threshold)
+    if (poseDistanceSquared(robot_pose.pose, global_plan_.poses[i]) > sq_dist_threshold)
     {
       if (transformed_plan.poses.size() == 0)
       {
@@ -477,7 +462,7 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
     {
       const geometry_msgs::Pose2D& w = *it;
       // Fixed error bound of 1 meter for now. Can reduce to a portion of the map size or based on the resolution
-      if (getSquareDistance(costmap_pose.pose, w) < sq_prune_dist)
+      if (poseDistanceSquared(costmap_pose.pose, w) < sq_prune_dist)
       {
         ROS_DEBUG_NAMED("DWBLocalPlanner", "Nearest waypoint to <%f, %f> is <%f, %f>\n",
                                            costmap_pose.pose.x, costmap_pose.pose.y, w.x, w.y);
