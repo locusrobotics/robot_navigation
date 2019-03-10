@@ -122,7 +122,7 @@ Below, we provide a "brief" mathematical derivation of the calculation.
    * ![beta = -(P(A) + P(C))](https://latex.codecogs.com/gif.latex?%5Cbeta%20%3D%20-%5CBig%28P%28A%29&plus;P%28C%29%5CBig%29)
    * ![gamma = 0.5 * (P(A)^2 + P(C)^2 - h^2)](https://latex.codecogs.com/gif.latex?%5Cgamma%20%3D%20%5Cfrac%7BP%28A%29%5E2%20&plus;%20P%28C%29%5E2%20-%20h%5E2%7D%7B2%7D)
  * That all looks complicated, and computationally inefficient due to the square root operation. Hence, we calculate a second-degree Taylor series approximation at ![x=P(C)+h/2](https://latex.codecogs.com/gif.latex?x=P(C)&plus;h/2) as
-  * ![delta = beta / h](https://latex.codecogs.com/gif.latex?%5Cdelta%20%3D%20%5Cbeta%20/%20h)
+  * ![delta = (P(C) - P(A)) / h](https://latex.codecogs.com/gif.latex?%5Cdelta%3D%5Cfrac%7BP%28C%29-P%28A%29%7D%7Bh%7D)
   * ![P(X) = P(A) + h (c_2 \delta^2 + c_1\delta + c_0)](https://latex.codecogs.com/gif.latex?P%28X%29%20%5Capprox%20P%28A%29%20&plus;%20h%20%28c_2%20%5Cdelta%5E2%20&plus;%20c_1%5Cdelta%20&plus;%20c_0%29)
   * ![c_2 = -0.2301, c_1 = 0.5307, c_0 = 0.7040](https://latex.codecogs.com/gif.latex?c_2%20%3D%20-0.2301%2C%20c_1%20%3D%200.5307%2C%20c_0%20%3D%200.7040)
  * You can compare the two curves on [this plot](https://www.desmos.com/calculator/axz378nfqg)
