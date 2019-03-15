@@ -67,6 +67,27 @@
 namespace nav_core2
 {
 
+enum {
+  COSTMAPEXCEPTION                 =   0,
+  COSTMAPSAFETYEXCEPTION           =   1,
+  COSTMAPDATALAGEXCEPTION          =   2,
+
+  PLANNEREXCEPTION                 =   3,
+    GLOBALPLANNEREXCEPTION         =   4,
+      INVALIDSTARTPOSEEXCEPTION    =   5,
+      STARTBOUNDSEXCEPTION         =   6,
+      OCCUPIEDSTARTEXCEPTION       =   7,
+      INVALIDGOALPOSEEXCEPTION     =   8,
+      GOALBOUNDSEXCEPTION          =   9,
+      OCCUPIEDGOALEXCEPTION        =   10,
+    NOGLOBALPATHEXCEPTION          =   11,
+    GLOBALPLANNERTIMEOUTEXCEPTION  =   12,
+    LOCALPLANNEREXCEPTION          =   13,
+      ILLEGALTRAJECTORYEXCEPTION   =   14,
+      NOLEGALTRAJECTORIESEXCEPTION =   15,
+    PLANNERTFEXCEPTION             =   16
+};
+
 inline std::string poseToString(const nav_2d_msgs::Pose2DStamped& pose)
 {
   return "(" + std::to_string(pose.pose.x) + ", " + std::to_string(pose.pose.y) + ", " + std::to_string(pose.pose.theta)
@@ -80,9 +101,12 @@ inline std::string poseToString(const nav_2d_msgs::Pose2DStamped& pose)
 class CostmapException: public std::runtime_error
 {
 public:
-  explicit CostmapException(const std::string& description) : std::runtime_error(description) {}
+  explicit CostmapException(const std::string& description, int result_code = COSTMAPEXCEPTION) : std::runtime_error(description), result_code_(result_code) {}
   using Ptr = std::shared_ptr<CostmapException>;
-  virtual int getResultCode() const { return 0; }
+  virtual int getResultCode() const { return result_code_; }
+
+protected:
+    int result_code_;
 };
 
 /**
@@ -92,8 +116,8 @@ public:
 class CostmapSafetyException: public CostmapException
 {
 public:
-  explicit CostmapSafetyException(const std::string& description) : CostmapException(description) {}
-  int getResultCode() const override { return 1; }
+  explicit CostmapSafetyException(const std::string& description, int result_code = COSTMAPSAFETYEXCEPTION) : CostmapException(description, result_code) {}
+  int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -105,8 +129,8 @@ public:
 class CostmapDataLagException: public CostmapSafetyException
 {
 public:
-  explicit CostmapDataLagException(const std::string& description) : CostmapSafetyException(description) {}
-  int getResultCode() const override { return 2; }
+  explicit CostmapDataLagException(const std::string& description, int result_code = COSTMAPDATALAGEXCEPTION) : CostmapSafetyException(description, result_code) {}
+  int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -116,9 +140,13 @@ public:
 class PlannerException: public std::runtime_error
 {
 public:
-  explicit PlannerException(const std::string& description) : std::runtime_error(description) {}
+  explicit PlannerException(const std::string& description, int result_code = PLANNEREXCEPTION) : std::runtime_error(description), result_code_(result_code) {}
   using Ptr = std::shared_ptr<PlannerException>;
-  virtual int getResultCode() const { return 3; }
+  virtual int getResultCode() const { return result_code_; }
+
+protected:
+    int result_code_;
+
 };
 
 /**
@@ -128,8 +156,8 @@ public:
 class GlobalPlannerException: public PlannerException
 {
 public:
-  explicit GlobalPlannerException(const std::string& description) : PlannerException(description) {}
-  virtual int getResultCode() const { return 4; }
+  explicit GlobalPlannerException(const std::string& description, int result_code = GLOBALPLANNEREXCEPTION) : PlannerException(description, result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -139,8 +167,8 @@ public:
 class LocalPlannerException: public PlannerException
 {
 public:
-  explicit LocalPlannerException(const std::string& description) : PlannerException(description) {}
-  virtual int getResultCode() const { return 13; }
+  explicit LocalPlannerException(const std::string& description, int result_code = LOCALPLANNEREXCEPTION) : PlannerException(description, result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -150,8 +178,8 @@ public:
 class PlannerTFException: public PlannerException
 {
 public:
-  explicit PlannerTFException(const std::string& description) : PlannerException(description) {}
-  virtual int getResultCode() const { return 16; }
+  explicit PlannerTFException(const std::string& description, int result_code = PLANNERTFEXCEPTION) : PlannerException(description, result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -161,10 +189,10 @@ public:
 class InvalidStartPoseException: public GlobalPlannerException
 {
 public:
-  explicit InvalidStartPoseException(const std::string& description) : GlobalPlannerException(description) {}
-  InvalidStartPoseException(const nav_2d_msgs::Pose2DStamped& pose, const std::string& problem) :
-    GlobalPlannerException("The starting pose " + poseToString(pose) + " is " + problem) {}
-  virtual int getResultCode() const { return 5; }
+  explicit InvalidStartPoseException(const std::string& description, int result_code = INVALIDSTARTPOSEEXCEPTION) : GlobalPlannerException(description, result_code) {}
+  InvalidStartPoseException(const nav_2d_msgs::Pose2DStamped& pose, const std::string& problem, int result_code = INVALIDSTARTPOSEEXCEPTION) :
+    GlobalPlannerException("The starting pose " + poseToString(pose) + " is " + problem, result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -174,10 +202,10 @@ public:
 class StartBoundsException: public InvalidStartPoseException
 {
 public:
-  explicit StartBoundsException(const std::string& description) : InvalidStartPoseException(description) {}
-  explicit StartBoundsException(const nav_2d_msgs::Pose2DStamped& pose) :
-    InvalidStartPoseException(pose, "out of bounds") {}
-  virtual int getResultCode() const { return 6; }
+  explicit StartBoundsException(const std::string& description, int result_code = STARTBOUNDSEXCEPTION) : InvalidStartPoseException(description, result_code) {}
+  explicit StartBoundsException(const nav_2d_msgs::Pose2DStamped& pose, int result_code = STARTBOUNDSEXCEPTION) :
+    InvalidStartPoseException(pose, "out of bounds", result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -187,10 +215,10 @@ public:
 class OccupiedStartException: public InvalidStartPoseException
 {
 public:
-  explicit OccupiedStartException(const std::string& description) : InvalidStartPoseException(description) {}
-  explicit OccupiedStartException(const nav_2d_msgs::Pose2DStamped& pose) :
-    InvalidStartPoseException(pose, "occupied") {}
-  virtual int getResultCode() const { return 7; }
+  explicit OccupiedStartException(const std::string& description, int result_code = OCCUPIEDSTARTEXCEPTION) : InvalidStartPoseException(description, result_code) {}
+  explicit OccupiedStartException(const nav_2d_msgs::Pose2DStamped& pose, int result_code = OCCUPIEDSTARTEXCEPTION) :
+    InvalidStartPoseException(pose, "occupied", result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -200,10 +228,10 @@ public:
 class InvalidGoalPoseException: public GlobalPlannerException
 {
 public:
-  explicit InvalidGoalPoseException(const std::string& description) : GlobalPlannerException(description) {}
-  InvalidGoalPoseException(const nav_2d_msgs::Pose2DStamped& pose, const std::string& problem) :
-    GlobalPlannerException("The goal pose " + poseToString(pose) + " is " + problem) {}
-  virtual int getResultCode() const { return 8; }
+  explicit InvalidGoalPoseException(const std::string& description, int result_code = INVALIDGOALPOSEEXCEPTION) : GlobalPlannerException(description, result_code) {}
+  InvalidGoalPoseException(const nav_2d_msgs::Pose2DStamped& pose, const std::string& problem, int result_code = INVALIDGOALPOSEEXCEPTION) :
+    GlobalPlannerException("The goal pose " + poseToString(pose) + " is " + problem, result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -213,10 +241,10 @@ public:
 class GoalBoundsException: public InvalidGoalPoseException
 {
 public:
-  explicit GoalBoundsException(const std::string& description) : InvalidGoalPoseException(description) {}
-  explicit GoalBoundsException(const nav_2d_msgs::Pose2DStamped& pose) :
-    InvalidGoalPoseException(pose, "out of bounds") {}
-  virtual int getResultCode() const { return 9; }
+  explicit GoalBoundsException(const std::string& description, int result_code = GOALBOUNDSEXCEPTION) : InvalidGoalPoseException(description, result_code) {}
+  explicit GoalBoundsException(const nav_2d_msgs::Pose2DStamped& pose, int result_code = GOALBOUNDSEXCEPTION) :
+    InvalidGoalPoseException(pose, "out of bounds", result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -226,10 +254,10 @@ public:
 class OccupiedGoalException: public InvalidGoalPoseException
 {
 public:
-  explicit OccupiedGoalException(const std::string& description) : InvalidGoalPoseException(description) {}
-  explicit OccupiedGoalException(const nav_2d_msgs::Pose2DStamped& pose) :
-    InvalidGoalPoseException(pose, "occupied") {}
-  virtual int getResultCode() const { return 10; }
+  explicit OccupiedGoalException(const std::string& description, int result_code = OCCUPIEDGOALEXCEPTION) : InvalidGoalPoseException(description, result_code) {}
+  explicit OccupiedGoalException(const nav_2d_msgs::Pose2DStamped& pose, int result_code = OCCUPIEDGOALEXCEPTION) :
+    InvalidGoalPoseException(pose, "occupied", result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -239,9 +267,9 @@ public:
 class NoGlobalPathException: public GlobalPlannerException
 {
 public:
-  explicit NoGlobalPathException(const std::string& description) : GlobalPlannerException(description) {}
-  NoGlobalPathException() : GlobalPlannerException("No global path found.") {}
-  virtual int getResultCode() const { return 11; }
+  explicit NoGlobalPathException(const std::string& description, int result_code = NOGLOBALPATHEXCEPTION) : GlobalPlannerException(description, result_code) {}
+  NoGlobalPathException(int result_code = NOGLOBALPATHEXCEPTION) : GlobalPlannerException("No global path found.", result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -251,8 +279,8 @@ public:
 class GlobalPlannerTimeoutException: public GlobalPlannerException
 {
 public:
-  explicit GlobalPlannerTimeoutException(const std::string& description) : GlobalPlannerException(description) {}
-  virtual int getResultCode() const { return 12; }
+  explicit GlobalPlannerTimeoutException(const std::string& description, int result_code = GLOBALPLANNERTIMEOUTEXCEPTION) : GlobalPlannerException(description, result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 /**
@@ -262,10 +290,10 @@ public:
 class IllegalTrajectoryException: public LocalPlannerException
 {
 public:
-  IllegalTrajectoryException(const std::string& critic_name, const std::string& description)
-    : LocalPlannerException(description), critic_name_(critic_name) {}
+  IllegalTrajectoryException(const std::string& critic_name, const std::string& description, int result_code = ILLEGALTRAJECTORYEXCEPTION)
+    : LocalPlannerException(description, result_code), critic_name_(critic_name) {}
   std::string getCriticName() const { return critic_name_; }
-  virtual int getResultCode() const { return 14; }
+  virtual int getResultCode() const override { return result_code_; }
 protected:
   std::string critic_name_;
 };
@@ -277,8 +305,8 @@ protected:
 class NoLegalTrajectoriesException: public LocalPlannerException
 {
 public:
-  explicit NoLegalTrajectoriesException(const std::string& description) : LocalPlannerException(description) {}
-  virtual int getResultCode() const { return 15; }
+  explicit NoLegalTrajectoriesException(const std::string& description, int result_code = NOLEGALTRAJECTORIESEXCEPTION) : LocalPlannerException(description, result_code) {}
+  virtual int getResultCode() const override { return result_code_; }
 };
 
 }  // namespace nav_core2
