@@ -67,7 +67,8 @@
 namespace nav_core2
 {
 
-enum {
+enum 
+{
   COSTMAPEXCEPTION                 =   0,
   COSTMAPSAFETYEXCEPTION           =   1,
   COSTMAPDATALAGEXCEPTION          =   2,
@@ -150,7 +151,6 @@ public:
 
 protected:
     int result_code_;
-
 };
 
 /**
@@ -284,7 +284,7 @@ class NoGlobalPathException: public GlobalPlannerException
 public:
   explicit NoGlobalPathException(const std::string& description, int result_code = NOGLOBALPATHEXCEPTION) :
     GlobalPlannerException(description, result_code) {}
-  NoGlobalPathException(int result_code = NOGLOBALPATHEXCEPTION) :
+  explicit NoGlobalPathException(int result_code = NOGLOBALPATHEXCEPTION) :
     GlobalPlannerException("No global path found.", result_code) {}
   virtual int getResultCode() const { return result_code_; }
 };
@@ -296,7 +296,8 @@ public:
 class GlobalPlannerTimeoutException: public GlobalPlannerException
 {
 public:
-  explicit GlobalPlannerTimeoutException(const std::string& description, int result_code = GLOBALPLANNERTIMEOUTEXCEPTION) :
+  explicit GlobalPlannerTimeoutException(const std::string& description, 
+                                        int result_code = GLOBALPLANNERTIMEOUTEXCEPTION) :
     GlobalPlannerException(description, result_code) {}
   virtual int getResultCode() const { return result_code_; }
 };
@@ -324,7 +325,8 @@ protected:
 class NoLegalTrajectoriesException: public LocalPlannerException
 {
 public:
-  explicit NoLegalTrajectoriesException(const std::string& description, int result_code = NOLEGALTRAJECTORIESEXCEPTION) :
+  explicit NoLegalTrajectoriesException(const std::string& description, 
+                                        int result_code = NOLEGALTRAJECTORIESEXCEPTION) :
     LocalPlannerException(description, result_code) {}
   virtual int getResultCode() const { return result_code_; }
 };
