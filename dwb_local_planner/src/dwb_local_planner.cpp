@@ -68,7 +68,6 @@ void DWBLocalPlanner::initialize(const ros::NodeHandle& parent, const std::strin
   planner_nh_.param("update_costmap_before_planning", update_costmap_before_planning_, true);
 
   planner_nh_.param("prune_plan", prune_plan_, true);
-  planner_nh_.param("prune_distance", prune_distance_, 1.0);
   planner_nh_.param("short_circuit_trajectory_evaluation", short_circuit_trajectory_evaluation_, true);
   planner_nh_.param("debug_trajectory_details", debug_trajectory_details_, false);
   pub_.initialize(planner_nh_);
@@ -173,7 +172,6 @@ void DWBLocalPlanner::setGoalPose(const nav_2d_msgs::Pose2DStamped& goal_pose)
 
 void DWBLocalPlanner::setPlan(const nav_2d_msgs::Path2D& path)
 {
-  pub_.publishGlobalPlan(path);
   global_plan_ = path;
 }
 
@@ -406,66 +404,60 @@ nav_2d_msgs::Path2D DWBLocalPlanner::transformGlobalPlan(const nav_2d_msgs::Pose
   transformed_plan.header.frame_id = costmap_->getFrameId();
   transformed_plan.header.stamp = pose.header.stamp;
 
-  // we'll discard points on the plan that are outside the local costmap
-  double dist_threshold = std::max(costmap_->getWidth(), costmap_->getHeight()) * costmap_->getResolution() / 2.0;
-  double sq_dist_threshold = dist_threshold * dist_threshold;
   nav_2d_msgs::Pose2DStamped stamped_pose;
   stamped_pose.header.frame_id = global_plan_.header.frame_id;
 
-  for (unsigned int i = 0; i < global_plan_.poses.size(); i++)
+  // Compute the squared distance from every path pose to the robot pose
+  auto compute_distance = [&robot_pose](const geometry_msgs::Pose2D& pose)
   {
-    bool should_break = false;
-    if (getSquareDistance(robot_pose.pose, global_plan_.poses[i]) > sq_dist_threshold)
-    {
-      if (transformed_plan.poses.size() == 0)
-      {
-        // we need to skip to a point on the plan that is within a certain distance of the robot
-        continue;
-      }
-      else
-      {
-        // we're done transforming points
-        should_break = true;
-      }
-    }
+    return getSquareDistance(robot_pose.pose, pose);
+  };
 
-    // now we'll transform until points are outside of our distance threshold
-    stamped_pose.pose = global_plan_.poses[i];
-    transformed_plan.poses.push_back(transformPoseToLocal(stamped_pose));
-    if (should_break) break;
+  std::vector<double> distances;
+  distances.reserve(global_plan_.poses.size());
+
+  std::transform(
+    global_plan_.poses.begin(),
+    global_plan_.poses.end(),
+    std::back_inserter(distances),
+    compute_distance);
+
+  // Get the closest path pose to the robot
+  const auto closest_distance = std::min_element(distances.begin(), distances.end());
+  const size_t closest_index = std::distance(distances.begin(), closest_distance);
+  auto closest_pose = global_plan_.poses.begin();
+  std::advance(closest_pose, closest_index);
+
+  // Prune distance is meant to be the longest distance to the costmap edge for perfectly straight paths. This
+  // obviously doesn't perfectly match the edge pose if the path is curved or leaves a corner, but it works well
+  // in practice.
+  const double prune_dist = std::max(costmap_->getWidth(), costmap_->getHeight()) * costmap_->getResolution() / 2.0;
+  const double sq_prune_dist = prune_dist * prune_dist;
+
+  auto pose_it = closest_pose;
+  size_t distance_index = closest_index;
+
+  // Now start at the closest pose, and walk forwards until we reach our prune threshold
+  for (; pose_it != global_plan_.poses.end() && distance_index < distances.size(); ++distance_index, ++pose_it)
+  {
+    if (!prune_plan_ || distances[distance_index] < sq_prune_dist)
+    {
+      stamped_pose.pose = *pose_it;
+      transformed_plan.poses.push_back(transformPoseToLocal(stamped_pose));
+    }
+    else  // if we are not pruning and we're outside prune distance
+    {
+      break;
+    }
   }
 
-  // Prune both plans based on robot position
-  // Note that this part of the algorithm assumes that the global plan starts near the robot (at one point)
-  // Otherwise it may take a few iterations to converge to the proper behavior
   if (prune_plan_)
   {
-    // let's get the pose of the robot in the frame of the transformed_plan/costmap
-    nav_2d_msgs::Pose2DStamped costmap_pose;
-    if (!nav_2d_utils::transformPose(tf_, transformed_plan.header.frame_id, pose, costmap_pose))
-    {
-      throw nav_core2::PlannerTFException("Unable to transform robot pose into costmap's frame");
-    }
-
-    ROS_ASSERT(global_plan_.poses.size() >= transformed_plan.poses.size());
-    std::vector<geometry_msgs::Pose2D>::iterator it = transformed_plan.poses.begin();
-    std::vector<geometry_msgs::Pose2D>::iterator global_it = global_plan_.poses.begin();
-    double sq_prune_dist = prune_distance_ * prune_distance_;
-    while (it != transformed_plan.poses.end())
-    {
-      const geometry_msgs::Pose2D& w = *it;
-      // Fixed error bound of 1 meter for now. Can reduce to a portion of the map size or based on the resolution
-      if (getSquareDistance(costmap_pose.pose, w) < sq_prune_dist)
-      {
-        ROS_DEBUG_NAMED("DWBLocalPlanner", "Nearest waypoint to <%f, %f> is <%f, %f>\n",
-                                           costmap_pose.pose.x, costmap_pose.pose.y, w.x, w.y);
-        break;
-      }
-      it = transformed_plan.poses.erase(it);
-      global_it = global_plan_.poses.erase(global_it);
-    }
-    pub_.publishGlobalPlan(global_plan_);
+    global_plan_.poses.erase(pose_it, global_plan_.poses.end());
+    global_plan_.poses.erase(global_plan_.poses.begin(), closest_pose);
   }
+
+  pub_.publishGlobalPlan(global_plan_);
 
   if (transformed_plan.poses.size() == 0)
   {

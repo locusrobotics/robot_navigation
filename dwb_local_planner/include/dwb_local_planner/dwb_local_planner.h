@@ -175,7 +175,6 @@ protected:
   nav_2d_msgs::Path2D global_plan_;  ///< Saved Global Plan
   nav_2d_msgs::Pose2DStamped goal_pose_;  ///< Saved Goal Pose
   bool prune_plan_;
-  double prune_distance_;
   bool debug_trajectory_details_;
   bool short_circuit_trajectory_evaluation_;
 
