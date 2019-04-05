@@ -103,6 +103,7 @@ protected:
 
   // MoveBaseAction
   void executeCB();
+  void preemptCB();
   actionlib::SimpleActionServer<move_base_msgs::MoveBaseAction> server_;
 
   // Recoveries
