@@ -634,7 +634,7 @@ void LocoMoveBase::preemptCB()
   ROS_INFO("Preempting goal");
   plan_loop_timer_.stop();
   control_loop_timer_.stop();
-  resetState();  
+  resetState();
   server_.setPreempted();
 }
 
