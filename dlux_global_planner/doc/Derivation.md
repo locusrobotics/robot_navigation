@@ -33,43 +33,46 @@ For computational efficiency, we are going to compute the Taylor series expansio
  * !eq[f'(\delta) = \frac{h}{2} (1 - \frac{\delta}{\sqrt{2-\delta^2}})]
  * !eq[f''(\delta) = \frac{-h}{(2-\delta^2)^\frac{3}{2}}]
 
-And then let's evaluate them at !eq[\delta=0]. Here's the first derivative
- * !eq[f'(0) = \frac{h}{2} (1 - \frac{0}{\sqrt{2-0^2}})]
- * !eq[f'(0) = \frac{h}{2}]
-
-and the second
- * !eq[f''(0) = \frac{-h}{(2-0^2)^\frac{3}{2}}]
- * !eq[f''(0) = \frac{-h}{2^\frac{3}{2}}]
-
-Now we can start to expand the Taylor series with !eq[\delta=0].
-
 ### 0th Order Taylor
- * !eq[f_0(\delta) = f(0)]
- * !eq[f_0(\delta) = P(A) + \frac{h}{2}(0+\sqrt{2-0^2})]
- * !eq[f_0(\delta) = P(A) + h\frac{\sqrt{2}}{2}]
+ * !eq[f_0(\delta, a) = f(a)]
+ * !eq[f_0(\delta, a) = P(A) + \frac{h}{2} \Big(a + \sqrt{2-a^2}\Big)]
 
 ### 1st Order Taylor
- * !eq[f_1(\delta) = f(0) + f'(0) (\delta - 0)]
- * !eq[f_1(\delta) = P(A) + h\frac{\sqrt{2}}{2} + \frac{h}{2}\delta]
- * !eq[f_1(\delta) = P(A) + h\Big(\frac{\sqrt{2}}{2} + \frac{1}{2} \delta\Big)]
+ * !eq[f_1(\delta, a) = f(a) + f'(a) (\delta - a)]
+ * !eq[f_1(\delta, a) = P(A) + \frac{h}{2} \Big(a + \sqrt{2-a^2}\Big) + \frac{h}{2} (1 - \frac{a}{\sqrt{2-a^2}}) (\delta - a)]
+ * !eq[f_1(\delta, a) = P(A) + \frac{h}{2} \Big(a + \sqrt{2-a^2} + (1 - \frac{a}{\sqrt{2-a^2}}) (\delta - a)\Big)]
+ * !eq[f_1(\delta, a) = P(A) + \frac{h}{2} \Big(a + \sqrt{2-a^2} + \delta - a - \frac{a\delta}{\sqrt{2-a^2}} + \frac{a^2}{\sqrt{2-a^2}}\Big)]
+ * !eq[f_1(\delta, a) = P(A) + \frac{h}{2} \Big(\delta - \frac{a\delta}{\sqrt{2-a^2}} + \sqrt{2-a^2} + \frac{a^2}{\sqrt{2-a^2}}\Big)]
+ * !eq[f_1(\delta, a) = P(A) + \frac{h}{2} \Big(\delta - \frac{a\delta}{\sqrt{2-a^2}} + \frac{2}{\sqrt{2-a^2}}\Big)]
 
 ### 2nd Order Taylor
- * !eq[f_2(\delta) = f(0) + f'(0) (\delta - 0) + \frac{f''(0)}{2!}(\delta - 0)^2]
- * !eq[f_2(\delta) = P(A) + h\Big(\frac{\sqrt{2}}{2} + \frac{1}{2} \delta\Big) + \frac{-h}{2^\frac{3}{2}}\frac{1}{2}\delta^2]
- * !eq[f_2(\delta) = P(A) + h\Big(\frac{\sqrt{2}}{2} + \frac{1}{2} \delta - \frac{1}{2^\frac{5}{2}}\delta^2\Big)]
+ * !eq[f_2(\delta, a) = f(a) + f'(a) (\delta - a) + \frac{f''(a)}{2!}(\delta - a)^2]
+ * !eq[f_2(\delta, a) = f_1(\delta, a) + \frac{1}{2} \frac{-h}{(2-a^2)^\frac{3}{2}} (\delta - a)^2]
+ * !eq[f_2(\delta, a) = f_1(\delta, a) + \frac{h}{2} \frac{-1}{(2-a^2)^\frac{3}{2}} (\delta^2 - 2\delta a + a^2)]
+ * !eq[f_2(\delta, a) = P(A) + \frac{h}{2} \Big(\delta - \frac{a\delta}{\sqrt{2-a^2}} + \frac{2}{\sqrt{2-a^2}}\Big) + \frac{h}{2} \frac{-1}{(2-a^2)^\frac{3}{2}} (\delta^2 - 2\delta a + a^2)]
+ * !eq[f_2(\delta, a) = P(A) + \frac{h}{2} \Big(\delta - \frac{a\delta}{\sqrt{2-a^2}} + \frac{2}{\sqrt{2-a^2}} + \frac{-1}{(2-a^2)^\frac{3}{2}} (\delta^2 - 2\delta a + a^2)\Big)]
+ * !eq[f_2(\delta, a) = P(A) + h\Big(c_0(a) + c_1(a)\delta + c_2(a) \delta^2\Big)]
+ * !eq[c_0(a) = \frac{1}{2}\Big(\frac{2}{\sqrt{2-a^2}} - \frac{a^2}{(2-a^2)^\frac{3}{2}}\Big)]
+ * !eq[c_0(a) = \frac{4 - 3a^2}{2(2-a^2)^\frac{3}{2}}]
+
+ * !eq[c_1(a) = \frac{1}{2}\Big(1 - \frac{a}{\sqrt{2-a^2}} + \frac{2a}{(2-a^2)^\frac{3}{2}} \Big)]
+ * !eq[c_2(a) = \frac{-1}{2(2-a^2)^\frac{3}{2}}]
 
 ## Exact coefficients
-More generally, we can say
- * !eq[f_2(\delta) = P(A) + h (c_0 + c_1\delta + c_2 \delta^2 )]
+Now that we have the general equations for the Taylor series, we can evaluate it at different values of a in the range `[0, 1]`.
 
-If we evaluate at !eq[\delta=0] (as we did above), then we get
- * !eq[c_0 = \frac{\sqrt{2}}{2} \approx 0.7071]
- * !eq[c_1 = \frac{1}{2} = 0.5]
- * !eq[c_2 = \frac{-1}{2^\frac{5}{2}} \approx -0.1768]
+| !eq[a] | !eq[c_0(a)] | !eq[c_1(a)] | !eq[c_2(a)] |
+| ------ | ----------- | ----------- | ----------- |
+|  0.0   |    0.7071   |    0.5000   |   -0.1768   |
+|  0.5   |    0.7019   |    0.5270   |   -0.2160   |
+|  1.0   |    0.5000   |    1.0000   |   -0.5000   |
 
 Historically, the values used by [`navfn`](https://github.com/ros-planning/navigation/blob/1f335323a605b49b4108a845c55a7c1ba93a6f2e/navfn/src/navfn.cpp#L509) are
- * !eq[c_0 = 0.7040]
- * !eq[c_1 = 0.5307]
- * !eq[c_2 = -0.2301]
 
-The exact reason for the difference in the values for !eq[\delta=0] and `navfn` is unknown at this time, but the plots are close enough to each other that it is not overly concerning.
+|  !eq[c_0]   |  !eq[c_1]   |  !eq[c_2]   |
+| ----------- | ----------- | ----------- |
+|    0.7040   |   0.5307    |   -0.2301   |
+
+You can see these values plotted [here](https://www.desmos.com/calculator/vbpkey1mt6).
+
+The historical values are pretty close to the values for !eq[\delta=0.5], although the exact reason for the difference is unknown, but its close enough to not be overly concerning.

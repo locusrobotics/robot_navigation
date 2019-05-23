@@ -33,43 +33,46 @@ For computational efficiency, we are going to compute the Taylor series expansio
  * ![f'(\delta) = \frac{h}{2} (1 - \frac{\delta}{\sqrt{2-\delta^2}})](doc/f_delta_frach21_fracdeltasqrt2_delta_2.gif)
  * ![f''(\delta) = \frac{-h}{(2-\delta^2)^\frac{3}{2}}](doc/f__delta_frac_h2_delta_2_frac32.gif)
 
-And then let's evaluate them at ![\delta=0](doc/delta_0.gif). Here's the first derivative
- * ![f'(0) = \frac{h}{2} (1 - \frac{0}{\sqrt{2-0^2}})](doc/f_0_frach21_frac0sqrt2_0_2.gif)
- * ![f'(0) = \frac{h}{2}](doc/f_0_frach2.gif)
-
-and the second
- * ![f''(0) = \frac{-h}{(2-0^2)^\frac{3}{2}}](doc/f__0_frac_h2_0_2_frac32.gif)
- * ![f''(0) = \frac{-h}{2^\frac{3}{2}}](doc/f__0_frac_h2_frac32.gif)
-
-Now we can start to expand the Taylor series with ![\delta=0](doc/delta_0.gif).
-
 ### 0th Order Taylor
- * ![f_0(\delta) = f(0)](doc/f_0delta_f0.gif)
- * ![f_0(\delta) = P(A) + \frac{h}{2}(0+\sqrt{2-0^2})](doc/f_0delta_PA_frach20_sqrt2_0_2.gif)
- * ![f_0(\delta) = P(A) + h\frac{\sqrt{2}}{2}](doc/f_0delta_PA_hfracsqrt22.gif)
+ * ![f_0(\delta, a) = f(a)](doc/f_0delta_a_fa.gif)
+ * ![f_0(\delta, a) = P(A) + \frac{h}{2} \Big(a + \sqrt{2-a^2}\Big)](doc/f_0delta_a_PA_frach2Biga_sqrt2_a_2Big.gif)
 
 ### 1st Order Taylor
- * ![f_1(\delta) = f(0) + f'(0) (\delta - 0)](doc/f_1delta_f0_f_0delta_0.gif)
- * ![f_1(\delta) = P(A) + h\frac{\sqrt{2}}{2} + \frac{h}{2}\delta](doc/f_1delta_PA_hfracsqrt22_frach2delta.gif)
- * ![f_1(\delta) = P(A) + h\Big(\frac{\sqrt{2}}{2} + \frac{1}{2} \delta\Big)](doc/f_1delta_PA_hBigfracsqrt22_frac12deltaBig.gif)
+ * ![f_1(\delta, a) = f(a) + f'(a) (\delta - a)](doc/f_1delta_a_fa_f_adelta_a.gif)
+ * ![f_1(\delta, a) = P(A) + \frac{h}{2} \Big(a + \sqrt{2-a^2}\Big) + \frac{h}{2} (1 - \frac{a}{\sqrt{2-a^2}}) (\delta - a)](doc/f_1delta_a_PA_frach2Biga_sqrt2_a_2Big_frach21_fracasqrt2_a_2delta_a.gif)
+ * ![f_1(\delta, a) = P(A) + \frac{h}{2} \Big(a + \sqrt{2-a^2} + (1 - \frac{a}{\sqrt{2-a^2}}) (\delta - a)\Big)](doc/f_1delta_a_PA_frach2Biga_sqrt2_a_2_1_fracasqrt2_a_2delta_aBig.gif)
+ * ![f_1(\delta, a) = P(A) + \frac{h}{2} \Big(a + \sqrt{2-a^2} + \delta - a - \frac{a\delta}{\sqrt{2-a^2}} + \frac{a^2}{\sqrt{2-a^2}}\Big)](doc/f_1delta_a_PA_frach2Biga_sqrt2_a_2_delta_a_fracadeltasqrt2_a_2_fraca_2sqrt2_a_2Big.gif)
+ * ![f_1(\delta, a) = P(A) + \frac{h}{2} \Big(\delta - \frac{a\delta}{\sqrt{2-a^2}} + \sqrt{2-a^2} + \frac{a^2}{\sqrt{2-a^2}}\Big)](doc/f_1delta_a_PA_frach2Bigdelta_fracadeltasqrt2_a_2_sqrt2_a_2_fraca_2sqrt2_a_2Big.gif)
+ * ![f_1(\delta, a) = P(A) + \frac{h}{2} \Big(\delta - \frac{a\delta}{\sqrt{2-a^2}} + \frac{2}{\sqrt{2-a^2}}\Big)](doc/f_1delta_a_PA_frach2Bigdelta_fracadeltasqrt2_a_2_frac2sqrt2_a_2Big.gif)
 
 ### 2nd Order Taylor
- * ![f_2(\delta) = f(0) + f'(0) (\delta - 0) + \frac{f''(0)}{2!}(\delta - 0)^2](doc/f_2delta_f0_f_0delta_0_fracf__02_delta_0_2.gif)
- * ![f_2(\delta) = P(A) + h\Big(\frac{\sqrt{2}}{2} + \frac{1}{2} \delta\Big) + \frac{-h}{2^\frac{3}{2}}\frac{1}{2}\delta^2](doc/f_2delta_PA_hBigfracsqrt22_frac12deltaBig_frac_h2_frac32frac12delta_2.gif)
- * ![f_2(\delta) = P(A) + h\Big(\frac{\sqrt{2}}{2} + \frac{1}{2} \delta - \frac{1}{2^\frac{5}{2}}\delta^2\Big)](doc/f_2delta_PA_hBigfracsqrt22_frac12delta_frac12_frac52delta_2Big.gif)
+ * ![f_2(\delta, a) = f(a) + f'(a) (\delta - a) + \frac{f''(a)}{2!}(\delta - a)^2](doc/f_2delta_a_fa_f_adelta_a_fracf__a2_delta_a_2.gif)
+ * ![f_2(\delta, a) = f_1(\delta, a) + \frac{1}{2} \frac{-h}{(2-a^2)^\frac{3}{2}} (\delta - a)^2](doc/f_2delta_a_f_1delta_a_frac12frac_h2_a_2_frac32delta_a_2.gif)
+ * ![f_2(\delta, a) = f_1(\delta, a) + \frac{h}{2} \frac{-1}{(2-a^2)^\frac{3}{2}} (\delta^2 - 2\delta a + a^2)](doc/f_2delta_a_f_1delta_a_frach2frac_12_a_2_frac32delta_2_2deltaa_a_2.gif)
+ * ![f_2(\delta, a) = P(A) + \frac{h}{2} \Big(\delta - \frac{a\delta}{\sqrt{2-a^2}} + \frac{2}{\sqrt{2-a^2}}\Big) + \frac{h}{2} \frac{-1}{(2-a^2)^\frac{3}{2}} (\delta^2 - 2\delta a + a^2)](doc/f_2delta_a_PA_frach2Bigdelta_fracadeltasqrt2_a_2_frac2sqrt2_a_2Big_frach2frac_12_a_2_frac32delta_2_2deltaa_a_2.gif)
+ * ![f_2(\delta, a) = P(A) + \frac{h}{2} \Big(\delta - \frac{a\delta}{\sqrt{2-a^2}} + \frac{2}{\sqrt{2-a^2}} + \frac{-1}{(2-a^2)^\frac{3}{2}} (\delta^2 - 2\delta a + a^2)\Big)](doc/f_2delta_a_PA_frach2Bigdelta_fracadeltasqrt2_a_2_frac2sqrt2_a_2_frac_12_a_2_frac32delta_2_2deltaa_a_2Big.gif)
+ * ![f_2(\delta, a) = P(A) + h\Big(c_0(a) + c_1(a)\delta + c_2(a) \delta^2\Big)](doc/f_2delta_a_PA_hBigc_0a_c_1adelta_c_2adelta_2Big.gif)
+ * ![c_0(a) = \frac{1}{2}\Big(\frac{2}{\sqrt{2-a^2}} - \frac{a^2}{(2-a^2)^\frac{3}{2}}\Big)](doc/c_0a_frac12Bigfrac2sqrt2_a_2_fraca_22_a_2_frac32Big.gif)
+ * ![c_0(a) = \frac{4 - 3a^2}{2(2-a^2)^\frac{3}{2}}](doc/c_0a_frac4_3a_222_a_2_frac32.gif)
+
+ * ![c_1(a) = \frac{1}{2}\Big(1 - \frac{a}{\sqrt{2-a^2}} + \frac{2a}{(2-a^2)^\frac{3}{2}} \Big)](doc/c_1a_frac12Big1_fracasqrt2_a_2_frac2a2_a_2_frac32Big.gif)
+ * ![c_2(a) = \frac{-1}{2(2-a^2)^\frac{3}{2}}](doc/c_2a_frac_122_a_2_frac32.gif)
 
 ## Exact coefficients
-More generally, we can say
- * ![f_2(\delta) = P(A) + h (c_0 + c_1\delta + c_2 \delta^2 )](doc/f_2delta_PA_hc_0_c_1delta_c_2delta_2.gif)
+Now that we have the general equations for the Taylor series, we can evaluate it at different values of a in the range `[0, 1]`.
 
-If we evaluate at ![\delta=0](doc/delta_0.gif) (as we did above), then we get
- * ![c_0 = \frac{\sqrt{2}}{2} \approx 0.7071](doc/c_0_fracsqrt22approx0_7071.gif)
- * ![c_1 = \frac{1}{2} = 0.5](doc/c_1_frac12_0_5.gif)
- * ![c_2 = \frac{-1}{2^\frac{5}{2}} \approx -0.1768](doc/c_2_frac_12_frac52approx_0_1768.gif)
+| ![a](doc/a.gif) | ![c_0(a)](doc/c_0a.gif) | ![c_1(a)](doc/c_1a.gif) | ![c_2(a)](doc/c_2a.gif) |
+| ------ | ----------- | ----------- | ----------- |
+|  0.0   |    0.7071   |    0.5000   |   -0.1768   |
+|  0.5   |    0.7019   |    0.5270   |   -0.2160   |
+|  1.0   |    0.5000   |    1.0000   |   -0.5000   |
 
 Historically, the values used by [`navfn`](https://github.com/ros-planning/navigation/blob/1f335323a605b49b4108a845c55a7c1ba93a6f2e/navfn/src/navfn.cpp#L509) are
- * ![c_0 = 0.7040](doc/c_0_0_7040.gif)
- * ![c_1 = 0.5307](doc/c_1_0_5307.gif)
- * ![c_2 = -0.2301](doc/c_2__0_2301.gif)
 
-The exact reason for the difference in the values for ![\delta=0](doc/delta_0.gif) and `navfn` is unknown at this time, but the plots are close enough to each other that it is not overly concerning.
+|  ![c_0](doc/c_0.gif)   |  ![c_1](doc/c_1.gif)   |  ![c_2](doc/c_2.gif)   |
+| ----------- | ----------- | ----------- |
+|    0.7040   |   0.5307    |   -0.2301   |
+
+You can see these values plotted [here](https://www.desmos.com/calculator/vbpkey1mt6).
+
+The historical values are pretty close to the values for ![\delta=0.5](doc/delta_0_5.gif), although the exact reason for the difference is unknown, but its close enough to not be overly concerning.
