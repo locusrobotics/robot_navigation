@@ -203,6 +203,7 @@ LocoMoveBase::LocoMoveBase(const ros::NodeHandle& nh) :
   goal_sub_ = simple_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, boost::bind(&LocoMoveBase::goalCB, this, _1));
 
   server_.registerGoalCallback(std::bind(&LocoMoveBase::executeCB, this));
+  server_.registerPreemptCallback(std::bind(&LocoMoveBase::preemptCB, this));
   server_.start();
 
   resetState();
@@ -626,6 +627,15 @@ void LocoMoveBase::executeCB()
 {
   auto move_base_goal = server_.acceptNewGoal();
   setGoal(nav_2d_utils::poseStampedToPose2D(move_base_goal->target_pose));
+}
+
+void LocoMoveBase::preemptCB()
+{
+  ROS_INFO("Preempting goal");
+  plan_loop_timer_.stop();
+  control_loop_timer_.stop();
+  resetState();
+  server_.setPreempted();
 }
 
 }  // namespace locomove_base
