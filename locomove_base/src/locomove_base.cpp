@@ -281,7 +281,7 @@ void LocoMoveBase::onGlobalCostmapUpdate(const ros::Duration& planning_time)
     std::bind(&LocoMoveBase::onGlobalPlanningException, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-void LocoMoveBase::onGlobalCostmapException(nav_core2::CostmapException e, const ros::Duration& planning_time)
+void LocoMoveBase::onGlobalCostmapException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
 {
   // If the planner_frequency is non-zero, the costmap will attempt to update again on its own (via the Timer).
   // If it is zero, then we manually request a new update
@@ -311,7 +311,7 @@ void LocoMoveBase::onNewGlobalPlan(nav_2d_msgs::Path2D new_global_plan, const ro
   control_loop_timer_.start();
 }
 
-void LocoMoveBase::onGlobalPlanningException(nav_core2::PlannerException e, const ros::Duration& planning_time)
+void LocoMoveBase::onGlobalPlanningException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
 {
   if (has_global_plan_)
   {
@@ -352,7 +352,7 @@ void LocoMoveBase::onLocalCostmapUpdate(const ros::Duration& planning_time)
     std::bind(&LocoMoveBase::onNavigationCompleted, this));
 }
 
-void LocoMoveBase::onLocalCostmapException(nav_core2::CostmapException e, const ros::Duration& planning_time)
+void LocoMoveBase::onLocalCostmapException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
 {
   ROS_WARN_NAMED("LocoMoveBase",
                  "Sensor data is out of date, we're not going to allow commanding of the base for safety");
@@ -394,7 +394,7 @@ void LocoMoveBase::onNewLocalPlan(nav_2d_msgs::Twist2DStamped new_command, const
   server_.publishFeedback(feedback);
 }
 
-void LocoMoveBase::onLocalPlanningException(nav_core2::PlannerException e, const ros::Duration& planning_time)
+void LocoMoveBase::onLocalPlanningException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
 {
   // check if we've tried to find a valid control for longer than our time limit
   if (ros::Time::now() > last_valid_control_ + ros::Duration(controller_patience_))

@@ -62,18 +62,18 @@ protected:
   void requestGlobalCostmapUpdate();
 
   void onGlobalCostmapUpdate(const ros::Duration& planning_time);
-  void onGlobalCostmapException(nav_core2::CostmapException e, const ros::Duration& planning_time);
+  void onGlobalCostmapException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time);
 
   void onNewGlobalPlan(nav_2d_msgs::Path2D new_global_plan, const ros::Duration& planning_time);
-  void onGlobalPlanningException(nav_core2::PlannerException e, const ros::Duration& planning_time);
+  void onGlobalPlanningException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time);
 
   void controlLoopCallback(const ros::TimerEvent& event);
 
   void onLocalCostmapUpdate(const ros::Duration& planning_time);
-  void onLocalCostmapException(nav_core2::CostmapException e, const ros::Duration& planning_time);
+  void onLocalCostmapException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time);
 
   void onNewLocalPlan(nav_2d_msgs::Twist2DStamped new_command, const ros::Duration& planning_time);
-  void onLocalPlanningException(nav_core2::PlannerException e, const ros::Duration& planning_time);
+  void onLocalPlanningException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time);
 
   void onNavigationCompleted();
   void onNavigationFailure(const locomotor_msgs::ResultCode result);

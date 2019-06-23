@@ -55,10 +55,10 @@ namespace locomotor
 {
 // Callback Type Definitions
 using CostmapUpdateCallback = std::function<void (const ros::Duration&)>;
-using CostmapUpdateExceptionCallback = std::function<void (nav_core2::CostmapException, const ros::Duration&)>;
+using CostmapUpdateExceptionCallback = std::function<void (nav_core2::NavCore2ExceptionPtr, const ros::Duration&)>;
 using GlobalPlanCallback = std::function<void (const nav_2d_msgs::Path2D&, const ros::Duration&)>;
 using LocalPlanCallback = std::function<void (const nav_2d_msgs::Twist2DStamped&, const ros::Duration&)>;
-using PlannerExceptionCallback = std::function<void (nav_core2::PlannerException, const ros::Duration&)>;
+using PlannerExceptionCallback = std::function<void (nav_core2::NavCore2ExceptionPtr, const ros::Duration&)>;
 using NavigationCompleteCallback = std::function<void ()>;
 using NavigationFailureCallback = std::function<void (const locomotor_msgs::ResultCode)>;
 
