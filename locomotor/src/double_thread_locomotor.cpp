@@ -152,7 +152,7 @@ protected:
       std::bind(&DoubleThreadLocomotor::onNavigationCompleted, this));
   }
 
-  void onLocalCostmapException(nav_core2::CostmapException e_ptr, const ros::Duration& planning_time)
+  void onLocalCostmapException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
   {
     requestNavigationFailure(makeResultCode(locomotor_msgs::ResultCode::LOCAL_COSTMAP, getResultCode(e_ptr),
                                             "Local Costmap failure."));
