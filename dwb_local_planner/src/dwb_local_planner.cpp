@@ -148,11 +148,37 @@ bool DWBLocalPlanner::isGoalReached(const nav_2d_msgs::Pose2DStamped& pose, cons
 
   // Update time stamp of goal pose
   goal_pose_.header.stamp = pose.header.stamp;
+  intermediate_goal_pose_.header.stamp = pose.header.stamp;
 
-  bool ret = goal_checker_->isGoalReached(transformPoseToLocal(pose), transformPoseToLocal(goal_pose_), velocity);
+  // use the goal_checker_ to check if the intermediate goal was reached.
+  bool ret = goal_checker_->isGoalReached(
+              transformPoseToLocal(pose),
+              transformPoseToLocal(intermediate_goal_pose_),
+              velocity);
   if (ret)
   {
-    ROS_INFO_THROTTLE_NAMED(1.0, "DWBLocalPlanner", "Goal reached!");
+    if (global_plan_segments_.empty())
+      ROS_INFO_THROTTLE_NAMED(1.0, "DWBLocalPlanner", "Goal reached!");
+    else
+    {
+      ROS_INFO_THROTTLE_NAMED(1.0, "DWBLocalPlanner", "Intermediate goal reached!");
+      ret = false;   // reset to false, as we only finished one segment.
+
+      // activate next path segment
+      global_plan_ = global_plan_segments_[0];
+      global_plan_segments_.erase(global_plan_segments_.begin());
+      // set the next goal pose
+      intermediate_goal_pose_.header = global_plan_.header;
+      intermediate_goal_pose_.pose = global_plan_.poses.back();
+
+      // publish the next path segment
+      pub_.publishGlobalPlan(global_plan_);
+
+      // reset critics etc, as we changed the global_plan_
+      resetPlugins();
+      // prepare(...) will be called soon, automatically, when computing the
+      // velocity commands.
+    }
   }
   return ret;
 }
@@ -161,12 +187,157 @@ void DWBLocalPlanner::setGoalPose(const nav_2d_msgs::Pose2DStamped& goal_pose)
 {
   ROS_INFO_NAMED("DWBLocalPlanner", "New Goal Received.");
   goal_pose_ = goal_pose;
+  intermediate_goal_pose_ = goal_pose;   // For now assume that the path will not
+                                         // be split. Else the intermediate goal
+                                         // will be reset in setPlan.
 }
 
 void DWBLocalPlanner::setPlan(const nav_2d_msgs::Path2D& path)
 {
-  pub_.publishGlobalPlan(path);
-  global_plan_ = path;
+  bool split_path;
+  planner_nh_.param("split_path", split_path, false);
+
+  global_plan_segments_.clear();
+
+  if (split_path)
+  {
+    /*
+      Global planners like SBPL might create trajectories with complex
+      maneuvers, switching between driving forwards and backwards, where it is
+      crucial that the individual segments are carefully followed and completed
+      before starting the next. The "split_path" option allows to split the
+      given path in such segments and to treat each of them independently.
+
+      The segmentation is computed as follows:
+      Given two poses in the path, we compute the vector v1 connecting them,
+      the vector of orientation given through the angle theta, check the dot
+      product of the vectors: If it is less than 0, the angle is over 90 deg,
+      which is a coarse approximation for "driving backwards", and for "driving
+      forwards" otherwise. In the special case that the vector connecting the
+      two poses is null we have to deal with in-place-rotations of the robot.
+      To avoid the robot from eagerly driving forward before having achieved the
+      correct orientation, these situations are grouped in a third category.
+      The path is then split into segments of the same movement-direction
+      (forward/backward/onlyRotation). When a cut is made, the last pose of the
+      last segment is copied, to be the first pose of the following segment, to
+      ensure a seamless path.
+
+      The "global_plan_" variable is then set to the first segment.
+      In the "isGoalReached" method, which is repeatedly called, we check if
+      the intermediate goal - i.e., the end of the current segment - is reached,
+      and if so proceed to the next segment.
+    */
+    ROS_INFO_NAMED("DWBLocalPlanner", "Splitting path...");
+
+    auto copy = path;
+    while (copy.poses.size() > 1)   // need at least 2 poses in a path
+    {
+      // start a new segment
+      nav_2d_msgs::Path2D segment;
+      segment.header = path.header;
+
+      // add the first pose
+      segment.poses.push_back(copy.poses[0]);
+      copy.poses.erase(copy.poses.begin());
+
+      // add the second pose and determine if we are going forward or backward
+      segment.poses.push_back(copy.poses[0]);
+      copy.poses.erase(copy.poses.begin());
+
+      // take the vector from the first to the second position and compare it
+      // to the orientation vector at the first position. If the angle is > 90 deg,
+      // assume we are driving backwards.
+      double v1[2] =
+      {
+        segment.poses[1].x - segment.poses[0].x,
+        segment.poses[1].y - segment.poses[0].y
+      };
+      double v2[2] =
+      {
+        cos(segment.poses[0].theta),
+        sin(segment.poses[0].theta)
+      };
+      double d = v1[0] * v2[0] + v1[1] * v2[1];   // dotproduct of the vectors. if < 0, the angle is over 90 degrees.
+      bool backwards = (d < 0);
+      bool onlyRotation = std::fabs(v1[0]) < 1e-5 && std::fabs(v1[1]) < 1e-5;
+                                        // if the translation vector is zero, the two positions are equal
+                                        // and the plan is to rotate on the spot. Since dwb would
+                                        // enthusiastically speed up at the start of a trajectory,
+                                        // even if it starts with in-place-rotation, it would
+                                        // miss the path by a lot. So let's split the path into
+                                        // forwards / backwards / onlyRotation.
+
+      // add more poses while they lead into the same direction (driving forwards/backwards/onlyRotation)
+      while (!copy.poses.empty())
+      {
+        // vector from the last pose in the segment to the next in the path
+        double v1[2] =
+        {
+          copy.poses[0].x - segment.poses.back().x,
+          copy.poses[0].y - segment.poses.back().y
+        };
+        // orientation at the last pose in the segment
+        double v2[2] =
+        {
+          cos(segment.poses.back().theta),
+          sin(segment.poses.back().theta)
+        };
+        double d = v1[0] * v2[0] + v1[1] * v2[1];   // dotproduct of the vectors. if < 0, the angle is over 90 degrees.
+        bool b = (d < 0);
+        bool rot = std::fabs(v1[0]) < 1e-5 && std::fabs(v1[1]) < 1e-5;
+
+        if (b == backwards && rot == onlyRotation)
+        {
+          // same direction -> just add the pose
+          segment.poses.push_back(copy.poses[0]);
+          copy.poses.erase(copy.poses.begin());
+        }
+        else
+        {
+          // direction changes -> add the last pose of the last segment back to
+          // the path, to start a new segment at the end of the last
+          copy.poses.insert(copy.poses.begin(), segment.poses.back());
+          break;
+        }
+      }
+
+      // add the created segment to the list
+      global_plan_segments_.push_back(segment);
+    }
+    if (global_plan_segments_.empty())
+    {
+      // path doesn't have at least 2 poses, hence there is only one segment, which
+      // is the complete path.
+      global_plan_segments_.push_back(path);
+    }
+
+    ROS_INFO_STREAM("Split path into " << global_plan_segments_.size() << " segments.");
+  }
+  else
+  {
+    // split_path option is disabled, hence there is only one segment, which
+    // is the complete path.
+    global_plan_segments_.push_back(path);
+  }
+
+  // set the global_plan_ to be the first segment
+  global_plan_ = global_plan_segments_[0];
+  global_plan_segments_.erase(global_plan_segments_.begin());
+
+  // publish not the complete path, but only the first segment.
+  pub_.publishGlobalPlan(global_plan_);
+
+  // set the intermediate goal
+  intermediate_goal_pose_.header = global_plan_.header;
+  intermediate_goal_pose_.pose = global_plan_.poses.back();
+
+  resetPlugins();
+  // prepare(...) to initialize the critics for the new segment does not need
+  // to be called here, as it is called at every computeVelocityCommands-call.
+}
+
+void DWBLocalPlanner::resetPlugins()
+{
   traj_generator_->reset();
   goal_checker_->reset();
   for (TrajectoryCritic::Ptr critic : critics_)
@@ -209,9 +380,10 @@ void DWBLocalPlanner::prepare(const nav_2d_msgs::Pose2DStamped& pose, const nav_
 
   // Update time stamp of goal pose
   goal_pose_.header.stamp = pose.header.stamp;
+  intermediate_goal_pose_.header.stamp = pose.header.stamp;
 
   geometry_msgs::Pose2D local_start_pose = transformPoseToLocal(pose),
-                        local_goal_pose = transformPoseToLocal(goal_pose_);
+                        local_goal_pose = transformPoseToLocal(intermediate_goal_pose_);
 
   pub_.publishInputParams(costmap_->getInfo(), local_start_pose, velocity, local_goal_pose);
 
