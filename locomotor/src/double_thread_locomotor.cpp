@@ -38,6 +38,8 @@
 
 namespace locomotor
 {
+using nav_core2::getResultCode;
+
 /**
  * @class DoubleThreadLocomotor
  * @brief Connect the callbacks in Locomotor to do global and local planning on two separate timers
@@ -107,9 +109,9 @@ protected:
       std::bind(&DoubleThreadLocomotor::onGlobalPlanningException, this, std::placeholders::_1, std::placeholders::_2));
   }
 
-  void onGlobalCostmapException(nav_core2::CostmapException e, const ros::Duration& planning_time)
+  void onGlobalCostmapException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
   {
-    requestNavigationFailure(makeResultCode(locomotor_msgs::ResultCode::GLOBAL_COSTMAP, e.getResultCode(),
+    requestNavigationFailure(makeResultCode(locomotor_msgs::ResultCode::GLOBAL_COSTMAP, getResultCode(e_ptr),
                                             "Global Costmap failure."));
   }
 
@@ -128,10 +130,10 @@ protected:
     as_.publishFeedback(locomotor_.getNavigationState());
   }
 
-  void onGlobalPlanningException(nav_core2::PlannerException e, const ros::Duration& planning_time)
+  void onGlobalPlanningException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
   {
     ROS_ERROR_NAMED("Locomotor", "Global planning error. Giving up.");
-    requestNavigationFailure(makeResultCode(locomotor_msgs::ResultCode::GLOBAL_PLANNER, e.getResultCode(),
+    requestNavigationFailure(makeResultCode(locomotor_msgs::ResultCode::GLOBAL_PLANNER, getResultCode(e_ptr),
                                             "Global Planning Failure."));
   }
 
@@ -150,9 +152,9 @@ protected:
       std::bind(&DoubleThreadLocomotor::onNavigationCompleted, this));
   }
 
-  void onLocalCostmapException(nav_core2::CostmapException e, const ros::Duration& planning_time)
+  void onLocalCostmapException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
   {
-    requestNavigationFailure(makeResultCode(locomotor_msgs::ResultCode::LOCAL_COSTMAP, e.getResultCode(),
+    requestNavigationFailure(makeResultCode(locomotor_msgs::ResultCode::LOCAL_COSTMAP, getResultCode(e_ptr),
                                             "Local Costmap failure."));
   }
 
@@ -168,7 +170,7 @@ protected:
     as_.publishFeedback(locomotor_.getNavigationState());
   }
 
-  void onLocalPlanningException(nav_core2::PlannerException e, const ros::Duration& planning_time)
+  void onLocalPlanningException(nav_core2::NavCore2ExceptionPtr e_ptr, const ros::Duration& planning_time)
   {
     ROS_WARN_NAMED("Locomotor", "Local planning error. Creating new global plan.");
     control_loop_timer_.stop();

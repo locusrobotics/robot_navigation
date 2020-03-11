@@ -27,6 +27,7 @@ if(CATKIN_ENABLE_TESTING)
   roslint_add_test()
 
   catkin_add_gtest(bounds_test test/bounds_test.cpp)
+  catkin_add_gtest(exception_test test/exception_test.cpp)
 endif()
 
 install(DIRECTORY include/${PROJECT_NAME}/

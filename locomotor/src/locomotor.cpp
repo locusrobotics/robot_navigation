@@ -169,7 +169,8 @@ void Locomotor::doCostmapUpdate(nav_core2::Costmap& costmap, Executor& result_ex
   }
   catch (const nav_core2::CostmapException& e)
   {
-    if (fail_cb) result_ex.addCallback(std::bind(fail_cb, e, getTimeDiffFromNow(start_t)));
+    if (fail_cb)
+      result_ex.addCallback(std::bind(fail_cb, std::current_exception(), getTimeDiffFromNow(start_t)));
   }
 }
 
@@ -189,7 +190,8 @@ void Locomotor::makeGlobalPlan(Executor& result_ex, GlobalPlanCallback cb, Plann
   // if we didn't get a plan and we are in the planning state (the robot isn't moving)
   catch (const nav_core2::PlannerException& e)
   {
-    if (fail_cb) result_ex.addCallback(std::bind(fail_cb, e, getTimeDiffFromNow(start_t)));
+    if (fail_cb)
+      result_ex.addCallback(std::bind(fail_cb, std::current_exception(), getTimeDiffFromNow(start_t)));
   }
 }
 
@@ -222,7 +224,8 @@ void Locomotor::makeLocalPlan(Executor& result_ex, LocalPlanCallback cb, Planner
     catch (const nav_core2::PlannerException& e)
     {
       lock.unlock();
-      if (fail_cb) result_ex.addCallback(std::bind(fail_cb, e, getTimeDiffFromNow(start_t)));
+      if (fail_cb)
+        result_ex.addCallback(std::bind(fail_cb, std::current_exception(), getTimeDiffFromNow(start_t)));
     }
   }
 }

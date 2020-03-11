@@ -5,15 +5,15 @@ Let's take a precise look at what the error handling functions look like.
 using PlannerExceptionCallback = std::function<void (nav_core2::PlannerException, const ros::Duration&)>;
 ```
 
-There are several standard extensions for the base `PlannerException` class in `nav_core2/exceptions.h`. When the function is called, you should be able to check the class of the exception against your known types and react accordingly. For instance,
+There are several standard extensions for the base `PlannerException` class in `nav_core2/exceptions.h` that will be passed as an exception pointer. When the function is called, you should be able to check the class of the exception against your known types and react accordingly. For instance,
 
 ```
-void SomeStateMachine::onGlobalPlanningException(nav_core2::PlannerException e,
+void SomeStateMachine::onGlobalPlanningException(nav_core2::NavCore2ExceptionPtr e_ptr,
                                                  const ros::Duration& planning_time)
 {
   try
   {
-    throw e;
+    std::rethrow_exception(e_ptr);
   }
   catch (nav_core2::OccupiedGoalException& e)
   {
@@ -33,12 +33,12 @@ void SomeStateMachine::onGlobalPlanningException(nav_core2::PlannerException e,
 Importantly, the individual planners can implement their own extensions of `PlannerException` and have their version of `StateMachine` handle it however they like.
 
 ```
-void LocomotorBrown::onGlobalPlanningException(nav_core2::PlannerException e,
+void LocomotorBrown::onGlobalPlanningException(nav_core2::NavCore2ExceptionPtr e_ptr,
                                                const ros::Duration& planning_time)
 {
   try
   {
-    throw e;
+    std::rethrow_exception(e_ptr);
   }
   catch (LocomotorBrown::TimeTravelException& e)
   {
