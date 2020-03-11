@@ -199,7 +199,7 @@ void DWBPublisher::publishCostGrid(const nav_core2::Costmap::Ptr costmap,
     double scale = critic->getScale();
     for (i = 0; i < n; i++)
     {
-      totals.values[i] = cost_grid_pc.channels[channel_index].values[i] * scale;
+      totals.values[i] += cost_grid_pc.channels[channel_index].values[i] * scale;
     }
   }
   cost_grid_pc.channels.push_back(totals);
