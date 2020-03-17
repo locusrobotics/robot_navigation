@@ -74,7 +74,10 @@ void DWBPublisher::initialize(ros::NodeHandle& nh)
 
   nh.param("publish_trajectories", publish_trajectories_, true);
   if (publish_trajectories_)
+  {
     marker_pub_ = global_nh.advertise<visualization_msgs::MarkerArray>("marker", 1);
+    critic_marker_pub_ = global_nh.advertise<visualization_msgs::MarkerArray>("critic_marker", 1);
+  }
   double marker_lifetime;
   nh.param("marker_lifetime", marker_lifetime, 0.1);
   marker_lifetime_ = ros::Duration(marker_lifetime);
@@ -92,6 +95,7 @@ void DWBPublisher::publishEvaluation(std::shared_ptr<dwb_msgs::LocalPlanEvaluati
     eval_pub_.publish(*results);
   }
   publishTrajectories(*results);
+  publishCriticTrajectories(*results);
 }
 
 void DWBPublisher::publishTrajectories(const dwb_msgs::LocalPlanEvaluation& results)
@@ -149,6 +153,65 @@ void DWBPublisher::publishTrajectories(const dwb_msgs::LocalPlanEvaluation& resu
   marker_pub_.publish(ma);
 }
 
+
+void DWBPublisher::publishCriticTrajectories(const dwb_msgs::LocalPlanEvaluation& results)
+{
+  if (!publish_trajectories_) return;
+  visualization_msgs::MarkerArray ma;
+  visualization_msgs::Marker m;
+
+  if (results.twists.size() == 0) return;
+
+  geometry_msgs::Point pt;
+
+  m.header = results.header;
+  m.type = m.LINE_STRIP;
+  m.pose.orientation.w = 1;
+  m.scale.x = 0.002;
+  m.color.a = 1.0;
+  m.lifetime = marker_lifetime_;
+
+  double best_cost = results.twists[results.best_index].total,
+         worst_cost = results.twists[results.worst_index].total,
+         denominator = worst_cost - best_cost;
+  
+  if (std::fabs(denominator) < 1e-9)
+  {
+    denominator = 1.0;
+  }
+
+  for (unsigned int i = 0; i < results.twists.size(); i++)
+  {
+  
+    const dwb_msgs::TrajectoryScore& twist = results.twists[i];
+
+    for (unsigned int j = 0; j < twist.scores.size(); j++)
+    {
+
+      const dwb_msgs::CriticScore& score = twist.scores[j];
+      double scaled_score = score.raw_score * score.scale;
+
+      m.color.r = 1 - (scaled_score - best_cost) / denominator;
+      m.color.g = 1 - (scaled_score - best_cost) / denominator;
+      m.color.b = 1;
+      m.ns = score.name;
+    
+      m.points.clear();
+      for (unsigned int k = 0; k < twist.traj.poses.size(); ++k)
+      {
+        pt.x = twist.traj.poses[k].x;
+        pt.y = twist.traj.poses[k].y;
+        pt.z = 0;
+        m.points.push_back(pt);
+      }
+      ma.markers.push_back(m);
+      m.id += 1;
+    }
+  }
+
+  critic_marker_pub_.publish(ma);
+}
+
 void DWBPublisher::publishLocalPlan(const std_msgs::Header& header,
                                     const dwb_msgs::Trajectory2D& traj)
 {
@@ -199,7 +262,7 @@ void DWBPublisher::publishCostGrid(const nav_core2::Costmap::Ptr costmap,
     double scale = critic->getScale();
     for (i = 0; i < n; i++)
     {
-      totals.values[i] = cost_grid_pc.channels[channel_index].values[i] * scale;
+      totals.values[i] += cost_grid_pc.channels[channel_index].values[i] * scale;
     }
   }
   cost_grid_pc.channels.push_back(totals);

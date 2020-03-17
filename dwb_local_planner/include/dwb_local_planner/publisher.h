@@ -54,7 +54,8 @@ namespace dwb_local_planner
  *   3) The Transformed Global Plan (since it may be different than the global)
  *   4) The Full LocalPlanEvaluation
  *   5) Markers representing the different trajectories evaluated
- *   6) The CostGrid (in the form of a complex PointCloud2)
+ *   6) Markers representing the different trajectories evaluated by each individual critic
+ *   7) The CostGrid (in the form of a complex PointCloud2)
  */
 class DWBPublisher
 {
@@ -85,6 +86,7 @@ public:
 
 protected:
   void publishTrajectories(const dwb_msgs::LocalPlanEvaluation& results);
+  void publishCriticTrajectories(const dwb_msgs::LocalPlanEvaluation& results);
 
   // Helper function for publishing other plans
   void publishGenericPlan(const nav_2d_msgs::Path2D plan, const ros::Publisher pub, bool flag);
@@ -98,7 +100,7 @@ protected:
 
   // Publisher Objects
   ros::Publisher eval_pub_, global_pub_, transformed_pub_, local_pub_, marker_pub_, cost_grid_pc_pub_,
-                 info_pub_, pose_pub_, goal_pub_, velocity_pub_;
+                 info_pub_, pose_pub_, goal_pub_, velocity_pub_, critic_marker_pub_;
 };
 
 }  // namespace dwb_local_planner
