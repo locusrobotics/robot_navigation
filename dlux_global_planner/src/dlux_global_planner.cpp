@@ -52,7 +52,7 @@ DluxGlobalPlanner::DluxGlobalPlanner() :
 void DluxGlobalPlanner::initialize(const ros::NodeHandle& parent, const std::string& name,
                                    TFListenerPtr tf, nav_core2::Costmap::Ptr costmap)
 {
-  tf_ = tf; 
+  tf_ = tf;
   ros::NodeHandle planner_nh(parent, name);
   costmap_ = costmap;
   potential_grid_.setInfo(costmap_->getInfo());
