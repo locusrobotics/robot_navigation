@@ -41,6 +41,7 @@
 #include <dwb_local_planner/publisher.h>
 #include <nav_core2/local_planner.h>
 #include <pluginlib/class_loader.h>
+#include <memory>
 #include <string>
 #include <vector>
 

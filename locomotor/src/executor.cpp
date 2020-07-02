@@ -33,6 +33,7 @@
  */
 
 #include <locomotor/executor.h>
+#include <memory>
 
 namespace locomotor
 {

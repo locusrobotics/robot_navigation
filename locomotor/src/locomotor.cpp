@@ -35,6 +35,7 @@
 #include <locomotor/locomotor.h>
 #include <nav_2d_utils/tf_help.h>
 #include <functional>
+#include <memory>
 #include <string>
 
 namespace locomotor

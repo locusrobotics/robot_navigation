@@ -38,6 +38,7 @@
 #include <ros/ros.h>
 #include <dynamic_reconfigure/server.h>
 #include <dwb_plugins/KinematicParamsConfig.h>
+#include <memory>
 
 namespace dwb_plugins
 {

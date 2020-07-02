@@ -34,6 +34,7 @@
 
 #include <dwb_plugins/kinematic_parameters.h>
 #include <nav_2d_utils/parameters.h>
+#include <memory>
 #include <string>
 
 using nav_2d_utils::moveDeprecatedParameter;

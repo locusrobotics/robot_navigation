@@ -38,6 +38,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
 #include <nav_2d_utils/conversions.h>
+#include <memory>
 #include <vector>
 
 namespace dwb_local_planner

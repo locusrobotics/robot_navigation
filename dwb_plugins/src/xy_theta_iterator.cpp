@@ -34,6 +34,7 @@
 
 #include <dwb_plugins/xy_theta_iterator.h>
 #include <nav_2d_utils/parameters.h>
+#include <memory>
 
 namespace dwb_plugins
 {

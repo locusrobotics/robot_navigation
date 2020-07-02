@@ -48,6 +48,7 @@
 #include <nav_2d_utils/odom_subscriber.h>
 #include <nav_2d_utils/plugin_mux.h>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 

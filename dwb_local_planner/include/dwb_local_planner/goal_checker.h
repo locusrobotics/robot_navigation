@@ -38,6 +38,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Pose2D.h>
 #include <nav_2d_msgs/Twist2D.h>
+#include <memory>
 
 namespace dwb_local_planner
 {

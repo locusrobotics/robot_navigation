@@ -36,6 +36,7 @@
 #include <nav_grid/coordinate_conversion.h>
 #include <pluginlib/class_loader.h>
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 

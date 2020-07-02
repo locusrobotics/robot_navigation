@@ -37,6 +37,7 @@
 #include <global_planner_tests/easy_costmap.h>
 #include <global_planner_tests/util.h>
 #include <yaml-cpp/yaml.h>
+#include <memory>
 #include <string>
 #include <vector>
 

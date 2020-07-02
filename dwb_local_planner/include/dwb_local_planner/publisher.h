@@ -39,6 +39,7 @@
 #include <nav_core2/common.h>
 #include <dwb_local_planner/trajectory_critic.h>
 #include <dwb_msgs/LocalPlanEvaluation.h>
+#include <memory>
 #include <vector>
 
 namespace dwb_local_planner

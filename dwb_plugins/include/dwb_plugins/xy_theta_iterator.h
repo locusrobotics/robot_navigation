@@ -37,6 +37,7 @@
 
 #include <dwb_plugins/velocity_iterator.h>
 #include <dwb_plugins/one_d_velocity_iterator.h>
+#include <memory>
 
 namespace dwb_plugins
 {
