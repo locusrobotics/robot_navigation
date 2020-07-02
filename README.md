@@ -33,4 +33,10 @@
 ### Backwards Compatibility
  * `nav_core_adapter` - Adapters between `nav_core` and `nav_core2`.
 
-### More to come!
+## ROS Buildfarm
+
+|         | source | binary |
+|---------|--------|--------|
+| kinetic | [![Build Status](http://build.ros.org/view/Ksrc_uX/job/Ksrc_uX__robot_navigation__ubuntu_xenial__source/badge/icon?style=flat-square)](http://build.ros.org/view/Ksrc_uX/job/Ksrc_uX__robot_navigation__ubuntu_xenial__source/) | [![Build Status](http://build.ros.org/view/Kbin_uX64/job/Kbin_uX64__robot_navigation__ubuntu_xenial_amd64__binary/badge/icon?style=flat-square)](http://build.ros.org/view/Kbin_uX64/job/Kbin_uX64__robot_navigation__ubuntu_xenial_amd64__binary/)|
+| melodic | [![Build Status](http://build.ros.org/view/Msrc_uB/job/Msrc_uB__robot_navigation__ubuntu_bionic__source/badge/icon?style=flat-square)](http://build.ros.org/view/Msrc_uB/job/Msrc_uB__robot_navigation__ubuntu_bionic__source/) | [![Build Status](http://build.ros.org/view/Mbin_uB64/job/Mbin_uB64__robot_navigation__ubuntu_bionic_amd64__binary/badge/icon?style=flat-square)](http://build.ros.org/view/Mbin_uB64/job/Mbin_uB64__robot_navigation__ubuntu_bionic_amd64__binary/)|
+| noetic  | [![Build Status](http://build.ros.org/view/Nsrc_uF/job/Nsrc_uF__robot_navigation__ubuntu_focal__source/badge/icon?style=flat-square)](http://build.ros.org/view/Nsrc_uF/job/Nsrc_uF__robot_navigation__ubuntu_focal__source/) | [![Build Status](http://build.ros.org/view/Nbin_uF64/job/Nbin_uF64__robot_navigation__ubuntu_focal_amd64__binary/badge/icon?style=flat-square)](http://build.ros.org/view/Nbin_uF64/job/Nbin_uF64__robot_navigation__ubuntu_focal_amd64__binary/)|
