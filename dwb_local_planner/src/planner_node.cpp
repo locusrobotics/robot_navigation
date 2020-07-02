@@ -35,6 +35,7 @@
 #include <pluginlib/class_loader.h>
 #include <dwb_local_planner/debug_dwb_local_planner.h>
 #include <tf2_ros/transform_listener.h>
+#include <memory>
 #include <string>
 
 int main(int argc, char** argv)

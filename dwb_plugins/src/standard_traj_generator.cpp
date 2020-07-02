@@ -37,9 +37,10 @@
 #include <nav_2d_utils/parameters.h>
 #include <pluginlib/class_list_macros.h>
 #include <nav_core2/exceptions.h>
+#include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using nav_2d_utils::loadParameterWithDeprecation;
 

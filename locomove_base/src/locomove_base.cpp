@@ -36,6 +36,7 @@
 #include <nav_core_adapter/costmap_adapter.h>
 #include <nav_2d_utils/conversions.h>
 #include <nav_2d_utils/path_ops.h>
+#include <memory>
 #include <string>
 #include <vector>
 

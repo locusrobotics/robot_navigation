@@ -38,6 +38,7 @@
 #include <nav_2d_utils/tf_help.h>
 #include <nav_2d_utils/path_ops.h>
 #include <pluginlib/class_list_macros.h>
+#include <memory>
 #include <string>
 
 namespace dlux_global_planner

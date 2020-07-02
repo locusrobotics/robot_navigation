@@ -35,8 +35,9 @@
 #include <dwb_critics/map_grid.h>
 #include <nav_grid/coordinate_conversion.h>
 #include <nav_core2/exceptions.h>
-#include <string>
 #include <algorithm>
+#include <memory>
+#include <string>
 
 namespace dwb_critics
 {

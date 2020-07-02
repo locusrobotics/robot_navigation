@@ -38,6 +38,7 @@
 #include <nav_grid_iterators/base_iterator.h>
 #include <nav_grid_iterators/sub_grid.h>
 #include <nav_2d_msgs/Polygon2D.h>
+#include <memory>
 
 namespace nav_grid_iterators
 {
