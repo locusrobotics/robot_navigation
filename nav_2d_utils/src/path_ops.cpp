@@ -190,7 +190,7 @@ void addPose(nav_2d_msgs::Path2D& path, double x, double y, double theta)
   path.poses.push_back(pose);
 }
 
-std::vector<nav_2d_msgs::Path2D> splitPlan(const nav_2d_msgs::Path2D &global_plan_in)
+std::vector<nav_2d_msgs::Path2D> splitPlan(const nav_2d_msgs::Path2D &global_plan_in, double epsilon)
 {
   auto copy = global_plan_in;
   std::vector<nav_2d_msgs::Path2D> global_plan_segments;   // Path segments of same movement direction
@@ -225,7 +225,7 @@ std::vector<nav_2d_msgs::Path2D> splitPlan(const nav_2d_msgs::Path2D &global_pla
         };
     double d = v1[0] * v2[0] + v1[1] * v2[1];   // dot product of the vectors. if < 0, the angle is over 90 degrees.
     bool backwards = (d < 0);
-    bool pureRotation = fabs(v1[0]) < 1e-5 && fabs(v1[1]) < 1e-5;
+    bool pureRotation = fabs(v1[0]) < epsilon && fabs(v1[1]) < epsilon;
     // if the translation vector is zero, the two positions are equal
     // and the plan is to rotate on the spot. Since dwb would
     // enthusiastically speed up at the start of a trajectory,
@@ -250,7 +250,7 @@ std::vector<nav_2d_msgs::Path2D> splitPlan(const nav_2d_msgs::Path2D &global_pla
           };
       double d = v1[0] * v2[0] + v1[1] * v2[1];   // dot product of the vectors. if < 0, the angle is over 90 degrees.
       bool b = (d < 0);
-      bool rot = fabs(v1[0]) < 1e-5 && fabs(v1[1]) < 1e-5;
+      bool rot = fabs(v1[0]) < epsilon && fabs(v1[1]) < epsilon;
 
       if (b == backwards && rot == pureRotation)
       {

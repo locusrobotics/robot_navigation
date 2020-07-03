@@ -108,9 +108,10 @@ void addPose(nav_2d_msgs::Path2D& path, double x, double y, double theta = 0.0);
  * ensure a seamless path.
  *
  * @param global_plan_in input plan
+ * @param epsilon maximum linear translation threshold for "pure rotation" segments
  * @return vector of plan segments
  */
-std::vector<nav_2d_msgs::Path2D> splitPlan(const nav_2d_msgs::Path2D &global_plan_in);
+std::vector<nav_2d_msgs::Path2D> splitPlan(const nav_2d_msgs::Path2D &global_plan_in, double epsilon = 1e-5);
 
 }  // namespace nav_2d_utils
 
