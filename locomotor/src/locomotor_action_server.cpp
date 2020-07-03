@@ -99,6 +99,7 @@ void LocomotorActionServer::preGoalCallback()
 void LocomotorActionServer::preemptCallback()
 {
   if (!navigate_action_server_.isActive()) return;
+  if (preemption_cb_) preemption_cb_();
   locomotor_msgs::NavigateToPoseResult result;
   result.result_code.result_code = -1;
   result.result_code.message = "Preempted.";

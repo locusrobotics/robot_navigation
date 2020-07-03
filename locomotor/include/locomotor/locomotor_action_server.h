@@ -43,6 +43,7 @@
 namespace locomotor
 {
 using NewGoalCallback = std::function<void (const nav_2d_msgs::Pose2DStamped&)>;
+using PreemptionCallback = std::function<void ()>;
 
 class LocomotorActionServer
 {
@@ -51,12 +52,16 @@ public:
   void publishFeedback(const locomotor_msgs::NavigationState& nav_state);
   void completeNavigation();
   void failNavigation(const locomotor_msgs::ResultCode& result_code);
+
+  // Note: This is a separate method so as not to change the previous constructor parameter list
+  void setPremptionCallback(PreemptionCallback cb) { preemption_cb_ = cb; }
 protected:
   void preGoalCallback();
   void preemptCallback();
   actionlib::SimpleActionServer<locomotor_msgs::NavigateToPoseAction> navigate_action_server_;
   locomotor_msgs::NavigateToPoseFeedback feedback_;
   NewGoalCallback goal_cb_;
+  PreemptionCallback preemption_cb_;
 };
 }  // namespace locomotor
 
