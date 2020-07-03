@@ -37,6 +37,7 @@
 
 #include <dwb_local_planner/trajectory_critic.h>
 #include <costmap_queue/costmap_queue.h>
+#include <memory>
 #include <vector>
 
 namespace dwb_critics

@@ -43,6 +43,7 @@
 #include <nav_2d_msgs/Path2D.h>
 #include <dwb_msgs/Trajectory2D.h>
 #include <sensor_msgs/PointCloud.h>
+#include <memory>
 #include <string>
 #include <vector>
 

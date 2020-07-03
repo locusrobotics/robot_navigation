@@ -36,6 +36,7 @@
 #define NAV_CORE_ADAPTER_SHARED_POINTERS_H
 
 #include <nav_core2/common.h>
+#include <memory>
 
 namespace nav_core_adapter
 {

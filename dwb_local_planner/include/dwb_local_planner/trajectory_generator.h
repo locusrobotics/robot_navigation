@@ -38,6 +38,7 @@
 #include <ros/ros.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <dwb_msgs/Trajectory2D.h>
+#include <memory>
 #include <vector>
 
 namespace dwb_local_planner

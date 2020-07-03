@@ -40,6 +40,7 @@
 #include <nav_core_adapter/costmap_adapter.h>
 #include <nav_2d_utils/odom_subscriber.h>
 #include <pluginlib/class_loader.h>
+#include <memory>
 #include <string>
 #include <vector>
 

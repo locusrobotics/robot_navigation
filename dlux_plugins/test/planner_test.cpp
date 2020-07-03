@@ -35,6 +35,7 @@
 #include <dlux_global_planner/dlux_global_planner.h>
 #include <ros/ros.h>
 #include <gtest/gtest.h>
+#include <memory>
 #include <string>
 
 using global_planner_tests::many_map_test_suite;

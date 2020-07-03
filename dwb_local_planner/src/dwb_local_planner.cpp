@@ -41,9 +41,11 @@
 #include <nav_2d_msgs/Twist2D.h>
 #include <dwb_msgs/CriticScore.h>
 #include <pluginlib/class_list_macros.h>
-#include <string>
-#include <vector>
 #include <algorithm>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace dwb_local_planner
 {

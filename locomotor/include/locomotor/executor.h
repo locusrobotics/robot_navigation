@@ -38,6 +38,7 @@
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
 #include <ros/spinner.h>
+#include <memory>
 
 namespace locomotor
 {

@@ -39,6 +39,7 @@
 #include <nav_core2/common.h>
 #include <nav_core2/bounds.h>
 #include <boost/thread.hpp>
+#include <memory>
 #include <string>
 
 namespace nav_core2

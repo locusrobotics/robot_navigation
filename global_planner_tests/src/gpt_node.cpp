@@ -34,6 +34,7 @@
 #include <global_planner_tests/global_planner_tests.h>
 #include <global_planner_tests/easy_costmap.h>
 #include <pluginlib/class_loader.h>
+#include <memory>
 #include <string>
 
 int main(int argc, char** argv)

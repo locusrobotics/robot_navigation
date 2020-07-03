@@ -38,6 +38,7 @@
 #include <nav_2d_utils/tf_help.h>
 #include <nav_2d_utils/path_ops.h>
 #include <pluginlib/class_list_macros.h>
+#include <memory>
 #include <string>
 
 namespace dlux_global_planner
@@ -52,6 +53,7 @@ DluxGlobalPlanner::DluxGlobalPlanner() :
 void DluxGlobalPlanner::initialize(const ros::NodeHandle& parent, const std::string& name,
                                    TFListenerPtr tf, nav_core2::Costmap::Ptr costmap)
 {
+  tf_ = tf;
   ros::NodeHandle planner_nh(parent, name);
   costmap_ = costmap;
   potential_grid_.setInfo(costmap_->getInfo());

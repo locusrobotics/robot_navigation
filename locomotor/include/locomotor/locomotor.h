@@ -49,6 +49,7 @@
 #include <nav_2d_utils/plugin_mux.h>
 #include <tf2_ros/transform_listener.h>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 

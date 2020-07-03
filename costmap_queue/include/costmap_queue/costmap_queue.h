@@ -40,6 +40,7 @@
 #include <nav_grid/vector_nav_grid.h>
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <vector>
 
 namespace costmap_queue

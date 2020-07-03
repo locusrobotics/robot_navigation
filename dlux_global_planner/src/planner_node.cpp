@@ -40,6 +40,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <tf2_ros/transform_listener.h>
 #include <visualization_msgs/Marker.h>
+#include <memory>
 #include <string>
 
 namespace dlux_global_planner

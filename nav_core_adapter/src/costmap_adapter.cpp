@@ -83,7 +83,7 @@ nav_core2::Costmap::mutex_t* CostmapAdapter::getMutex()
 
 void CostmapAdapter::reset()
 {
-  costmap_->resetMap(0, 0, costmap_->getSizeInCellsX(), costmap_->getSizeInCellsY());
+  costmap_ros_->resetLayers();
 }
 
 void CostmapAdapter::update()

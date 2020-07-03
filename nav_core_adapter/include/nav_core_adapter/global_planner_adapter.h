@@ -39,6 +39,7 @@
 #include <nav_core2/global_planner.h>
 #include <nav_core_adapter/costmap_adapter.h>
 #include <pluginlib/class_loader.h>
+#include <memory>
 #include <string>
 #include <vector>
 

@@ -33,6 +33,7 @@
  */
 #include <global_planner_tests/many_map_test_suite.h>
 #include <pluginlib/class_loader.h>
+#include <memory>
 #include <string>
 
 int main(int argc, char** argv)
