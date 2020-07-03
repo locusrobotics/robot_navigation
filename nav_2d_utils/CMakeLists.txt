@@ -65,6 +65,9 @@ if(CATKIN_ENABLE_TESTING)
 
   add_rostest_gtest(param_tests test/param_tests.launch test/param_tests.cpp)
   target_link_libraries(param_tests polygons ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+
+  catkin_add_gtest(split_plan_test test/split_plan_test.cpp)
+  target_link_libraries(split_plan_test path_ops ${catkin_LIBRARIES})
 endif()
 
 install(TARGETS conversions path_ops polygons
