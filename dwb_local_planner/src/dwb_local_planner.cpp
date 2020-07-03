@@ -37,6 +37,7 @@
 #include <dwb_local_planner/backwards_compatibility.h>
 #include <dwb_local_planner/illegal_trajectory_tracker.h>
 #include <nav_2d_utils/conversions.h>
+#include <nav_2d_utils/path_ops.h>
 #include <nav_2d_utils/tf_help.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <dwb_msgs/CriticScore.h>
@@ -197,126 +198,17 @@ void DWBLocalPlanner::setPlan(const nav_2d_msgs::Path2D& path)
   bool split_path;
   planner_nh_.param("split_path", split_path, false);
 
-  global_plan_segments_.clear();
-
   if (split_path)
   {
-    /*
-      Global planners like SBPL might create trajectories with complex
-      maneuvers, switching between driving forwards and backwards, where it is
-      crucial that the individual segments are carefully followed and completed
-      before starting the next. The "split_path" option allows to split the
-      given path in such segments and to treat each of them independently.
-
-      The segmentation is computed as follows:
-      Given two poses in the path, we compute the vector v1 connecting them,
-      the vector of orientation given through the angle theta, check the dot
-      product of the vectors: If it is less than 0, the angle is over 90 deg,
-      which is a coarse approximation for "driving backwards", and for "driving
-      forwards" otherwise. In the special case that the vector connecting the
-      two poses is null we have to deal with in-place-rotations of the robot.
-      To avoid the robot from eagerly driving forward before having achieved the
-      correct orientation, these situations are grouped in a third category.
-      The path is then split into segments of the same movement-direction
-      (forward/backward/onlyRotation). When a cut is made, the last pose of the
-      last segment is copied, to be the first pose of the following segment, to
-      ensure a seamless path.
-
-      The "global_plan_" variable is then set to the first segment.
-      In the "isGoalReached" method, which is repeatedly called, we check if
-      the intermediate goal - i.e., the end of the current segment - is reached,
-      and if so proceed to the next segment.
-    */
     ROS_INFO_NAMED("DWBLocalPlanner", "Splitting path...");
-
-    auto copy = path;
-    while (copy.poses.size() > 1)   // need at least 2 poses in a path
-    {
-      // start a new segment
-      nav_2d_msgs::Path2D segment;
-      segment.header = path.header;
-
-      // add the first pose
-      segment.poses.push_back(copy.poses[0]);
-      copy.poses.erase(copy.poses.begin());
-
-      // add the second pose and determine if we are going forward or backward
-      segment.poses.push_back(copy.poses[0]);
-      copy.poses.erase(copy.poses.begin());
-
-      // take the vector from the first to the second position and compare it
-      // to the orientation vector at the first position. If the angle is > 90 deg,
-      // assume we are driving backwards.
-      double v1[2] =
-      {
-        segment.poses[1].x - segment.poses[0].x,
-        segment.poses[1].y - segment.poses[0].y
-      };
-      double v2[2] =
-      {
-        cos(segment.poses[0].theta),
-        sin(segment.poses[0].theta)
-      };
-      double d = v1[0] * v2[0] + v1[1] * v2[1];   // dotproduct of the vectors. if < 0, the angle is over 90 degrees.
-      bool backwards = (d < 0);
-      bool onlyRotation = std::fabs(v1[0]) < 1e-5 && std::fabs(v1[1]) < 1e-5;
-                                        // if the translation vector is zero, the two positions are equal
-                                        // and the plan is to rotate on the spot. Since dwb would
-                                        // enthusiastically speed up at the start of a trajectory,
-                                        // even if it starts with in-place-rotation, it would
-                                        // miss the path by a lot. So let's split the path into
-                                        // forwards / backwards / onlyRotation.
-
-      // add more poses while they lead into the same direction (driving forwards/backwards/onlyRotation)
-      while (!copy.poses.empty())
-      {
-        // vector from the last pose in the segment to the next in the path
-        double v1[2] =
-        {
-          copy.poses[0].x - segment.poses.back().x,
-          copy.poses[0].y - segment.poses.back().y
-        };
-        // orientation at the last pose in the segment
-        double v2[2] =
-        {
-          cos(segment.poses.back().theta),
-          sin(segment.poses.back().theta)
-        };
-        double d = v1[0] * v2[0] + v1[1] * v2[1];   // dotproduct of the vectors. if < 0, the angle is over 90 degrees.
-        bool b = (d < 0);
-        bool rot = std::fabs(v1[0]) < 1e-5 && std::fabs(v1[1]) < 1e-5;
-
-        if (b == backwards && rot == onlyRotation)
-        {
-          // same direction -> just add the pose
-          segment.poses.push_back(copy.poses[0]);
-          copy.poses.erase(copy.poses.begin());
-        }
-        else
-        {
-          // direction changes -> add the last pose of the last segment back to
-          // the path, to start a new segment at the end of the last
-          copy.poses.insert(copy.poses.begin(), segment.poses.back());
-          break;
-        }
-      }
-
-      // add the created segment to the list
-      global_plan_segments_.push_back(segment);
-    }
-    if (global_plan_segments_.empty())
-    {
-      // path doesn't have at least 2 poses, hence there is only one segment, which
-      // is the complete path.
-      global_plan_segments_.push_back(path);
-    }
-
+    global_plan_segments_ = nav_2d_utils::splitPlan(path);
     ROS_INFO_STREAM("Split path into " << global_plan_segments_.size() << " segments.");
   }
   else
   {
     // split_path option is disabled, hence there is only one segment, which
     // is the complete path.
+    global_plan_segments_.clear();
     global_plan_segments_.push_back(path);
   }
 

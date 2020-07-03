@@ -36,6 +36,7 @@
 #define NAV_2D_UTILS_PATH_OPS_H
 
 #include <nav_2d_msgs/Path2D.h>
+#include <vector>
 
 namespace nav_2d_utils
 {
@@ -82,6 +83,34 @@ nav_2d_msgs::Path2D compressPlan(const nav_2d_msgs::Path2D& input_path, double e
  * @param theta theta (if needed)
  */
 void addPose(nav_2d_msgs::Path2D& path, double x, double y, double theta = 0.0);
+
+/**
+ * @brief Split the plan into segments when it is switching between going forwards / backwards / pure rotation
+ *
+ * Global planners like SBPL might create trajectories with complex
+ * maneuvers, switching between driving forwards and backwards, where it is
+ * crucial that the individual segments are carefully followed and completed
+ * before starting the next. This function splits the given path into such
+ * segments, so that they can be independently treated as separate plans.
+
+ * The segmentation is computed as follows:
+ * Given two poses in the path, we compute the vector v1 connecting them,
+ * the vector of orientation given through the angle theta, check the dot
+ * product of the vectors: If it is less than 0, the angle is over 90 deg,
+ * which is a coarse approximation for "driving backwards", and for "driving
+ * forwards" otherwise. In the special case that the vector connecting the
+ * two poses is null we have to deal with in-place-rotations of the robot.
+ * To avoid the robot from eagerly driving forward before having achieved the
+ * correct orientation, these situations are grouped in a third category,
+ * "pure rotation". The path is then split into segments of the same movement
+ * direction (forward/backward/pureRotation). When a cut is made, the last pose of the
+ * last segment is copied to be the first pose of the following segment in order to
+ * ensure a seamless path.
+ *
+ * @param global_plan_in input plan
+ * @return vector of plan segments
+ */
+std::vector<nav_2d_msgs::Path2D> splitPlan(const nav_2d_msgs::Path2D &global_plan_in);
 
 }  // namespace nav_2d_utils
 
