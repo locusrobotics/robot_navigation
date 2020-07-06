@@ -105,7 +105,7 @@ public:
   /**
    * @brief Reset the state of the critic
    *
-   * Reset is called when the planner receives a new global goal.
+   * Reset is called when the planner receives a new global plan.
    * This can be used to discard information specific to one plan.
    */
   virtual void reset() {}

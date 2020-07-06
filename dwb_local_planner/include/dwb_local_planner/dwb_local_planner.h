@@ -172,8 +172,21 @@ protected:
    */
   geometry_msgs::Pose2D transformPoseToLocal(const nav_2d_msgs::Pose2DStamped& pose);
 
-  nav_2d_msgs::Path2D global_plan_;  ///< Saved Global Plan
+
+  /**
+   * @brief Reset the critics and other plugins, e.g. when getting a new plan,
+   *        or starting the next path segment.
+   */
+  virtual void resetPlugins();
+
+  std::vector<nav_2d_msgs::Path2D> global_plan_segments_;   ///< Path segments of same movement direction
+                                                            // (forward/backward/in-place rotation)
+  nav_2d_msgs::Path2D global_plan_;   ///< The currently active segment of the plan, or the whole plan if
+                                      // path segmentation is disabled.
+
   nav_2d_msgs::Pose2DStamped goal_pose_;  ///< Saved Goal Pose
+  nav_2d_msgs::Pose2DStamped intermediate_goal_pose_;   ///< Goal of current path segment
+
   bool prune_plan_;
   double prune_distance_;
   bool debug_trajectory_details_;

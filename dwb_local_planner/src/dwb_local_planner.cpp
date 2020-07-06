@@ -37,6 +37,7 @@
 #include <dwb_local_planner/backwards_compatibility.h>
 #include <dwb_local_planner/illegal_trajectory_tracker.h>
 #include <nav_2d_utils/conversions.h>
+#include <nav_2d_utils/path_ops.h>
 #include <nav_2d_utils/tf_help.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <dwb_msgs/CriticScore.h>
@@ -150,11 +151,37 @@ bool DWBLocalPlanner::isGoalReached(const nav_2d_msgs::Pose2DStamped& pose, cons
 
   // Update time stamp of goal pose
   goal_pose_.header.stamp = pose.header.stamp;
+  intermediate_goal_pose_.header.stamp = pose.header.stamp;
 
-  bool ret = goal_checker_->isGoalReached(transformPoseToLocal(pose), transformPoseToLocal(goal_pose_), velocity);
+  // use the goal_checker_ to check if the intermediate goal was reached.
+  bool ret = goal_checker_->isGoalReached(
+              transformPoseToLocal(pose),
+              transformPoseToLocal(intermediate_goal_pose_),
+              velocity);
   if (ret)
   {
-    ROS_INFO_THROTTLE_NAMED(1.0, "DWBLocalPlanner", "Goal reached!");
+    if (global_plan_segments_.empty())
+      ROS_INFO_THROTTLE_NAMED(1.0, "DWBLocalPlanner", "Goal reached!");
+    else
+    {
+      ROS_INFO_THROTTLE_NAMED(1.0, "DWBLocalPlanner", "Intermediate goal reached!");
+      ret = false;   // reset to false, as we only finished one segment.
+
+      // activate next path segment
+      global_plan_ = global_plan_segments_[0];
+      global_plan_segments_.erase(global_plan_segments_.begin());
+      // set the next goal pose
+      intermediate_goal_pose_.header = global_plan_.header;
+      intermediate_goal_pose_.pose = global_plan_.poses.back();
+
+      // publish the next path segment
+      pub_.publishGlobalPlan(global_plan_);
+
+      // reset critics etc, as we changed the global_plan_
+      resetPlugins();
+      // prepare(...) will be called soon, automatically, when computing the
+      // velocity commands.
+    }
   }
   return ret;
 }
@@ -163,18 +190,54 @@ void DWBLocalPlanner::setGoalPose(const nav_2d_msgs::Pose2DStamped& goal_pose)
 {
   ROS_INFO_NAMED("DWBLocalPlanner", "New Goal Received.");
   goal_pose_ = goal_pose;
+  intermediate_goal_pose_ = goal_pose;   // For now assume that the path will not
+                                         // be split. Else the intermediate goal
+                                         // will be reset in setPlan.
+}
+
+void DWBLocalPlanner::setPlan(const nav_2d_msgs::Path2D& path)
+{
+  bool split_path;
+  planner_nh_.param("split_path", split_path, false);
+
+  if (split_path)
+  {
+    ROS_INFO_NAMED("DWBLocalPlanner", "Splitting path...");
+    global_plan_segments_ = nav_2d_utils::splitPlan(path);
+    ROS_INFO_STREAM("Split path into " << global_plan_segments_.size() << " segments.");
+  }
+  else
+  {
+    // split_path option is disabled, hence there is only one segment, which
+    // is the complete path.
+    global_plan_segments_.clear();
+    global_plan_segments_.push_back(path);
+  }
+
+  // set the global_plan_ to be the first segment
+  global_plan_ = global_plan_segments_[0];
+  global_plan_segments_.erase(global_plan_segments_.begin());
+
+  // publish not the complete path, but only the first segment.
+  pub_.publishGlobalPlan(global_plan_);
+
+  // set the intermediate goal
+  intermediate_goal_pose_.header = global_plan_.header;
+  intermediate_goal_pose_.pose = global_plan_.poses.back();
+
+  resetPlugins();
+  // prepare(...) to initialize the critics for the new segment does not need
+  // to be called here, as it is called at every computeVelocityCommands-call.
+}
+
+void DWBLocalPlanner::resetPlugins()
+{
   traj_generator_->reset();
   goal_checker_->reset();
   for (TrajectoryCritic::Ptr critic : critics_)
   {
     critic->reset();
   }
-}
-
-void DWBLocalPlanner::setPlan(const nav_2d_msgs::Path2D& path)
-{
-  pub_.publishGlobalPlan(path);
-  global_plan_ = path;
 }
 
 nav_2d_msgs::Twist2DStamped DWBLocalPlanner::computeVelocityCommands(const nav_2d_msgs::Pose2DStamped& pose,
@@ -211,9 +274,10 @@ void DWBLocalPlanner::prepare(const nav_2d_msgs::Pose2DStamped& pose, const nav_
 
   // Update time stamp of goal pose
   goal_pose_.header.stamp = pose.header.stamp;
+  intermediate_goal_pose_.header.stamp = pose.header.stamp;
 
   geometry_msgs::Pose2D local_start_pose = transformPoseToLocal(pose),
-                        local_goal_pose = transformPoseToLocal(goal_pose_);
+                        local_goal_pose = transformPoseToLocal(intermediate_goal_pose_);
 
   pub_.publishInputParams(costmap_->getInfo(), local_start_pose, velocity, local_goal_pose);
 
