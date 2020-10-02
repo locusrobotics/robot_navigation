@@ -95,6 +95,8 @@ std::vector<unsigned char> getOccupancyInput(bool trinary, bool use_unknown_valu
       value = 0;
     else if (i >= 100)
       value = 254;
+    else if (i == 99)
+      value = 253;
     else if (trinary)
       value = 0;
     else
