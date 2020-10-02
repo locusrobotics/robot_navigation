@@ -30,7 +30,7 @@ Also, `nav_msgs::Path posesToPath(std::vector<geometry_msgs::PoseStamped>)`
 
 | to `nav_grid` info | from `nav_grid` info |
 | -- | -- |
-|`nav_grid::NavGridInfo infoToInfo(nav_msgs::MapMetaData)` | `nav_msgs::MapMetaData infoToInfo(nav_grid::NavGridInfo)`
+|`nav_grid::NavGridInfo infoToInfo(nav_msgs::MapMetaData, std::string)` | `nav_msgs::MapMetaData infoToInfo(nav_grid::NavGridInfo)`
 
 
 ## Bounds Transformations
