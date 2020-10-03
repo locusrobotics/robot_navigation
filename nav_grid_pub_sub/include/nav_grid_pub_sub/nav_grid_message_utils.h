@@ -97,6 +97,43 @@ ROSMsgType toUpdate(const nav_grid::NavGrid<NumericType>& grid, const nav_core2:
 }
 
 /**
+ * @brief Generic conversion from message of arbitrary type to grid of arbitrary type
+ */
+template<typename ROSMsgType, typename NumericType>
+void fromMsg(const ROSMsgType& msg, nav_grid::NavGrid<NumericType>& grid)
+{
+  nav_grid::NavGridInfo info = nav_2d_utils::fromMsg(msg.info);
+  const nav_grid::NavGridInfo current_info = grid.getInfo();
+  if (info != current_info)
+  {
+    grid.setInfo(info);
+  }
+
+  unsigned int data_index = 0;
+  for (const nav_grid::Index& index : nav_grid_iterators::WholeGrid(info))
+  {
+    grid.setValue(index, msg.data[data_index++]);
+  }
+}
+
+/**
+ * @brief Generic conversion from an update message to a portion of a grid of arbitrary type
+ */
+template<typename ROSMsgType, typename NumericType>
+nav_core2::UIntBounds fromUpdate(const ROSMsgType& update, nav_grid::NavGrid<NumericType>& grid)
+{
+  const nav_grid::NavGridInfo& info = grid.getInfo();
+  nav_core2::UIntBounds bounds = nav_2d_utils::fromMsg(update.bounds);
+
+  unsigned int data_index = 0;
+  for (const nav_grid::Index& index : nav_grid_iterators::SubGrid(&info, bounds))
+  {
+    grid.setValue(index, update.data[data_index++]);
+  }
+  return bounds;
+}
+
+/**
  * @brief NavGrid<unsigned char> to NavGridOfChars
  */
 inline nav_2d_msgs::NavGridOfChars toMsg(const nav_grid::NavGrid<unsigned char>& grid,
