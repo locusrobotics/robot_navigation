@@ -64,7 +64,7 @@ If we only want trinary values (i.e. Free, unknown or occupied), we can use `nav
 
 If we want a full range of output values, we can use `nav_grid_pub_sub::getOccupancyInput(trinary=false, use_unknown_value=true)`
 
-![0-99 is scaled, 100-254 is 254 and 255 is 255](https://latex.codecogs.com/gif.latex?f%28x%29%20%3D%20%5Cleft%5C%7B%20%5Cbegin%7Barray%7D%7Blr%7D%20%5Cfrac%7Bx%20*%20254%7D%7B100%7D%20%26%20%3A%200-99%5C%5C%20%5Ctext%7B254%7D%20%26%20%3A%20100-254%5C%5C%20%5Ctext%7B255%7D%20%26%20%3A255%20%5C%5C%20%5Cend%7Barray%7D%20%5Cright.)
+![0-98 is scaled, 99 is 253, 100-254 is 254 and 255 is 255](https://latex.codecogs.com/gif.latex?f%28x%29%20%3D%20%5Cleft%5C%7B%20%5Cbegin%7Barray%7D%7Blr%7D%20%5Cfrac%7Bx%20*%20254%7D%7B100%7D%20%26%20%3A%200-98%5C%5C%20%5Ctext%7B253%7D%20%26%20%3A%20%5Ctext%7B99%7D%20%5C%5C%20%5Ctext%7B254%7D%20%26%20%3A%20100-254%5C%5C%20%5Ctext%7B255%7D%20%26%20%3A255%20%5C%5C%20%5Cend%7Barray%7D%20%5Cright.)
 
 ![input0](input0.png)
 

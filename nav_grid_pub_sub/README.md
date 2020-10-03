@@ -36,8 +36,10 @@ You can control how often updates are published with similar logic and the updat
 * cover the superset of all the bounds.
 
 ## Subscribing
-The [subscriber](include/nav_grid_pub_sub/nav_grid_subscriber.h) also requires a `nav_grid::NavGrid&` at construction.
+The [subscribers](include/nav_grid_pub_sub/nav_grid_subscriber.h) also require a `nav_grid::NavGrid&` at construction.
 
-However, it will only subscribe to `OccupancyGrid` OR `NavGridOfChars` (and their updates), not both.
+However, each will only subscribe to `OccupancyGrid` OR `NavGridOfX` (and their updates), not both.
+ * The standard way to subscribe to `OccupancyGrid` messages is with `nav_grid_pub_sub::NavGridSubscriber` initialized with `nav_grid=False` which will write into a `nav_grid::NavGrid<unsigned char>`. You could also theoretically use `nav_grid_pub_sub::NavGridOfDoublesSubscriber` to write to `nav_grid::NavGrid<double>`, but you would likely need to set your own interpretation function for that.
+ * On the other hand, if you set `nav_grid=True` it will subscribe to `NavGridofChars` or `NavGridOfDoubles` depending on if you use `nav_grid_pub_sub::NavGridSubscriber` or `nav_grid_pub_sub::NavGridOfDoublesSubscriber`.
 
 The data is automatically applied to the `NavGrid`, and new data will trigger a callback function that is passed in as a parameter so that other classes can be notified of how much of the costmap has changed.

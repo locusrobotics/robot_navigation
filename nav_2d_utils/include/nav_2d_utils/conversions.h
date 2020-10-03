@@ -76,7 +76,7 @@ nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d);
 // Info Transformations
 nav_2d_msgs::NavGridInfo toMsg(const nav_grid::NavGridInfo& info);
 nav_grid::NavGridInfo fromMsg(const nav_2d_msgs::NavGridInfo& msg);
-nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata);
+nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata, const std::string& frame);
 nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info);
 
 // Bounds Transformations

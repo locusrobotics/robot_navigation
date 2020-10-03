@@ -207,9 +207,10 @@ nav_grid::NavGridInfo fromMsg(const nav_2d_msgs::NavGridInfo& msg)
   return info;
 }
 
-nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata)
+nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata, const std::string& frame)
 {
   nav_grid::NavGridInfo info;
+  info.frame_id = frame;
   info.resolution = metadata.resolution;
   info.width = metadata.width;
   info.height = metadata.height;
