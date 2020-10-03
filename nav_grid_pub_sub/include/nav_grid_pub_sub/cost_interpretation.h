@@ -43,13 +43,17 @@ namespace nav_grid_pub_sub
 {
 /**
  * @brief return cost_interpretation_table[original_value] (or original_value if not a valid index)
+ *
+ * Since original_value is used as the index into the table, it must be an integer-like type (i.e. not double)
  */
-inline unsigned char interpretCost(unsigned char original_value,
-                                   const std::vector<unsigned char>& cost_interpretation_table)
+template<typename NumericType, typename IntegralType>
+inline NumericType interpretCost(IntegralType original_value,
+                                 const std::vector<NumericType>& cost_interpretation_table)
 {
-  if (original_value < cost_interpretation_table.size())
+  unsigned int index = static_cast<unsigned int>(original_value);
+  if (index < cost_interpretation_table.size())
   {
-    return cost_interpretation_table[original_value];
+    return cost_interpretation_table[index];
   }
   else
   {
@@ -60,8 +64,9 @@ inline unsigned char interpretCost(unsigned char original_value,
 /**
  * @brief Apply a given interpretation to the provided nav grid
  */
-inline void applyInterpretation(nav_grid::NavGrid<unsigned char>& grid,
-                                const std::vector<unsigned char>& cost_interpretation_table)
+template<typename IntegralType>
+inline void applyInterpretation(nav_grid::NavGrid<IntegralType>& grid,
+                                const std::vector<IntegralType>& cost_interpretation_table)
 {
   for (const nav_grid::Index& index : nav_grid_iterators::WholeGrid(grid.getInfo()))
   {

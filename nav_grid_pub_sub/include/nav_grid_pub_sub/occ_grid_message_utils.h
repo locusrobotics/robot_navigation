@@ -200,6 +200,55 @@ map_msgs::OccupancyGridUpdate toOccupancyGridUpdate(const nav_grid::NavGrid<Nume
   return update;
 }
 
+/**
+ * @brief generic OccupancyGrid to NavGrid conversion using cost_interpretation_table
+ */
+template<typename NumericType>
+void fromOccupancyGrid(const nav_msgs::OccupancyGrid& msg, nav_grid::NavGrid<NumericType>& grid,
+                       const std::vector<NumericType>& cost_interpretation_table)
+{
+  nav_grid::NavGridInfo info = nav_2d_utils::infoToInfo(msg.info, msg.header.frame_id);
+  const nav_grid::NavGridInfo current_info = grid.getInfo();
+  if (info != current_info)
+  {
+    grid.setInfo(info);
+  }
+
+  unsigned int data_index = 0;
+  for (const nav_grid::Index& index : nav_grid_iterators::WholeGrid(info))
+  {
+    // Because OccupancyGrid.msg defines its data as `int8[] data` we need to explicitly parameterize it as an
+    // unsigned char, otherwise it will be interpretted incorrectly.
+    NumericType value =
+      nav_grid_pub_sub::interpretCost<NumericType, unsigned char>(msg.data[data_index++], cost_interpretation_table);
+    grid.setValue(index, value);
+  }
+}
+
+/**
+ * @brief generic OccupancyGridUpdate to NavGrid conversion using cost_interpretation_table.
+ * @return A bounds object to know how much was updated
+ */
+template<typename NumericType>
+nav_core2::UIntBounds fromOccupancyGridUpdate(const map_msgs::OccupancyGridUpdate& update,
+                                              nav_grid::NavGrid<NumericType>& grid,
+                                              const std::vector<NumericType>& cost_interpretation_table)
+{
+  const nav_grid::NavGridInfo& info = grid.getInfo();
+  nav_core2::UIntBounds bounds(update.x, update.y, update.x + update.width - 1, update.y + update.height - 1);
+
+  unsigned int data_index = 0;
+  for (const nav_grid::Index& index : nav_grid_iterators::SubGrid(&info, bounds))
+  {
+    // Because OccupancyGridUpdate.msg defines its data as `int8[] data` we need to explicitly parameterize it as an
+    // unsigned char, otherwise it will be interpretted incorrectly.
+    NumericType value =
+      nav_grid_pub_sub::interpretCost<NumericType, unsigned char>(update.data[data_index++], cost_interpretation_table);
+    grid.setValue(index, value);
+  }
+  return bounds;
+}
+
 }  // namespace nav_grid_pub_sub
 
 #endif  // NAV_GRID_PUB_SUB_OCC_GRID_MESSAGE_UTILS_H
