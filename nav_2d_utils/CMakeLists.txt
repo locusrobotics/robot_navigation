@@ -30,7 +30,7 @@ catkin_package(
         tf
         xmlrpcpp
     INCLUDE_DIRS include
-    LIBRARIES conversions path_ops polygons
+    LIBRARIES bounds conversions path_ops polygons
 )
 
 include_directories(
@@ -47,6 +47,9 @@ add_dependencies(path_ops ${catkin_EXPORTED_TARGETS})
 
 add_library(polygons src/polygons.cpp src/footprint.cpp)
 target_link_libraries(polygons ${catkin_LIBRARIES})
+
+add_library(bounds src/bounds.cpp)
+target_link_libraries(bounds ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
@@ -67,7 +70,7 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(param_tests polygons ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 endif()
 
-install(TARGETS conversions path_ops polygons
+install(TARGETS bounds conversions path_ops polygons
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
