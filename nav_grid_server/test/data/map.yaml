@@ -1,0 +1,6 @@
+image: spectrum.png
+resolution: 0.050000
+origin: [0, 0, 0.000000]
+occupied_thresh: 0.650000
+free_thresh: 0.196000
+negate: 0
