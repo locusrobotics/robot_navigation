@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
     nav_msgs
     roscpp
 )
-find_package(OpenCV 4 REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(YAMLCPP yaml-cpp REQUIRED)
 
