@@ -77,7 +77,7 @@ std::vector<unsigned char> grayScaleInterpretation(const double free_threshold, 
     else
     {
       // scale from [free_threshold, occupied_threshold] to [1, 99]
-      cost_interpretation_table[i] = 99 * (intensity - free_threshold) / (occupied_threshold - free_threshold);
+      cost_interpretation_table[i] = 1 + 98 * (intensity - free_threshold) / (occupied_threshold - free_threshold);
     }
   }
   return cost_interpretation_table;
