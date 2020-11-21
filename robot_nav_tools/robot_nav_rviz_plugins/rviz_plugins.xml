@@ -1,0 +1,8 @@
+<class_libraries>
+  <library path="lib/librobot_nav_rviz_plugins">
+    <class name="Path2D" type="robot_nav_rviz_plugins::PathDisplay" base_class_type="rviz::Display">
+      <description>Display for nav_2d_msgs::Path2D</description>
+      <message_type>nav_2d_msgs/Path2D</message_type>
+    </class>
+  </library>
+</class_libraries>

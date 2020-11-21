@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>robot_nav_tools</name>
+  <version>0.2.6</version>
+  <description>A collection of tools / accessories for the robot_navigation packages</description>
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>color_util</exec_depend>
+  <exec_depend>robot_nav_rviz_plugins</exec_depend>
+  <exec_depend>robot_nav_viz_demos</exec_depend>
+  <export>
+   <metapackage/>
+  </export>
+</package>
