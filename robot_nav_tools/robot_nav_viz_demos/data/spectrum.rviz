@@ -1,0 +1,33 @@
+Panels:
+- Class: rviz/Displays
+  Name: Displays
+  Property Tree Widget:
+    Expanded:
+    - /Global Options1
+    - /SpectrumDisplay1
+  Tree Height: 549
+- Class: rviz/Views
+  Expanded:
+  - /Current View1
+  Name: Views
+Visualization Manager:
+  Displays:
+  - Alpha A: 1
+    Alpha B: 1
+    Class: robot_nav_rviz_plugins::SpectrumDisplay
+    Color A: 239; 41; 41
+    Color B: 41; 0; 226
+    Enabled: true
+    Name: SpectrumDisplay
+    Value: true
+  Tools:
+  - Class: rviz/MoveCamera
+  Views:
+    Current:
+      Angle: 1.57
+      Class: rviz/TopDownOrtho
+      Scale: 460
+      Value: TopDownOrtho (rviz)
+      X: 0.5
+      Y: 0.5
+    Saved: null
