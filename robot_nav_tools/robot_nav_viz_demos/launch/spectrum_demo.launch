@@ -1,0 +1,3 @@
+<launch>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_nav_viz_demos)/data/spectrum.rviz" output="screen" />
+</launch>
