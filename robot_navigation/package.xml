@@ -27,6 +27,7 @@
   <exec_depend>nav_grid</exec_depend>
   <exec_depend>nav_grid_iterators</exec_depend>
   <exec_depend>nav_grid_pub_sub</exec_depend>
+  <exec_depend>nav_grid_server</exec_depend>
   <export>
    <metapackage/>
  </export>
