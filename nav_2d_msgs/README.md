@@ -11,6 +11,8 @@ This package has basic message types for two dimensional navigation. Many of the
 ## Polygons
  * [`Polygon2D`](msg/Polygon2D.msg) - Like `geometry_msgs::Polygon` but with 64 bit precision and no `z` coordinate.
  * [`Polygon2DStamped`](msg/Polygon2DStamped.msg) - above with a header
+ * [`ComplexPolygon2D`](msg/ComplexPolygon2D.msg) - Non-simple Polygon2D, i.e. polygon with inner holes
+ * [`Polygon2DCollection`](msg/Polygon2DCollection.msg) - A list of complex polygons, with a header and an optional parallel list of colors.
 
 ## Twists
  * [`Twist2D`](msg/Twist2D.msg) - Like `geometry_msgs::Twist` but only `(x, y, theta)` (and not separated into linear and angular)
