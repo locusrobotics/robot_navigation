@@ -36,10 +36,15 @@
 #define NAV_2D_UTILS_CONVERSIONS_H
 
 #include <ros/ros.h>
+#include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/PolygonStamped.h>
 #include <nav_2d_msgs/Twist2D.h>
 #include <nav_2d_msgs/Path2D.h>
+#include <nav_2d_msgs/Point2D.h>
+#include <nav_2d_msgs/Polygon2D.h>
+#include <nav_2d_msgs/Polygon2DStamped.h>
 #include <nav_2d_msgs/Pose2DStamped.h>
 #include <nav_2d_msgs/NavGridInfo.h>
 #include <nav_2d_msgs/UIntBounds.h>
@@ -57,6 +62,12 @@ namespace nav_2d_utils
 geometry_msgs::Twist twist2Dto3D(const nav_2d_msgs::Twist2D& cmd_vel_2d);
 nav_2d_msgs::Twist2D twist3Dto2D(const geometry_msgs::Twist& cmd_vel);
 
+// Point Transformations
+nav_2d_msgs::Point2D pointToPoint2D(const geometry_msgs::Point& point);
+nav_2d_msgs::Point2D pointToPoint2D(const geometry_msgs::Point32& point);
+geometry_msgs::Point pointToPoint3D(const nav_2d_msgs::Point2D& point);
+geometry_msgs::Point32 pointToPoint32(const nav_2d_msgs::Point2D& point);
+
 // Pose Transformations
 nav_2d_msgs::Pose2DStamped stampedPoseToPose2D(const tf::Stamped<tf::Pose>& pose);
 nav_2d_msgs::Pose2DStamped poseStampedToPose2D(const geometry_msgs::PoseStamped& pose);
@@ -72,6 +83,12 @@ nav_2d_msgs::Path2D posesToPath2D(const std::vector<geometry_msgs::PoseStamped>&
 nav_msgs::Path poses2DToPath(const std::vector<geometry_msgs::Pose2D>& poses,
                              const std::string& frame, const ros::Time& stamp);
 nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d);
+
+// Polygon Transformations
+geometry_msgs::Polygon polygon2Dto3D(const nav_2d_msgs::Polygon2D& polygon_2d);
+nav_2d_msgs::Polygon2D polygon3Dto2D(const geometry_msgs::Polygon& polygon_3d);
+geometry_msgs::PolygonStamped polygon2Dto3D(const nav_2d_msgs::Polygon2DStamped& polygon_2d);
+nav_2d_msgs::Polygon2DStamped polygon3Dto2D(const geometry_msgs::PolygonStamped& polygon_3d);
 
 // Info Transformations
 nav_2d_msgs::NavGridInfo toMsg(const nav_grid::NavGridInfo& info);
