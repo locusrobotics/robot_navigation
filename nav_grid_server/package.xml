@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>nav_grid_server</name>
+  <version>0.2.5</version>
+  <description>Customizable tools for publishing images as NavGrids or OccupancyGrids</description>
+
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>libopencv-dev</depend>
+  <depend>nav_2d_utils</depend>
+  <depend>nav_grid</depend>
+  <depend>nav_grid_iterators</depend>
+  <depend>nav_grid_pub_sub</depend>
+  <depend>nav_msgs</depend>
+  <depend>roscpp</depend>
+  <test_depend>map_server</test_depend>
+  <test_depend>roslib</test_depend>
+  <test_depend>roslint</test_depend>
+
+</package>
