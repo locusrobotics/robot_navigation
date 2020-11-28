@@ -93,6 +93,8 @@ nav_2d_msgs::Polygon2DStamped polygon3Dto2D(const geometry_msgs::PolygonStamped&
 // Info Transformations
 nav_2d_msgs::NavGridInfo toMsg(const nav_grid::NavGridInfo& info);
 nav_grid::NavGridInfo fromMsg(const nav_2d_msgs::NavGridInfo& msg);
+geometry_msgs::Pose getOrigin3D(const nav_grid::NavGridInfo& info);
+geometry_msgs::Pose2D getOrigin2D(const nav_grid::NavGridInfo& info);
 nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata, const std::string& frame);
 nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info);
 

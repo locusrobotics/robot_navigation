@@ -44,6 +44,9 @@ Also, `nav_msgs::Path posesToPath(std::vector<geometry_msgs::PoseStamped>)`
 | -- | -- |
 |`nav_grid::NavGridInfo infoToInfo(nav_msgs::MapMetaData, std::string)` | `nav_msgs::MapMetaData infoToInfo(nav_grid::NavGridInfo)`
 
+| to two dimensional pose | to three dimensional pose |
+| -- | -- |
+| `Pose2D getOrigin2D(nav_grid::NavGridInfo)` | `geometry_msgs::Pose getOrigin3D(nav_grid::NavGridInfo)`|
 
 ## Bounds Transformations
 | to `nav_2d_msgs` | from `nav_2d_msgs` |
