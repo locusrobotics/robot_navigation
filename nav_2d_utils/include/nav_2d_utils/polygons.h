@@ -37,6 +37,7 @@
 
 #include <ros/ros.h>
 #include <nav_2d_msgs/Polygon2D.h>
+#include <nav_2d_msgs/ComplexPolygon2D.h>
 #include <geometry_msgs/Pose2D.h>
 #include <vector>
 #include <string>
@@ -168,6 +169,30 @@ bool isInside(const nav_2d_msgs::Polygon2D& polygon, const double x, const doubl
  * @param[out] max_dist
  */
 void calculateMinAndMaxDistances(const nav_2d_msgs::Polygon2D& polygon, double& min_dist, double& max_dist);
+
+/**
+ * @brief Decompose a complex polygon into a set of triangles.
+ *
+ * See https://en.wikipedia.org/wiki/Polygon_triangulation
+ *
+ * Implementation from https://github.com/mapbox/earcut.hpp
+ *
+ * @param polygon The complex polygon to deconstruct
+ * @return A vector of points where each set of three points represents a triangle
+ */
+std::vector<nav_2d_msgs::Point2D> triangulate(const nav_2d_msgs::ComplexPolygon2D& polygon);
+
+/**
+ * @brief Decompose a simple polygon into a set of triangles.
+ *
+ * See https://en.wikipedia.org/wiki/Polygon_triangulation
+ *
+ * Implementation from https://github.com/mapbox/earcut.hpp
+ *
+ * @param polygon The polygon to deconstruct
+ * @return A vector of points where each set of three points represents a triangle
+ */
+std::vector<nav_2d_msgs::Point2D> triangulate(const nav_2d_msgs::Polygon2D& polygon);
 
 }  // namespace nav_2d_utils
 

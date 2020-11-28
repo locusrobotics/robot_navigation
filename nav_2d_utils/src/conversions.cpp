@@ -57,6 +57,38 @@ nav_2d_msgs::Twist2D twist3Dto2D(const geometry_msgs::Twist& cmd_vel)
   return cmd_vel_2d;
 }
 
+nav_2d_msgs::Point2D pointToPoint2D(const geometry_msgs::Point& point)
+{
+  nav_2d_msgs::Point2D output;
+  output.x = point.x;
+  output.y = point.y;
+  return output;
+}
+
+nav_2d_msgs::Point2D pointToPoint2D(const geometry_msgs::Point32& point)
+{
+  nav_2d_msgs::Point2D output;
+  output.x = point.x;
+  output.y = point.y;
+  return output;
+}
+
+geometry_msgs::Point pointToPoint3D(const nav_2d_msgs::Point2D& point)
+{
+  geometry_msgs::Point output;
+  output.x = point.x;
+  output.y = point.y;
+  return output;
+}
+
+geometry_msgs::Point32 pointToPoint32(const nav_2d_msgs::Point2D& point)
+{
+  geometry_msgs::Point32 output;
+  output.x = point.x;
+  output.y = point.y;
+  return output;
+}
+
 nav_2d_msgs::Pose2DStamped stampedPoseToPose2D(const tf::Stamped<tf::Pose>& pose)
 {
   nav_2d_msgs::Pose2DStamped pose2d;
@@ -181,6 +213,44 @@ nav_msgs::Path pathToPath(const nav_2d_msgs::Path2D& path2d)
     path.poses[i].pose = pose2DToPose(path2d.poses[i]);
   }
   return path;
+}
+
+geometry_msgs::Polygon polygon2Dto3D(const nav_2d_msgs::Polygon2D& polygon_2d)
+{
+  geometry_msgs::Polygon polygon;
+  polygon.points.reserve(polygon_2d.points.size());
+  for (const auto& pt : polygon_2d.points)
+  {
+    polygon.points.push_back(pointToPoint32(pt));
+  }
+  return polygon;
+}
+
+nav_2d_msgs::Polygon2D polygon3Dto2D(const geometry_msgs::Polygon& polygon_3d)
+{
+  nav_2d_msgs::Polygon2D polygon;
+  polygon.points.reserve(polygon_3d.points.size());
+  for (const auto& pt : polygon_3d.points)
+  {
+    polygon.points.push_back(pointToPoint2D(pt));
+  }
+  return polygon;
+}
+
+geometry_msgs::PolygonStamped polygon2Dto3D(const nav_2d_msgs::Polygon2DStamped& polygon_2d)
+{
+  geometry_msgs::PolygonStamped polygon;
+  polygon.header = polygon_2d.header;
+  polygon.polygon = polygon2Dto3D(polygon_2d.polygon);
+  return polygon;
+}
+
+nav_2d_msgs::Polygon2DStamped polygon3Dto2D(const geometry_msgs::PolygonStamped& polygon_3d)
+{
+  nav_2d_msgs::Polygon2DStamped polygon;
+  polygon.header = polygon_3d.header;
+  polygon.polygon = polygon3Dto2D(polygon_3d.polygon);
+  return polygon;
 }
 
 nav_2d_msgs::NavGridInfo toMsg(const nav_grid::NavGridInfo& info)

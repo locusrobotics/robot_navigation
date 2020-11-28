@@ -48,5 +48,5 @@ There are also a handful of methods for examining/manipulating polygons
  * `equals` - check if two polygons are equal
  * `movePolygonToPose` - translate and rotate a polygon
  * `isInside` - check if a point is inside a polygon
- * `distanceToLine` - helper method to calculate the shortest distance from a point to a line
  * `calculateMinAndMaxDistances` - Calculate the minimum and maximum distance from the origin of a polygon
+ * `triangulate` - Decompose a polygon into a set of non-overlapping triangles using an open source implementation of the [earcut algorithm](https://github.com/mapbox/earcut.hpp)
