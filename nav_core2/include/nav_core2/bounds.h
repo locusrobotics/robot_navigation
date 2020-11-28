@@ -42,6 +42,19 @@
 namespace nav_core2
 {
 /**
+ * @brief Templatized method for checking if a value falls inside a one-dimensional range
+ * @param value     The value to check
+ * @param min_value The minimum value of the range
+ * @param max_value The maximum value of the range
+ * @return True if the value is within the range
+ */
+template <typename NumericType>
+inline bool inRange(const NumericType value, const NumericType min_value, const NumericType max_value)
+{
+  return min_value <= value && value <= max_value;
+}
+
+/**
  * @class GenericBounds
  * @brief Templatized class that represents a two dimensional bounds with ranges [min_x, max_x] [min_y, max_y] inclusive
  */
@@ -120,6 +133,38 @@ public:
   }
 
   /**
+   * @brief Returns true if the point is inside this range
+   */
+  bool contains(NumericType x, NumericType y) const
+  {
+    return inRange(x, min_x_, max_x_) && inRange(y, min_y_, max_y_);
+  }
+
+  /**
+   * @brief returns true if the two bounds overlap each other
+   */
+  bool overlaps(const GenericBounds<NumericType>& other) const
+  {
+    return !isEmpty() && !other.isEmpty()
+             && max_y_ >= other.min_y_ && min_y_ <= other.max_y_
+             && max_x_ >= other.min_x_ && min_x_ <= other.max_x_;
+  }
+
+  /**
+   * @brief comparison operator that requires all fields are equal
+   */
+  bool operator==(const GenericBounds<NumericType>& other) const
+  {
+    return min_x_ == other.min_x_ && min_y_ == other.min_y_ &&
+           max_x_ == other.max_x_ && max_y_ == other.max_y_;
+  }
+
+  bool operator!=(const GenericBounds<NumericType>& other) const
+  {
+    return !operator==(other);
+  }
+
+  /**
    * @brief Returns a string representation of the bounds
    */
   std::string toString() const
@@ -146,12 +191,17 @@ protected:
 
 using Bounds = GenericBounds<double>;
 
+inline unsigned int getDimension(unsigned int min_v, unsigned int max_v)
+{
+  return (min_v > max_v) ? 0 : max_v - min_v + 1;
+}
+
 class UIntBounds : public GenericBounds<unsigned int>
 {
 public:
   using GenericBounds<unsigned int>::GenericBounds;
-  unsigned int getWidth() const { return max_x_ - min_x_ + 1; }
-  unsigned int getHeight() const { return max_y_ - min_y_ + 1; }
+  unsigned int getWidth() const { return getDimension(min_x_, max_x_); }
+  unsigned int getHeight() const { return getDimension(min_y_, max_y_); }
 };
 
 }  // namespace nav_core2
