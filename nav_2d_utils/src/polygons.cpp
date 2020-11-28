@@ -34,6 +34,7 @@
 
 #include <nav_2d_utils/polygons.h>
 #include <nav_2d_utils/geometry_help.h>
+#include <mapbox/earcut.hpp>
 #include <algorithm>
 #include <limits>
 #include <string>
@@ -427,5 +428,75 @@ void calculateMinAndMaxDistances(const nav_2d_msgs::Polygon2D& polygon, double& 
   min_dist = std::min(min_dist, std::min(vertex_dist, edge_dist));
   max_dist = std::max(max_dist, std::max(vertex_dist, edge_dist));
 }
+}  // namespace nav_2d_utils
+
+// Adapt Point2D for use with the triangulation library
+namespace mapbox
+{
+namespace util
+{
+template <>
+struct nth<0, nav_2d_msgs::Point2D>
+{
+  inline static double get(const nav_2d_msgs::Point2D& point)
+  {
+    return point.x;
+  };
+};
+
+template <>
+struct nth<1, nav_2d_msgs::Point2D>
+{
+  inline static double get(const nav_2d_msgs::Point2D& point)
+  {
+    return point.y;
+  };
+};
+
+}  // namespace util
+}  // namespace mapbox
+
+
+namespace nav_2d_utils
+{
+std::vector<nav_2d_msgs::Point2D> triangulate(const nav_2d_msgs::ComplexPolygon2D& polygon)
+{
+  // Compute the triangulation
+  std::vector<std::vector<nav_2d_msgs::Point2D>> rings;
+  rings.reserve(1 + polygon.inner.size());
+  rings.push_back(polygon.outer.points);
+  for (const nav_2d_msgs::Polygon2D& inner : polygon.inner)
+  {
+    rings.push_back(inner.points);
+  }
+  std::vector<unsigned int> indices = mapbox::earcut<unsigned int>(rings);
+
+  // Create a sequential point index. The triangulation results are indices in this vector.
+  std::vector<nav_2d_msgs::Point2D> points;
+  for (const auto& ring : rings)
+  {
+    for (const nav_2d_msgs::Point2D& point : ring)
+    {
+      points.push_back(point);
+    }
+  }
+
+  // Construct the output triangles
+  std::vector<nav_2d_msgs::Point2D> result;
+  result.reserve(indices.size());
+  for (unsigned int index : indices)
+  {
+    result.push_back(points[index]);
+  }
+  return result;
+}
+
+std::vector<nav_2d_msgs::Point2D> triangulate(const nav_2d_msgs::Polygon2D& polygon)
+{
+  nav_2d_msgs::ComplexPolygon2D complex;
+  complex.outer = polygon;
+  return triangulate(complex);
+}
+
 
 }  // namespace nav_2d_utils

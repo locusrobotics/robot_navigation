@@ -1,0 +1,2 @@
+A C++ port of earcut.js, a fast, header-only polygon triangulation library.
+https://github.com/mapbox/earcut.hpp
