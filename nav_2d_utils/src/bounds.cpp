@@ -34,6 +34,9 @@
 
 #include <nav_2d_utils/bounds.h>
 #include <nav_grid/coordinate_conversion.h>
+#include <algorithm>
+#include <stdexcept>
+#include <vector>
 
 namespace nav_2d_utils
 {
@@ -63,5 +66,37 @@ nav_core2::Bounds translateBounds(const nav_grid::NavGridInfo& info, const nav_c
   gridToWorld(info, bounds.getMinX(), bounds.getMinY(), min_x, min_y);
   gridToWorld(info, bounds.getMaxX(), bounds.getMaxY(), max_x, max_y);
   return nav_core2::Bounds(min_x, min_y, max_x, max_y);
+}
+
+std::vector<nav_core2::UIntBounds> divideBounds(const nav_core2::UIntBounds& original_bounds,
+                                                unsigned int n_cols, unsigned int n_rows)
+{
+  if (n_cols * n_rows == 0)
+  {
+    throw std::invalid_argument("Number of rows and columns must be positive (not zero)");
+  }
+  unsigned int full_width = original_bounds.getWidth(),
+               full_height = original_bounds.getHeight();
+
+  unsigned int small_width = static_cast<unsigned int>(ceil(static_cast<double>(full_width) / n_cols)),
+               small_height = static_cast<unsigned int>(ceil(static_cast<double>(full_height) / n_rows));
+
+  std::vector<nav_core2::UIntBounds> divided;
+
+  for (unsigned int row = 0; row < n_rows; row++)
+  {
+    unsigned int min_y = original_bounds.getMinY() + small_height * row;
+    unsigned int max_y = std::min(min_y + small_height - 1, original_bounds.getMaxY());
+
+    for (unsigned int col = 0; col < n_cols; col++)
+    {
+      unsigned int min_x = original_bounds.getMinX() + small_width * col;
+      unsigned int max_x = std::min(min_x + small_width - 1, original_bounds.getMaxX());
+      nav_core2::UIntBounds sub(min_x, min_y, max_x, max_y);
+      if (!sub.isEmpty())
+        divided.push_back(sub);
+    }
+  }
+  return divided;
 }
 }  // namespace nav_2d_utils
