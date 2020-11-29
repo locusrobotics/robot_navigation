@@ -75,6 +75,17 @@ nav_core2::UIntBounds translateBounds(const nav_grid::NavGridInfo& info, const n
  */
 nav_core2::Bounds translateBounds(const nav_grid::NavGridInfo& info, const nav_core2::UIntBounds& bounds);
 
+/**
+ * @brief divide the given bounds up into sub-bounds of roughly equal size
+ * @param original_bounds The original bounds to divide
+ * @param n_cols Positive number of columns to divide the bounds into
+ * @param n_rows Positive number of rows to divide the bounds into
+ * @return vector of a maximum of n_cols*n_rows nonempty bounds
+ * @throws std::invalid_argument when n_cols or n_rows is zero
+ */
+std::vector<nav_core2::UIntBounds> divideBounds(const nav_core2::UIntBounds& original_bounds,
+                                                unsigned int n_cols, unsigned int n_rows);
+
 }  // namespace nav_2d_utils
 
 #endif  // NAV_2D_UTILS_BOUNDS_H

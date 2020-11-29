@@ -70,6 +70,9 @@ if(CATKIN_ENABLE_TESTING)
   catkin_add_gtest(resolution_test test/resolution_test.cpp)
   target_link_libraries(resolution_test path_ops ${catkin_LIBRARIES})
 
+  catkin_add_gtest(bounds_test test/bounds_test.cpp)
+  target_link_libraries(bounds_test bounds ${catkin_LIBRARIES})
+
   add_rostest_gtest(param_tests test/param_tests.launch test/param_tests.cpp)
   target_link_libraries(param_tests polygons ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 endif()

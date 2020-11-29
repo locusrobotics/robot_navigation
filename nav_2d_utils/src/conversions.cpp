@@ -294,15 +294,30 @@ nav_grid::NavGridInfo infoToInfo(const nav_msgs::MapMetaData& metadata, const st
   return info;
 }
 
+geometry_msgs::Pose getOrigin3D(const nav_grid::NavGridInfo& info)
+{
+  geometry_msgs::Pose origin;
+  origin.position.x = info.origin_x;
+  origin.position.y = info.origin_y;
+  origin.orientation.w = 1.0;
+  return origin;
+}
+
+geometry_msgs::Pose2D getOrigin2D(const nav_grid::NavGridInfo& info)
+{
+  geometry_msgs::Pose2D origin;
+  origin.x = info.origin_x;
+  origin.y = info.origin_y;
+  return origin;
+}
+
 nav_msgs::MapMetaData infoToInfo(const nav_grid::NavGridInfo & info)
 {
   nav_msgs::MapMetaData metadata;
   metadata.resolution = info.resolution;
   metadata.width = info.width;
   metadata.height = info.height;
-  metadata.origin.position.x = info.origin_x;
-  metadata.origin.position.y = info.origin_y;
-  metadata.origin.orientation.w = 1.0;
+  metadata.origin = getOrigin3D(info);
   return metadata;
 }
 
