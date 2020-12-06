@@ -54,9 +54,6 @@ public:
    * @param min_y Minimum index (y coordinate)
    * @param width Number of indexes in the x direction
    * @param height Number of indexes in the y direction
-   *
-   * @note No bounds checking is done for any of the coordinates. Assumes (min_x, min_y) and
-   * (min_x + width - 1, min_y + height - 1) are valid in the grid.
    */
   SubGrid(const nav_grid::NavGridInfo* info, unsigned int min_x, unsigned int min_y,
           unsigned int width, unsigned int height)
@@ -78,13 +75,18 @@ public:
    * @param min_y Minimum index (y coordinate)
    * @param width Number of indexes in the x direction
    * @param height Number of indexes in the y direction
-   *
-   * @note No bounds checking is done for any of the coordinates. Assumes (min_x, min_y) and
-   * (min_x + width - 1, min_y + height - 1) are valid in the grid.
    */
   SubGrid(const nav_grid::NavGridInfo* info, const nav_grid::Index& index, unsigned int min_x, unsigned int min_y,
-          unsigned int width, unsigned int height)
-    : BaseIterator(info, index), min_x_(min_x), min_y_(min_y), width_(width), height_(height) {}
+          unsigned int width, unsigned int height);
+
+  /**
+   * @brief Public constructor using UIntBounds object that takes in an arbitrary index
+   * @param info NavGridInfo for the grid to iterate over
+   * @param index Initial index
+   * @param bounds UIntBounds
+   */
+  SubGrid(const nav_grid::NavGridInfo* info, const nav_grid::Index& index, const nav_core2::UIntBounds& bounds)
+    : SubGrid(info, index, bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight()) {}
 
   /**@name Standard BaseIterator Interface */
   /**@{*/
