@@ -117,6 +117,24 @@ TEST(SubGrid, sub_grid)
   ASSERT_EQ(countIterations(nav_grid_iterators::SubGrid(&info, 1, 3, 2, 2)), 4);
   nav_core2::UIntBounds bounds(1, 3, 4, 3);
   ASSERT_EQ(countIterations(nav_grid_iterators::SubGrid(&info, bounds)), 4);
+
+  // Empty Bounds
+  bounds.reset();
+  ASSERT_EQ(countIterations(nav_grid_iterators::SubGrid(&info, bounds)), 0);
+
+  // Partially Overlapping Bounds
+  bounds.touch(3, 2);
+  bounds.touch(6, 3);
+  ASSERT_EQ(countIterations(nav_grid_iterators::SubGrid(&info, bounds)), 4);
+
+  bounds.reset();
+  bounds.touch(1, 6);
+  bounds.touch(3, 9);
+  ASSERT_EQ(countIterations(nav_grid_iterators::SubGrid(&info, bounds)), 6);
+
+  // Different empty bounds
+  nav_core2::UIntBounds empty(1, 0, 0, 0);
+  ASSERT_EQ(countIterations(nav_grid_iterators::SubGrid(&info, empty)), 0);
 }
 
 TEST(SubGrid, equality)
