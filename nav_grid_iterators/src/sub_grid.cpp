@@ -36,6 +36,35 @@
 
 namespace nav_grid_iterators
 {
+SubGrid::SubGrid(const nav_grid::NavGridInfo* info, const nav_grid::Index& index,
+                 unsigned int min_x, unsigned int min_y,
+                 unsigned int width, unsigned int height)
+  : BaseIterator(info, index), min_x_(min_x), min_y_(min_y), width_(width), height_(height)
+{
+  // If the start coordinate is entirely off the grid or the size is 0
+  // we invalidate the entire iterator and give up immediately
+  if (min_x_ >= info->width || min_y_ >= info->height || width_ == 0 || height_ == 0)
+  {
+    index_ = nav_grid::Index(0, 0);
+    width_ = 0;
+    height_ = 0;
+    min_x_ = 0;
+    min_y_ = 0;
+    return;
+  }
+
+  // If the end coordinate is off the grid, we shorten the dimensions to
+  // cover the on-grid potion
+  if (min_x_ + width_ > info->width)
+  {
+    width_ = info->width - min_x_;
+  }
+  if (min_y_ + height_ > info->height)
+  {
+    height_ = info->height - min_y_;
+  }
+}
+
 SubGrid SubGrid::begin() const
 {
   return SubGrid(info_, min_x_, min_y_, width_, height_);
