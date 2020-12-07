@@ -4,5 +4,17 @@
       <description>Display for nav_2d_msgs::Path2D</description>
       <message_type>nav_2d_msgs/Path2D</message_type>
     </class>
+    <class name="Polygon2D" type="robot_nav_rviz_plugins::PolygonDisplay" base_class_type="rviz::Display">
+      <message_type>nav_2d_msgs/Polygon2DStamped</message_type>
+      <description>Display for nav_2d_msgs::Polygon2D</description>
+    </class>
+    <class name="Polygon3D" type="robot_nav_rviz_plugins::Polygon3DDisplay" base_class_type="rviz::Display">
+      <message_type>geometry_msgs/PolygonStamped</message_type>
+      <description>Display for geometry_msgs::PolygonStamped</description>
+    </class>
+    <class name="Polygons" type="robot_nav_rviz_plugins::PolygonsDisplay" base_class_type="rviz::Display">
+      <message_type>nav_2d_msgs/Polygon2DCollection</message_type>
+      <description>Display for nav_2d_msgs::Polygon2DCollection</description>
+    </class>
   </library>
 </class_libraries>
