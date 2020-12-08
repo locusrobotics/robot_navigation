@@ -1,0 +1,4 @@
+<launch>
+    <node name="polygon" pkg="robot_nav_viz_demos" type="polygon" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_nav_viz_demos)/data/demo_polygons.rviz" required="true" output="screen"/>
+</launch>

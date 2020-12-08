@@ -31,62 +31,51 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef ROBOT_NAV_RVIZ_PLUGINS_POLYGON_DISPLAY_H
+#define ROBOT_NAV_RVIZ_PLUGINS_POLYGON_DISPLAY_H
 
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-
-#include <geometry_msgs/Pose2D.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
+#include <nav_2d_msgs/Polygon2DStamped.h>
+#include <rviz/message_filter_display.h>
+#include <rviz/properties/enum_property.h>
+#include <rviz/properties/color_property.h>
+#include <rviz/properties/float_property.h>
+#include <robot_nav_rviz_plugins/polygon_parts.h>
+#include <OgreManualObject.h>
+#include <OgreMaterial.h>
+#include <string>
 #include <vector>
 
 namespace robot_nav_rviz_plugins
 {
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
+/**
+ * @brief Displays a nav_2d_msgs::Polygon2DStamped message in Rviz
+ */
+class PolygonDisplay: public rviz::MessageFilterDisplay<nav_2d_msgs::Polygon2DStamped>
 {
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
-}
+Q_OBJECT
+public:
+  PolygonDisplay();
+  virtual ~PolygonDisplay();
+  void reset() override;
 
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
-{
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
-}
+protected:
+  void onInitialize() override;
+  void processMessage(const nav_2d_msgs::Polygon2DStamped::ConstPtr& msg) override;
 
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
-{
-  for (const auto& element : vec)
-  {
-    if (!validateFloats(element)) return false;
-  }
-  return true;
-}
+private Q_SLOTS:
+  void updateStyle();
 
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
-{
-  return validateFloats(msg.poses);
-}
+private:
+  PolygonOutline* outline_object_;
+  PolygonFill* filler_object_;
+  PolygonMaterial polygon_material_;
 
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
-
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
-  {
-    if (!validateFloats(inner)) return false;
-  }
-  return true;
-}
-
+  PolygonDisplayModeProperty* mode_property_;
+  rviz::FloatProperty* zoffset_property_;
+  rviz::ColorProperty* outline_color_property_;
+  rviz::ColorProperty* filler_color_property_;
+  rviz::FloatProperty* filler_alpha_property_;
+};
 }  // namespace robot_nav_rviz_plugins
 
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#endif  // ROBOT_NAV_RVIZ_PLUGINS_POLYGON_DISPLAY_H
