@@ -31,62 +31,62 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef ROBOT_NAV_RVIZ_PLUGINS_POLYGONS_DISPLAY_H
+#define ROBOT_NAV_RVIZ_PLUGINS_POLYGONS_DISPLAY_H
 
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-
-#include <geometry_msgs/Pose2D.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
+#include <nav_2d_msgs/Polygon2DCollection.h>
+#include <rviz/message_filter_display.h>
+#include <rviz/properties/enum_property.h>
+#include <rviz/properties/color_property.h>
+#include <rviz/properties/float_property.h>
+#include <robot_nav_rviz_plugins/polygon_parts.h>
+#include <OgreManualObject.h>
+#include <OgreMaterial.h>
+#include <string>
 #include <vector>
 
 namespace robot_nav_rviz_plugins
 {
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
+/**
+ * @brief Displays a nav_2d_msgs::Polygon2DCollection message in Rviz
+ */
+class PolygonsDisplay: public rviz::MessageFilterDisplay<nav_2d_msgs::Polygon2DCollection>
 {
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
-}
+Q_OBJECT
+public:
+  PolygonsDisplay();
+  virtual ~PolygonsDisplay();
+  void reset() override;
 
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
-{
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
-}
+protected:
+  void processMessage(const nav_2d_msgs::Polygon2DCollection::ConstPtr& msg) override;
+  void resetOutlines();
+  void resetFillers();
 
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
-{
-  for (const auto& element : vec)
-  {
-    if (!validateFloats(element)) return false;
-  }
-  return true;
-}
+private Q_SLOTS:
+  void updateStyle();
+  void updateProperties();
 
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
-{
-  return validateFloats(msg.poses);
-}
+private:
+  std::vector<nav_2d_msgs::Polygon2D> saved_outlines_;
+  nav_2d_msgs::Polygon2DCollection saved_polygons_;
 
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
+  std::vector<PolygonOutline*> outline_objects_;
+  std::vector<PolygonFill*> filler_objects_;
+  PolygonMaterial polygon_material_;
 
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
-  {
-    if (!validateFloats(inner)) return false;
-  }
-  return true;
-}
+  PolygonDisplayModeProperty* mode_property_;
+  rviz::FloatProperty* zoffset_property_;
+  rviz::ColorProperty* outline_color_property_;
+  rviz::ColorProperty* filler_color_property_;
+  rviz::FloatProperty* filler_alpha_property_;
 
+  enum struct FillColorMode {SINGLE, FROM_MSG, UNIQUE};
+  FillColorMode getFillColorMode() const { return static_cast<FillColorMode>(color_mode_property_->getOptionInt()); }
+  rviz::EnumProperty* color_mode_property_;
+
+  std::vector<std_msgs::ColorRGBA> unique_colors_;
+};
 }  // namespace robot_nav_rviz_plugins
 
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#endif  // ROBOT_NAV_RVIZ_PLUGINS_POLYGONS_DISPLAY_H

@@ -1,0 +1,43 @@
+Panels:
+- Class: rviz/Displays
+  Name: Displays
+  Tree Height: 549
+- Class: rviz/Views
+  Name: Views
+Visualization Manager:
+  Displays:
+  - Class: rviz/Grid
+    Name: Grid
+    Value: true
+  - Class: Polygon2D
+    Enabled: true
+    Name: Polygon2D
+    Topic: /polygon/polygon
+  - Class: Polygons
+    Enabled: true
+    Name: Polygons
+    Topic: /polygon/polygons
+  - Class: rviz/Polygon
+    Enabled: false
+    Name: Old Style Polygon3D
+    Topic: /polygon/polygon3d
+  - Alpha: 1
+    Class: Polygon3D
+    Enabled: true
+    Fill Color: 255; 255; 255
+    Name: New Style Polygon3D
+    Outline Color: 239; 41; 41
+    Topic: /polygon/polygon3d
+  Tools:
+  - Class: rviz/MoveCamera
+  Views:
+    Current:
+      Distance: 14
+      Pitch: 0.870
+      Value: Orbit (rviz)
+      Yaw: 1.0
+Window Geometry:
+  Height: 846
+  Width: 1200
+  X: 60
+  Y: 0
