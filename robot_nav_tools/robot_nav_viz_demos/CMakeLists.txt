@@ -3,8 +3,14 @@ project(robot_nav_viz_demos)
 set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED COMPONENTS
+    angles
     color_util
+    geometry_msgs
+    nav_2d_msgs
+    nav_2d_utils
     pluginlib
+    robot_nav_rviz_plugins
+    roscpp
     rviz
 )
 
@@ -20,8 +26,14 @@ add_definitions(-DQT_NO_KEYWORDS)
 
 catkin_package(
     CATKIN_DEPENDS
+        angles
         color_util
+        geometry_msgs
+        nav_2d_msgs
+        nav_2d_utils
         pluginlib
+        robot_nav_rviz_plugins
+        roscpp
         rviz
     LIBRARIES spectrum_display
     INCLUDE_DIRS include
@@ -40,6 +52,10 @@ add_library(spectrum_display
 add_dependencies(spectrum_display ${catkin_EXPORTED_TARGETS})
 target_link_libraries(spectrum_display ${QT_LIBRARIES} ${catkin_LIBRARIES})
 
+add_executable(polygon src/polygon_display.cpp)
+add_dependencies(polygon ${catkin_EXPORTED_TARGETS})
+target_link_libraries(polygon ${catkin_LIBRARIES})
+
 if(CATKIN_ENABLE_TESTING)
   find_package(catkin REQUIRED COMPONENTS roslaunch roslint)
   roslint_cpp()
@@ -55,11 +71,14 @@ install(TARGETS spectrum_display
 install(FILES rviz_plugins.xml
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-install(FILES data/spectrum.rviz
+install(FILES data/demo_polygons.rviz data/spectrum.rviz
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/data
 )
-install(FILES launch/spectrum_demo.launch
+install(FILES launch/polygons.launch launch/spectrum_demo.launch
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)
+install(TARGETS polygon
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(DIRECTORY include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

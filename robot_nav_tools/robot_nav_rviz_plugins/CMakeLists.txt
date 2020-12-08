@@ -3,11 +3,13 @@ project(robot_nav_rviz_plugins)
 set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED COMPONENTS
+    color_util
     geometry_msgs
     nav_2d_msgs
     nav_2d_utils
     pluginlib
     rviz
+    std_msgs
 )
 
 set(CMAKE_AUTOMOC ON)
@@ -22,11 +24,13 @@ add_definitions(-DQT_NO_KEYWORDS)
 
 catkin_package(
     CATKIN_DEPENDS
+        color_util
         geometry_msgs
         nav_2d_msgs
         nav_2d_utils
         pluginlib
         rviz
+        std_msgs
     LIBRARIES robot_nav_rviz_plugins
     INCLUDE_DIRS include
 )
@@ -35,10 +39,17 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 qt5_wrap_cpp(MOC_FILES
   include/robot_nav_rviz_plugins/path_display.h
+  include/robot_nav_rviz_plugins/polygon_display.h
+  include/robot_nav_rviz_plugins/polygon3d_display.h
+  include/robot_nav_rviz_plugins/polygons_display.h
 )
 
 add_library(robot_nav_rviz_plugins
     src/path_display.cpp
+    src/polygon_display.cpp
+    src/polygon3d_display.cpp
+    src/polygons_display.cpp
+    src/polygon_parts.cpp
     ${MOC_FILES}
 )
 add_dependencies(robot_nav_rviz_plugins ${catkin_EXPORTED_TARGETS})
