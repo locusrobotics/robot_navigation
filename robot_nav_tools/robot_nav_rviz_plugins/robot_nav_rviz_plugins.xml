@@ -1,0 +1,38 @@
+<library path="lib/libbasic_palettes">
+  <class type="robot_nav_rviz_plugins::RawPalette" base_class_type="robot_nav_rviz_plugins::NavGridPalette">
+    <description>
+      Palette with grayscale for [0, 100], blueish gray for unknown and other colors for "illegal" values
+    </description>
+  </class>
+  <class type="robot_nav_rviz_plugins::CostmapPalette" base_class_type="robot_nav_rviz_plugins::NavGridPalette">
+    <description>
+      Palette with invisible 0, blue/red spectrum for [1, 98], cyan for 99, purple for 100, blueish gray for unknown,
+      and other colors for "illegal" values.
+    </description>
+  </class>
+  <class type="robot_nav_rviz_plugins::MapPalette" base_class_type="robot_nav_rviz_plugins::NavGridPalette">
+    <description>
+      Palette that covers a black to white spectrum.
+    </description>
+  </class>
+  <class type="robot_nav_rviz_plugins::RainbowPalette" base_class_type="robot_nav_rviz_plugins::NavGridPalette">
+    <description>
+      Rainbow hued palette from purple to red with transparent 0
+    </description>
+  </class>
+  <class type="robot_nav_rviz_plugins::Rainbow2Palette" base_class_type="robot_nav_rviz_plugins::NavGridPalette">
+    <description>
+      Rainbow hued palette from red to purple with transparent 0
+    </description>
+  </class>
+  <class type="robot_nav_rviz_plugins::BluesPalette" base_class_type="robot_nav_rviz_plugins::NavGridPalette">
+    <description>
+      Palette with a gradient of blues from dark to light
+    </description>
+  </class>
+  <class type="robot_nav_rviz_plugins::DistinctPalette" base_class_type="robot_nav_rviz_plugins::NavGridPalette">
+    <description>
+      Palette with 55 unique colors for when adjacent values have no relation to each other. 0 is transparent.
+    </description>
+  </class>
+</library>

@@ -32,69 +32,53 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-
-#include <geometry_msgs/Pose2D.h>
-#include <nav_grid/nav_grid_info.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
-#include <vector>
+#include <robot_nav_rviz_plugins/nav_grid_display.h>
+#include <nav_msgs/OccupancyGrid.h>
+#include <nav_grid_pub_sub/nav_grid_subscriber.h>
+#include <string>
 
 namespace robot_nav_rviz_plugins
 {
-inline bool validateFloats(const nav_grid::NavGridInfo& info)
+/**
+ * @brief Displays an OccupancyGrid along the XY plane.
+ *
+ * Works the same as `rviz::MapDisplay` with the added benefits of `NavGridDisplay`
+ */
+class OccupancyGridDisplay: public NavGridDisplay
 {
-  return rviz::validateFloats(info.resolution)
-      && rviz::validateFloats(info.origin_x)
-      && rviz::validateFloats(info.origin_y);
-}
-
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
-{
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
-}
-
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
-{
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
-}
-
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
-{
-  for (const auto& element : vec)
+public:
+  OccupancyGridDisplay()
+    : NavGridDisplay(ros::message_traits::datatype<nav_msgs::OccupancyGrid>())
+    , sub_(panel_data_)  // set up the subscriber to update directly into `panel_data_`
   {
-    if (!validateFloats(element)) return false;
   }
-  return true;
-}
 
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
-{
-  return validateFloats(msg.poses);
-}
-
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
-
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
+  void onSubscribe(const std::string& topic) override
   {
-    if (!validateFloats(inner)) return false;
+    // Same arguments as in NavGridOfCharsDisplay but the penultimate parameter false means
+    // subscribe to OccupancyGrids instead of NavGrids
+    sub_.init(update_nh_, std::bind(&OccupancyGridDisplay::newDataCallback, this, std::placeholders::_1),
+              topic, false, true);
   }
-  return true;
-}
 
+  void onUnsubscribe() override
+  {
+    sub_.deactivate();
+  }
+
+protected:
+  void newDataCallback(const nav_core2::UIntBounds& bounds)
+  {
+    if (bounds.isEmpty())
+    {
+      return;
+    }
+    Q_EMIT mapUpdated(bounds);
+  }
+
+  nav_grid_pub_sub::NavGridSubscriber sub_;
+};
 }  // namespace robot_nav_rviz_plugins
 
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#include <pluginlib/class_list_macros.hpp>
+PLUGINLIB_EXPORT_CLASS(robot_nav_rviz_plugins::OccupancyGridDisplay, rviz::Display)

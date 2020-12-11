@@ -32,69 +32,62 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-
-#include <geometry_msgs/Pose2D.h>
-#include <nav_grid/nav_grid_info.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
+#include <robot_nav_rviz_plugins/spectrum_palette.h>
+#include <color_util/convert.h>
+#include <color_util/blend.h>
 #include <vector>
 
 namespace robot_nav_rviz_plugins
 {
-inline bool validateFloats(const nav_grid::NavGridInfo& info)
+
+SpectrumPalette::SpectrumPalette(const color_util::ColorRGBA24& color_a,
+                                 const color_util::ColorRGBA24& color_b,
+                                 bool transparent_minimum)
+  : transparent_minimum_(transparent_minimum)
 {
-  return rviz::validateFloats(info.resolution)
-      && rviz::validateFloats(info.origin_x)
-      && rviz::validateFloats(info.origin_y);
+  color_a_ = color_util::toFloat(color_util::changeColorspace(color_a));
+  color_b_ = color_util::toFloat(color_util::changeColorspace(color_b));
 }
 
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
+SpectrumPalette::SpectrumPalette(const color_util::ColorHSVA24& color_a,
+                                 const color_util::ColorHSVA24& color_b,
+                                 bool transparent_minimum)
+  : transparent_minimum_(transparent_minimum)
 {
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
+  color_a_ = color_util::toFloat(color_a);
+  color_b_ = color_util::toFloat(color_b);
 }
 
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
+
+bool SpectrumPalette::hasTransparency() const
 {
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
+  return transparent_minimum_ || color_a_.a < 1.0 || color_b_.a < 1.0;
 }
 
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
+std::vector<color_util::ColorRGBA24> SpectrumPalette::getColors() const
 {
-  for (const auto& element : vec)
+  std::vector<color_util::ColorRGBA24> colors(NUM_COLORS);
+  unsigned int start;
+  double denominator;
+
+  if (transparent_minimum_)
   {
-    if (!validateFloats(element)) return false;
+    colors[0] = color_util::ColorRGBA24(0, 0, 0, 0);
+    start = 1;
+    denominator = NUM_COLORS - 2;
   }
-  return true;
-}
-
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
-{
-  return validateFloats(msg.poses);
-}
-
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
-
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
+  else
   {
-    if (!validateFloats(inner)) return false;
+    start = 0;
+    denominator = NUM_COLORS - 1;
   }
-  return true;
+
+  for (unsigned int i = start; i < NUM_COLORS; i++)
+  {
+    double ratio = static_cast<double>(i - start) / denominator;
+    colors[i] = color_util::toInt(color_util::changeColorspace(color_util::hueBlendPlus(color_a_, color_b_, ratio)));
+  }
+  return colors;
 }
 
 }  // namespace robot_nav_rviz_plugins
-
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H

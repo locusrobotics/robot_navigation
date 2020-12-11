@@ -32,69 +32,52 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-
-#include <geometry_msgs/Pose2D.h>
-#include <nav_grid/nav_grid_info.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
+#include <robot_nav_rviz_plugins/nav_grid_palette.h>
+#include <string>
 #include <vector>
 
-namespace robot_nav_rviz_plugins
+namespace robot_nav_viz_demos
 {
-inline bool validateFloats(const nav_grid::NavGridInfo& info)
-{
-  return rviz::validateFloats(info.resolution)
-      && rviz::validateFloats(info.origin_x)
-      && rviz::validateFloats(info.origin_y);
-}
+using color_util::ColorRGBA24;
 
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
+class MegaPalette : public robot_nav_rviz_plugins::NavGridPalette
 {
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
-}
-
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
-{
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
-}
-
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
-{
-  for (const auto& element : vec)
+public:
+  std::string getName() const override { return "mega"; }
+  bool hasTransparency() const override { return true; }
+  std::vector<ColorRGBA24> getColors() const override
   {
-    if (!validateFloats(element)) return false;
+    std::vector<ColorRGBA24> colors(6);
+    colors[0] = ColorRGBA24(0, 0, 0, 0);
+    colors[1] = ColorRGBA24(0, 0, 0, 255);
+    colors[2] = ColorRGBA24(0, 112, 236, 255);
+    colors[3] = ColorRGBA24(0, 232, 216, 255);
+    colors[4] = ColorRGBA24(252, 228, 160, 255);
+    colors[5] = ColorRGBA24(255, 255, 255, 255);
+    return colors;
   }
-  return true;
-}
+};
 
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
+class GreenPalette : public robot_nav_rviz_plugins::NavGridPalette
 {
-  return validateFloats(msg.poses);
-}
-
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
-
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
+public:
+  std::string getName() const override { return "green"; }
+  bool hasTransparency() const override { return true; }
+  std::vector<ColorRGBA24> getColors() const override
   {
-    if (!validateFloats(inner)) return false;
+    std::vector<ColorRGBA24> colors(6);
+    colors[0] = ColorRGBA24(0, 0, 0, 0);
+    colors[1] = ColorRGBA24(0, 0, 0, 255);
+    colors[2] = ColorRGBA24(0, 148, 0, 255);
+    colors[3] = ColorRGBA24(252, 252, 252, 255);
+    colors[4] = ColorRGBA24(252, 228, 160, 255);
+    colors[5] = ColorRGBA24(255, 255, 255, 255);
+    return colors;
   }
-  return true;
-}
+};
 
-}  // namespace robot_nav_rviz_plugins
+}  // namespace robot_nav_viz_demos
 
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#include <pluginlib/class_list_macros.h>
+PLUGINLIB_EXPORT_CLASS(robot_nav_viz_demos::MegaPalette, robot_nav_rviz_plugins::NavGridPalette)
+PLUGINLIB_EXPORT_CLASS(robot_nav_viz_demos::GreenPalette, robot_nav_rviz_plugins::NavGridPalette)

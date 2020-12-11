@@ -32,69 +32,63 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#include <nav_grid/vector_nav_grid.h>
+#include <nav_grid_iterators/circle_fill.h>
+#include <nav_grid_pub_sub/nav_grid_publisher.h>
 
-#include <geometry_msgs/Pose2D.h>
-#include <nav_grid/nav_grid_info.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
-#include <vector>
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "pong");
+  ros::NodeHandle nh("~");
+  nav_grid::VectorNavGrid<double> grid;
+  nav_grid::NavGridInfo info;
 
-namespace robot_nav_rviz_plugins
-{
-inline bool validateFloats(const nav_grid::NavGridInfo& info)
-{
-  return rviz::validateFloats(info.resolution)
-      && rviz::validateFloats(info.origin_x)
-      && rviz::validateFloats(info.origin_y);
-}
+  int size = 100;
+  nh.param("size", size, size);
+  info.width = size * 2;
+  info.height = size;
+  info.resolution = 0.1;
+  grid.setInfo(info);
 
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
-{
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
-}
+  double radius = 4.0;
+  nh.param("radius", radius, radius);
+  radius *= info.resolution;
 
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
-{
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
-}
+  double x = 0.0, y = size * info.resolution / 3;
+  double dx = info.resolution, dy = info.resolution;
+  double counter = 1.0;
 
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
-{
-  for (const auto& element : vec)
+  double max_x = info.resolution * info.width;
+  double max_y = info.resolution * info.height;
+
+  bool publish_updates = true;
+  nh.param("updates", publish_updates, publish_updates);
+
+  nav_grid_pub_sub::ScaleGridPublisher<double> pub(grid);
+  pub.init(nh);
+
+  ros::Rate r(33);
+
+  while (ros::ok())
   {
-    if (!validateFloats(element)) return false;
+    nav_core2::UIntBounds bounds;
+    for (const nav_grid::Index& i : nav_grid_iterators::CircleFill(&info, x, y, radius))
+    {
+      grid.setValue(i, counter);
+      bounds.touch(i.x, i.y);
+    }
+    counter += 1.0;
+    x += dx;
+    y += dy;
+    if (x > max_x || x < 0.0) dx *= -1;
+    if (y > max_y || y < 0.0) dy *= -1;
+    if (publish_updates)
+        pub.publish(bounds);
+    else
+        pub.publish();
+    r.sleep();
+    ros::spinOnce();
   }
-  return true;
+
+  return 0;
 }
-
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
-{
-  return validateFloats(msg.poses);
-}
-
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
-
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
-  {
-    if (!validateFloats(inner)) return false;
-  }
-  return true;
-}
-
-}  // namespace robot_nav_rviz_plugins
-
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
