@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(color_util)
+set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
 
 find_package(catkin REQUIRED COMPONENTS std_msgs)
 
