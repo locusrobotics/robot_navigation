@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>dwb_msgs</name>
-  <version>0.2.5</version>
+  <version>0.3.0</version>
   <description>Message/Service definitions specifically for the dwb_local_planner</description>
 
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>

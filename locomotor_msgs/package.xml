@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>locomotor_msgs</name>
-  <version>0.2.5</version>
+  <version>0.3.0</version>
   <description>Action definition for Locomotor</description>
 
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
