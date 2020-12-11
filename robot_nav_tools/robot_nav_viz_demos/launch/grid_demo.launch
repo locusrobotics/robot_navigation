@@ -1,0 +1,5 @@
+<launch>
+    <node name="demo_grids" pkg="rosbag" type="play" args="$(find robot_nav_viz_demos)/data/demo_grids.bag -l" />
+    <node name="pong" pkg="robot_nav_viz_demos" type="pong" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_nav_viz_demos)/data/demo_grids.rviz" />
+</launch>

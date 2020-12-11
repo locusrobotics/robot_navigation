@@ -1,0 +1,39 @@
+Panels:
+- Class: rviz/Displays
+  Name: Displays
+- Class: rviz/Views
+  Name: Views
+Visualization Manager:
+  Displays:
+  - Alpha: 1
+    Class: NavGridOfChars
+    Color Scheme: mega
+    Draw Behind: false
+    Enabled: true
+    Name: NavGridOfChars
+    Topic: /grid
+    Value: true
+  - Alpha: 0.7
+    Class: NavGridOfDoubles
+    Color Scheme: rainbow2
+    Draw Behind: true
+    Enabled: true
+    Ignore Value: 0
+    Name: NavGridOfDoubles
+    Topic: /pong/grid
+    Value: true
+  Global Options:
+    Fixed Frame: /map
+  Tools:
+  - Class: rviz/MoveCamera
+  Views:
+    Current:
+      Angle: 0
+      Class: rviz/TopDownOrtho
+      Scale: 25
+      Value: TopDownOrtho (rviz)
+      X: 9.5
+      Y: 4.2
+Window Geometry:
+  Height: 846
+  Width: 1200

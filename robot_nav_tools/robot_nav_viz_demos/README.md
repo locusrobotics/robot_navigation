@@ -4,7 +4,16 @@ Demos for testing/demonstrating `robot_nav_rviz_plugins` and `color_util` packag
 
 ## Color Util Demos
 To see a simple tool for visualizing `color_util` blending, run
-`roslaunch robot_nav_viz_demos spectrum_demo.launch`.
+`roslaunch robot_nav_viz_demos spectrum_demo.launch`. To see what all the named colors look like, run `roslaunch robot_nav_viz_demos named_colors_demo.launch`
+
+## Nav Grid Demo
+`roslaunch robot_nav_viz_demos grid_demo.launch`
+
+This will launch two processes.
+ * `pong` is a simple script for generating `NavGridOfDoubles` and `NavGridOfDoublesUpdate` data with an ever-expanding range of values.
+   * Note that `0` is set as the Ignore Value, which means that it is set to transparent (with some palettes) and the min/max range ignores that value.
+ * The second plays back the data from `demo_grids.bag` which contains `NavGridOfChars` and `NavGridOfCharsUpdate` data.
+   * The bag data only contains 6 values (by design) and thus requires custom palettes to fully appreciate. There are two contained within `demo_palettes.cpp`, called `mega` and `green`. This demonstrates the capabilities of the `pluginlib` approach for the palettes.
 
 ## Polygons Demo
 `roslaunch robot_nav_viz_demos polygons.launch`

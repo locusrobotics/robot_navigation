@@ -1,0 +1,4 @@
+<library path="lib/libdemo_palettes">
+  <class type="robot_nav_viz_demos::MegaPalette" base_class_type="robot_nav_rviz_plugins::NavGridPalette" />
+  <class type="robot_nav_viz_demos::GreenPalette" base_class_type="robot_nav_rviz_plugins::NavGridPalette" />
+</library>
