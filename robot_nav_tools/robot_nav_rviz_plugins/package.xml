@@ -11,12 +11,19 @@
   <depend>geometry_msgs</depend>
   <depend>nav_2d_msgs</depend>
   <depend>nav_2d_utils</depend>
+  <depend>nav_core2</depend>
+  <depend>nav_grid</depend>
+  <depend>nav_grid_iterators</depend>
+  <depend>nav_grid_pub_sub</depend>
+  <depend>nav_msgs</depend>
   <depend>pluginlib</depend>
   <depend>qtbase5-dev</depend>
+  <depend>roscpp</depend>
   <depend>rviz</depend>
   <depend>std_msgs</depend>
   <test_depend>roslint</test_depend>
   <export>
     <rviz plugin="${prefix}/rviz_plugins.xml"/>
+    <robot_nav_rviz_plugins plugin="${prefix}/robot_nav_rviz_plugins.xml"/>
   </export>
 </package>

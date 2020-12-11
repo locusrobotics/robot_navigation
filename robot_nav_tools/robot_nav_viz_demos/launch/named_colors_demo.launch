@@ -1,0 +1,4 @@
+<launch>
+    <node name="named_colors_demo" pkg="robot_nav_viz_demos" type="named_colors_demo" output="screen" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_nav_viz_demos)/data/named_colors_demo.rviz" output="screen" />
+</launch>
