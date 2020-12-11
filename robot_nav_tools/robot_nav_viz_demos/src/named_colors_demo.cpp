@@ -31,70 +31,47 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-
-#include <geometry_msgs/Pose2D.h>
-#include <nav_grid/nav_grid_info.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
+#include <color_util/named_colors.h>
+#include <nav_grid/vector_nav_grid.h>
+#include <nav_grid_pub_sub/nav_grid_publisher.h>
 #include <vector>
 
-namespace robot_nav_rviz_plugins
+int main(int argc, char** argv)
 {
-inline bool validateFloats(const nav_grid::NavGridInfo& info)
-{
-  return rviz::validateFloats(info.resolution)
-      && rviz::validateFloats(info.origin_x)
-      && rviz::validateFloats(info.origin_y);
-}
+  ros::init(argc, argv, "named_colors_demo");
+  ros::NodeHandle nh("~");
+  nav_grid::VectorNavGrid<unsigned char> grid;
+  nav_grid::NavGridInfo info;
 
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
-{
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
-}
+  std::vector<color_util::ColorRGBA24> named_colors = color_util::getNamedColors();
+  unsigned int N = named_colors.size();
+  ROS_INFO("%u", N);
 
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
-{
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
-}
+  info.width = (N - 1) / 3;
+  info.height = 3;
+  info.resolution = 0.5;
+  grid.setInfo(info);
 
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
-{
-  for (const auto& element : vec)
+  unsigned char v = 1;
+  for (unsigned int y = 0; y < info.height; y++)
   {
-    if (!validateFloats(element)) return false;
+    for (unsigned int x = 0; x < info.width; x++)
+    {
+      grid.setValue(x, y, v++);
+    }
   }
-  return true;
-}
 
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
-{
-  return validateFloats(msg.poses);
-}
+  nav_grid_pub_sub::NavGridPublisher pub(grid);
+  pub.init(nh);
 
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
+  ros::Rate r(1);
 
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
+  while (ros::ok())
   {
-    if (!validateFloats(inner)) return false;
+    pub.publish();
+    r.sleep();
+    ros::spinOnce();
   }
-  return true;
+
+  return 0;
 }
-
-}  // namespace robot_nav_rviz_plugins
-
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H

@@ -32,69 +32,50 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#ifndef ROBOT_NAV_RVIZ_PLUGINS_SPECTRUM_PALETTE_H
+#define ROBOT_NAV_RVIZ_PLUGINS_SPECTRUM_PALETTE_H
 
-#include <geometry_msgs/Pose2D.h>
-#include <nav_grid/nav_grid_info.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
+#include <robot_nav_rviz_plugins/nav_grid_palette.h>
 #include <vector>
 
 namespace robot_nav_rviz_plugins
 {
-inline bool validateFloats(const nav_grid::NavGridInfo& info)
+/**
+ * @brief Easy class to generate palettes that simply blend two colors together
+ *
+ * Implementing classes need only override the default constructor to call this class's
+ * constructor and the getName function.
+ */
+class SpectrumPalette : public NavGridPalette
 {
-  return rviz::validateFloats(info.resolution)
-      && rviz::validateFloats(info.origin_x)
-      && rviz::validateFloats(info.origin_y);
-}
+public:
+  /**
+   * @brief Constructor for a blend of colors from color_a to color_b
+   * @param color_a Color used for low values
+   * @param color_b Color used for high values
+   * @param transparent_minimum Whether the lowest value should be completely transparent
+   */
+  SpectrumPalette(const color_util::ColorRGBA24& color_a,
+                  const color_util::ColorRGBA24& color_b,
+                  bool transparent_minimum = true);
 
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
-{
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
-}
+  /**
+   * @brief Constructor for a blend of colors from color_a to color_b
+   * @param color_a Color used for low values
+   * @param color_b Color used for high values
+   * @param transparent_minimum Whether the lowest value should be completely transparent
+   */
+  SpectrumPalette(const color_util::ColorHSVA24& color_a,
+                  const color_util::ColorHSVA24& color_b,
+                  bool transparent_minimum = true);
 
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
-{
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
-}
+  bool hasTransparency() const override;
 
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
-{
-  for (const auto& element : vec)
-  {
-    if (!validateFloats(element)) return false;
-  }
-  return true;
-}
-
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
-{
-  return validateFloats(msg.poses);
-}
-
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
-
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
-  {
-    if (!validateFloats(inner)) return false;
-  }
-  return true;
-}
-
+  std::vector<color_util::ColorRGBA24> getColors() const override;
+protected:
+  color_util::ColorHSVA color_a_, color_b_;
+  bool transparent_minimum_;
+};
 }  // namespace robot_nav_rviz_plugins
 
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#endif  // ROBOT_NAV_RVIZ_PLUGINS_SPECTRUM_PALETTE_H

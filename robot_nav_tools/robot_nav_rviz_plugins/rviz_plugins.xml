@@ -1,5 +1,17 @@
 <class_libraries>
   <library path="lib/librobot_nav_rviz_plugins">
+    <class name="NavGridOfChars" type="robot_nav_rviz_plugins::NavGridOfCharsDisplay" base_class_type="rviz::Display">
+      <description>Display for nav_2d_msgs::NavGridOfChars / nav_2d_msgs::NavGridOfCharsUpdate</description>
+      <message_type>nav_2d_msgs/NavGridOfChars</message_type>
+    </class>
+    <class name="NavGridOfDoubles" type="robot_nav_rviz_plugins::NavGridOfDoublesDisplay" base_class_type="rviz::Display">
+      <description>Display for nav_2d_msgs::NavGridOfDoubles / nav_2d_msgs::NavGridOfDoublesUpdate</description>
+      <message_type>nav_2d_msgs/NavGridOfDoubles</message_type>
+    </class>
+    <class name="OccupancyGrid" type="robot_nav_rviz_plugins::OccupancyGridDisplay" base_class_type="rviz::Display">
+      <description>Fancier version of MapDisplay</description>
+      <message_type>nav_msgs/OccupancyGrid</message_type>
+    </class>
     <class name="Path2D" type="robot_nav_rviz_plugins::PathDisplay" base_class_type="rviz::Display">
       <description>Display for nav_2d_msgs::Path2D</description>
       <message_type>nav_2d_msgs/Path2D</message_type>

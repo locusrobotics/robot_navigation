@@ -32,69 +32,54 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
-#define ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#ifndef ROBOT_NAV_RVIZ_PLUGINS_NAV_GRID_PALETTE_H
+#define ROBOT_NAV_RVIZ_PLUGINS_NAV_GRID_PALETTE_H
 
-#include <geometry_msgs/Pose2D.h>
-#include <nav_grid/nav_grid_info.h>
-#include <nav_2d_msgs/Path2D.h>
-#include <nav_2d_msgs/Point2D.h>
-#include <nav_2d_msgs/Polygon2D.h>
-#include <nav_2d_msgs/ComplexPolygon2D.h>
-#include <rviz/validate_floats.h>
+#include <color_util/types.h>
+#include <cmath>
+#include <string>
 #include <vector>
 
 namespace robot_nav_rviz_plugins
 {
-inline bool validateFloats(const nav_grid::NavGridInfo& info)
+/**
+ * @brief A simple datastructure representing a palette of up to 256 24-bit colors
+ *
+ * Designed to be loaded via pluginlib
+ */
+class NavGridPalette
 {
-  return rviz::validateFloats(info.resolution)
-      && rviz::validateFloats(info.origin_x)
-      && rviz::validateFloats(info.origin_y);
-}
+public:
+  static const unsigned int NUM_COLORS = 256, NUM_CHANNELS = 4;
 
-inline bool validateFloats(const geometry_msgs::Pose2D& pose)
-{
-  return rviz::validateFloats(pose.x)
-      && rviz::validateFloats(pose.y)
-      && rviz::validateFloats(pose.theta);
-}
+  virtual ~NavGridPalette() {}
 
-inline bool validateFloats(const nav_2d_msgs::Point2D& point)
-{
-  return rviz::validateFloats(point.x) && rviz::validateFloats(point.y);
-}
+  /**
+   * @brief Unique descriptive name for this particular palette
+   */
+  virtual std::string getName() const = 0;
 
-template <typename T>
-inline bool validateFloats(const std::vector<T>& vec)
-{
-  for (const auto& element : vec)
+  /**
+   * @brief The actual definition of the colors
+   * @return vector of up to 256 colors. Undefined behavior if more are returned.
+   */
+  virtual std::vector<color_util::ColorRGBA24> getColors() const = 0;
+
+  /**
+   * @brief See if the palette has any transparent colors.
+   *
+   * Can be overridden by implementing classes to save iterations
+   */
+  virtual bool hasTransparency() const
   {
-    if (!validateFloats(element)) return false;
+    for (const auto& color : getColors())
+    {
+      if (color.a < 255) return true;
+    }
+    return false;
   }
-  return true;
-}
-
-inline bool validateFloats(const nav_2d_msgs::Path2D& msg)
-{
-  return validateFloats(msg.poses);
-}
-
-inline bool validateFloats(const nav_2d_msgs::Polygon2D& msg)
-{
-  return validateFloats(msg.points);
-}
-
-inline bool validateFloats(const nav_2d_msgs::ComplexPolygon2D& msg)
-{
-  if (!validateFloats(msg.outer)) return false;
-  for (const auto& inner : msg.inner)
-  {
-    if (!validateFloats(inner)) return false;
-  }
-  return true;
-}
+};
 
 }  // namespace robot_nav_rviz_plugins
 
-#endif  // ROBOT_NAV_RVIZ_PLUGINS_VALIDATE_FLOATS_H
+#endif  // ROBOT_NAV_RVIZ_PLUGINS_NAV_GRID_PALETTE_H
