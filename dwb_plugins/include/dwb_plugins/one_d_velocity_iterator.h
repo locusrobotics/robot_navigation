@@ -55,17 +55,57 @@ const double EPSILON = 1E-5;
  */
 inline double projectVelocity(double v0, double accel, double decel, double dt, double target)
 {
-  double v1;
-  if (v0 < target)
+  double decel_mag = fabs(decel);
+  double accel_mag = fabs(accel);
+  double proj_vel = 0;
+  double limit_vel = 0;
+
+  if (fabs(v0) < EPSILON)
   {
-    v1 = v0 + accel * dt;
-    return std::min(target, v1);
+    // Starting from standstill (v0 can be something like 1.36e-16), allways accelerate
+    if (target < 0)
+    {
+      limit_vel = v0 - accel_mag * dt;
+      proj_vel = std::max(target, limit_vel);
+    }
+    else
+    {
+      limit_vel = v0 + accel_mag * dt;
+      proj_vel = std::min(target, limit_vel);
+    }
   }
-  else
+  else if (v0 > 0) 
   {
-    v1 = v0 + decel * dt;
-    return std::max(target, v1);
+    if (v0 < target)
+    {
+      // Acceleration (speed magnitude increases)
+      limit_vel = v0 + accel_mag * dt;
+      proj_vel = std::min(target, limit_vel);
+    }
+    else
+    {
+      // Deceleration (speed magnitude decreases)
+      limit_vel = v0 - decel_mag * dt;
+      proj_vel = std::max(target, limit_vel);
+    }
   }
+  else  
+  {
+    if (v0 < target)
+    {
+      // Deceleration (speed magnitude decreases)
+      limit_vel = v0 + decel_mag * dt;
+      proj_vel = std::min(target, limit_vel);
+    }
+    else
+    {
+      // Acceleration (speed magnitude increases)
+      limit_vel = v0 - accel_mag * dt;
+      proj_vel = std::max(target, limit_vel);
+    }
+  }
+
+  return proj_vel;
 }
 
 /**
