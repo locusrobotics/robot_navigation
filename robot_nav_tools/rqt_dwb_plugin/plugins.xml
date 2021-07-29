@@ -1,0 +1,7 @@
+<library path="src">
+  <class name="DWBPlugin" type="rqt_dwb_plugin.dwb_plugin.DWBPlugin" base_class_type="rqt_bag::Plugin">
+    <description>
+        Plugin for rqt_bag to examine dwb_msgs/LocalPlanEvaluation messages
+    </description>
+  </class>
+</library>
