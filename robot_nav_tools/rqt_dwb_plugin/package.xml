@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>rqt_dwb_plugin</name>
+  <version>0.3.0</version>
+  <description>View dwb_msgs/LocalPlanEvaluation information visually using rqt</description>
+  <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>dwb_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>python_qt_binding</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>rqt_bag</exec_depend>
+  <test_depend>roslint</test_depend>
+  <export>
+    <rqt_bag plugin="${prefix}/plugins.xml"/>
+  </export>
+</package>
