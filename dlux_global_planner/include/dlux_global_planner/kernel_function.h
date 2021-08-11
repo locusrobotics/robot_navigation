@@ -80,7 +80,7 @@ inline bool operator &(CardinalDirection a, CardinalDirection b)
  * @param upstream[out] Direction of cells used in computation (if not null initially)
  * @return potential for this cell
  */
-static float calculateKernel(const PotentialGrid& potential_grid, unsigned char cost, unsigned int x, unsigned int y,
+static float calculateKernel(const PotentialGrid& potential_grid, float cost, unsigned int x, unsigned int y,
                              CardinalDirection* upstream = nullptr)
 {
   // See README.md for more about this calculation
