@@ -117,7 +117,7 @@ int main(int argc, char** argv)
         failures[i] += 1;
         failures[j] += 1;
       }
-      if (!ros::ok()) return false;
+      if (!ros::ok()) return EXIT_FAILURE;
     }
   }
 
@@ -152,5 +152,5 @@ int main(int argc, char** argv)
   }
 
   ROS_INFO("%d/%d valid plans found.", passing_plans, total_plans);
-  return 0;
+  return EXIT_SUCCESS;
 }
