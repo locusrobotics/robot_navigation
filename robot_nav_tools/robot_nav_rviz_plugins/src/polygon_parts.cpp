@@ -159,7 +159,8 @@ PolygonMaterial::PolygonMaterial()
   rviz::UniformStringStream ss;
   ss << "PolygonMaterial" << count++;
   name_ = ss.str();
-  material_ = Ogre::MaterialManager::getSingleton().create(name_, "rviz");
+  material_ =
+      Ogre::MaterialManager::getSingleton().create(name_, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   material_->setReceiveShadows(false);
   material_->setCullingMode(Ogre::CULL_NONE);
 
