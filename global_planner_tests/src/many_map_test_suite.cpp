@@ -73,7 +73,7 @@ bool many_map_test_suite(nav_core2::GlobalPlanner& planner, TFListenerPtr tf,
   bool passes_all = true;
 
   // Check all the Full Coverage Maps
-  for (const std::string base_filename : config["full_coverage_maps"].as<std::vector<std::string> >())
+  for (const auto& base_filename : config["full_coverage_maps"].as<std::vector<std::string> >())
   {
     std::string map_filename = prefix + base_filename;
     ROS_INFO("Testing full coverage map \"%s\"", map_filename.c_str());
@@ -86,7 +86,7 @@ bool many_map_test_suite(nav_core2::GlobalPlanner& planner, TFListenerPtr tf,
   }
 
   // Check all the No Coverage Maps
-  for (const std::string base_filename : config["no_coverage_maps"].as<std::vector<std::string> >())
+  for (const auto& base_filename : config["no_coverage_maps"].as<std::vector<std::string> >())
   {
     std::string map_filename = prefix + base_filename;
     ROS_INFO("Testing no coverage map \"%s\"", map_filename.c_str());

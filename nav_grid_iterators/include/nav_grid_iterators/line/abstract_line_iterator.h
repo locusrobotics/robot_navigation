@@ -54,6 +54,11 @@ public:
   AbstractLineIterator() {}
 
   /**
+   * @brief Public Destructor
+   */
+  virtual ~AbstractLineIterator() = default;
+
+  /**
    * @brief Dereference the iterator
    * @return the index to which the iterator is pointing.
    */
