@@ -74,7 +74,7 @@ inline double projectVelocity(double v0, double accel, double decel, double dt, 
       proj_vel = std::min(target, limit_vel);
     }
   }
-  else if (v0 > 0) 
+  else if (v0 > 0)
   {
     if (v0 < target)
     {
@@ -89,7 +89,7 @@ inline double projectVelocity(double v0, double accel, double decel, double dt, 
       proj_vel = std::max(target, limit_vel);
     }
   }
-  else  
+  else
   {
     if (v0 < target)
     {
