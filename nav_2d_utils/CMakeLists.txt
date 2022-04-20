@@ -34,7 +34,7 @@ catkin_package(
         tf2_geometry_msgs
         xmlrpcpp
     INCLUDE_DIRS include
-    LIBRARIES bounds conversions path_ops polygons
+    LIBRARIES bounds conversions path_ops polygons tf_help
 )
 
 include_directories(
@@ -54,6 +54,9 @@ target_link_libraries(polygons ${catkin_LIBRARIES})
 
 add_library(bounds src/bounds.cpp)
 target_link_libraries(bounds ${catkin_LIBRARIES})
+
+add_library(tf_help src/tf_help.cpp)
+target_link_libraries(tf_help ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
@@ -77,7 +80,7 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(param_tests polygons ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
 endif()
 
-install(TARGETS bounds conversions path_ops polygons
+install(TARGETS bounds conversions path_ops polygons tf_help
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
