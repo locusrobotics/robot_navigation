@@ -140,6 +140,8 @@ TEST(VelocityIterator, acceleration_magnitude)
 {
   double accel_rate = 2.0;
   double decel_rate = -3.0;
+  EXPECT_NEAR(projectVelocity(+0.0, accel_rate, decel_rate, 0.1, +1.5), +0.2, EPSILON);
+  EXPECT_NEAR(projectVelocity(+0.0, accel_rate, decel_rate, 0.1, -1.5), -0.2, EPSILON);
   EXPECT_NEAR(projectVelocity(+1.0, accel_rate, decel_rate, 0.1, +1.5), +1.2, EPSILON);
   EXPECT_NEAR(projectVelocity(+1.0, accel_rate, decel_rate, 0.1, +0.5), +0.7, EPSILON);
   EXPECT_NEAR(projectVelocity(-1.0, accel_rate, decel_rate, 0.1, -1.5), -1.2, EPSILON);
