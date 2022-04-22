@@ -55,15 +55,53 @@ const double EPSILON = 1E-5;
  */
 inline double projectVelocity(double v0, double accel, double decel, double dt, double target)
 {
-  double v1;
-  if (v0 < target)
+  double magnitude;
+  if (fabs(v0) < EPSILON)
   {
-    v1 = v0 + accel * dt;
+    // Starting from standstill, always accelerate
+    if (target >= 0.0)
+    {
+      magnitude = fabs(accel);
+    }
+    else
+    {
+      magnitude = -fabs(accel);
+    }
+  }
+  else if (v0 > 0.0)
+  {
+    if (v0 < target)
+    {
+      // Acceleration (speed magnitude increases)
+      magnitude = fabs(accel);
+    }
+    else
+    {
+      // Deceleration (speed magnitude decreases)
+      magnitude = -fabs(decel);
+    }
+  }
+  else
+  {
+    if (v0 < target)
+    {
+      // Deceleration (speed magnitude decreases)
+      magnitude = fabs(decel);
+    }
+    else
+    {
+      // Acceleration (speed magnitude increases)
+      magnitude = -fabs(accel);
+    }
+  }
+
+  double v1 = v0 + magnitude * dt;
+  if (magnitude > 0.0)
+  {
     return std::min(target, v1);
   }
   else
   {
-    v1 = v0 + decel * dt;
     return std::max(target, v1);
   }
 }

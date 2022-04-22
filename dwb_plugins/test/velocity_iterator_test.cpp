@@ -35,6 +35,7 @@
 #include <dwb_plugins/one_d_velocity_iterator.h>
 
 using dwb_plugins::OneDVelocityIterator;
+using dwb_plugins::projectVelocity;
 
 const double EPSILON = 1e-3;
 
@@ -133,6 +134,18 @@ TEST(VelocityIterator, around_zero2)
   ++it;
   EXPECT_NEAR(it.getVelocity(), 1.0, EPSILON);
   ++it;
+}
+
+TEST(VelocityIterator, acceleration_magnitude)
+{
+  double accel_rate = 2.0;
+  double decel_rate = -3.0;
+  EXPECT_NEAR(projectVelocity(+0.0, accel_rate, decel_rate, 0.1, +1.5), +0.2, EPSILON);
+  EXPECT_NEAR(projectVelocity(+0.0, accel_rate, decel_rate, 0.1, -1.5), -0.2, EPSILON);
+  EXPECT_NEAR(projectVelocity(+1.0, accel_rate, decel_rate, 0.1, +1.5), +1.2, EPSILON);
+  EXPECT_NEAR(projectVelocity(+1.0, accel_rate, decel_rate, 0.1, +0.5), +0.7, EPSILON);
+  EXPECT_NEAR(projectVelocity(-1.0, accel_rate, decel_rate, 0.1, -1.5), -1.2, EPSILON);
+  EXPECT_NEAR(projectVelocity(-1.0, accel_rate, decel_rate, 0.1, -0.5), -0.7, EPSILON);
 }
 
 int main(int argc, char **argv)
