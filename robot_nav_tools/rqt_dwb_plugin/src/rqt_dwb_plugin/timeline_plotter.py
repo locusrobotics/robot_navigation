@@ -67,7 +67,7 @@ class TimelinePlotter(TimelineRenderer):
         painter.drawLine(x, z_val, x + width, z_val)
         RADIUS = 2
 
-        for field, color in FIELDS.iteritems():
+        for field, color in FIELDS.items():
             if field == 'y':
                 continue
             color = getattr(Qt, color)
