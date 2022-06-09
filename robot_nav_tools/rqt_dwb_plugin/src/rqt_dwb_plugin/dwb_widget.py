@@ -78,14 +78,14 @@ class DWBWidget(QWidget):
         hsplitter.addWidget(widget2)
         self.widgets.append(widget2)
 
-        hsplitter.setSizes([1e10] * 2)  # Makes them equally sized
+        hsplitter.setSizes([10] * 2)  # Makes them equally sized
         vsplitter.addWidget(hsplitter)
 
         widget3 = self.getBottomWidget(bounds)
         vsplitter.addWidget(widget3)
         self.widgets.append(widget3)
 
-        vsplitter.setSizes([1e10] * 3)
+        vsplitter.setSizes([10] * 3)
 
         self.color_map = {}
 
@@ -125,18 +125,21 @@ class DWBWidget(QWidget):
         new_color_map = collections.OrderedDict()
         used_colors = set()
 
+        def qcolor_hash(c):
+            return c.red, c.green, c.blue
+
         # Keep existing colors the same
         for index in selected:
             if index in self.color_map:
                 new_color_map[index] = self.color_map[index]
-                used_colors.add(new_color_map[index])
+                used_colors.add(qcolor_hash(new_color_map[index]))
 
         # Get New Colors
         color_index = 0
         for index in selected:
             if index in self.color_map:
                 continue
-            while PALETTE[color_index] in used_colors:
+            while qcolor_hash(PALETTE[color_index]) in used_colors:
                 color_index += 1
             new_color_map[index] = PALETTE[color_index]
             color_index += 1
