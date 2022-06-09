@@ -121,7 +121,7 @@ class VelocitySpaceWidget(QWidget):
         self.qp.drawText(0, 0, self.left - radius, self.top * 2, right_center, '%.2f' % self.t_max)
         self.qp.drawText(0, h - self.top, self.left - radius, self.top, right_center, '%.2f' % self.t_min)
 
-        for (x, theta), index in self.vel_space.iteritems():
+        for (x, theta), index in self.vel_space.items():
             dx, dy = self.toScreen(x, theta)
             if index in self.selected:
                 self.qp.setBrush(QBrush(self.selected[index]))
@@ -153,7 +153,7 @@ class VelocitySpaceWidget(QWidget):
     def getNearestVelocity(self, xv, tv):
         best_d = None
         best = None
-        for (x, theta), index in self.vel_space.iteritems():
+        for (x, theta), index in self.vel_space.items():
             d = abs(x - xv) + abs(theta - tv)
             if best_d is None or d < best_d:
                 best_d = d

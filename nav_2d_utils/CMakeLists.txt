@@ -18,6 +18,7 @@ find_package(catkin REQUIRED
         tf2_geometry_msgs
         xmlrpcpp
 )
+catkin_python_setup()
 
 catkin_package(
     CATKIN_DEPENDS
@@ -63,6 +64,7 @@ if(CATKIN_ENABLE_TESTING)
   find_package(roslint REQUIRED)
   roslint_cpp()
   roslint_add_test()
+  roslint_python()
 
   catkin_add_gtest(polygon_tests test/polygon_tests.cpp)
   target_link_libraries(polygon_tests polygons ${catkin_LIBRARIES})

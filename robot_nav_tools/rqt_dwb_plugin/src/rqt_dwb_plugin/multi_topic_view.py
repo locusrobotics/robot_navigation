@@ -113,7 +113,7 @@ class MultiTopicView(TopicMessageView):
         """
         super(MultiTopicView, self).message_viewed(bag, msg_details)
         main_topic, msg, ts = msg_details
-        for extra_topic, callback in self.extra_topic_callbacks.iteritems():
+        for extra_topic, callback in self.extra_topic_callbacks.items():
             best_entry = self.get_closest_message(extra_topic, ts)
             if best_entry:
                 extra_msg_details = self.timeline.read_message(bag, best_entry.position)
