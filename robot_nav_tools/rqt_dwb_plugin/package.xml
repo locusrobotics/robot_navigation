@@ -9,6 +9,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>dwb_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav_2d_utils</exec_depend>
   <exec_depend>python_qt_binding</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>rqt_bag</exec_depend>
