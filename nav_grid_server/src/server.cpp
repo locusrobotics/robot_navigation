@@ -106,6 +106,7 @@ public:
 
     the_map_ = nav_grid_server::classicLoadMapFromFile(image_filename, resolution, negate, occ_th, free_th, mode);
     nav_grid::NavGridInfo full_info = the_map_.getInfo();
+    full_info.frame_id = frame_id;
     full_info.origin_x = origin_x;
     full_info.origin_y = origin_y;
     the_map_.setInfo(full_info);

@@ -126,10 +126,6 @@ protected:
 
   void incomingOcc(const nav_msgs::OccupancyGridConstPtr& new_map)
   {
-    if (!map_received_)
-    {
-      return;
-    }
     fromOccupancyGrid(*new_map, data_, cost_interpretation_table_);
     map_received_ = true;
     callback_(nav_2d_utils::getFullUIntBounds(data_.getInfo()));
@@ -137,6 +133,10 @@ protected:
 
   void incomingOccUpdate(const map_msgs::OccupancyGridUpdateConstPtr& update)
   {
+    if (!map_received_)
+    {
+      return;
+    }
     nav_core2::UIntBounds bounds = fromOccupancyGridUpdate(*update, data_, cost_interpretation_table_);
     callback_(bounds);
   }
