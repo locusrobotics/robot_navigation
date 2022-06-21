@@ -80,16 +80,19 @@ public:
     std::string output_directory_str;
     private_nh.param("output_directory", output_directory_str, std::string("."));
     output_directory_ = boost::filesystem::path(output_directory_str);
-    // Create the output folder
-    try
+    if (!boost::filesystem::exists(output_directory_))
     {
-      boost::filesystem::create_directories(output_directory_);
-    }
-    catch (const std::exception& e)
-    {
-      ROS_FATAL_STREAM("Unable to create the requested output directory (" + output_directory_.string() + "). "
-                       "Error: " + e.what());
-      exit(EXIT_FAILURE);
+      // Create the output folder
+      try
+      {
+        boost::filesystem::create_directories(output_directory_);
+      }
+      catch (const std::exception& e)
+      {
+        ROS_FATAL_STREAM("Unable to create the requested output directory (" + output_directory_.string() + "). "
+                         "Error: " + e.what());
+        exit(EXIT_FAILURE);
+      }
     }
 
     ROS_INFO_NAMED("MapSaver", "Waiting for the map");
