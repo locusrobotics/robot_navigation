@@ -59,7 +59,7 @@ For computational efficiency, we are going to compute the Taylor series expansio
  * $c_2(a) = \frac{-1}{2(2-a^2)^\frac{3}{2}}$
 
 ## Exact coefficients
-Now that we have the general equations for the Taylor series, we can evaluate it at different values of a in the range `[0, 1]`.
+Now that we have the general equations for the Taylor series, we can evaluate it at different values of a in the range $[0, 1]$.
 
 | $a$ | $c_0(a)$ | $c_1(a)$ | $c_2(a)$ |
 | --- | -------- | -------- | -------- |

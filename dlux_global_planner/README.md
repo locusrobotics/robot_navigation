@@ -106,16 +106,16 @@ This package provides the `kernel_function` class for combining neighboring pote
 [A Light Formulation of the E Interpolated Path Replanner by Philippsen, Roland](https://www.research-collection.ethz.ch/bitstream/handle/20.500.11850/154503/eth-8428-01.pdf).
 Below, we provide a "brief" mathematical derivation of the calculation.
 
- * For calculating the potential `P` for a cell `X` (a.k.a. `P(X)`) we will look at the four neighbors of the cell `X`,
- which we'll call `A`, `B`, `C` and `D`, where `A` and `B` are on the same axis (i.e. above and below `X`) and `C` and
- `D` are on the other axis.
- * The cost of moving to a cell is the cost from the costmap, which we'll call `h` (to match the paper's notation)
+ * For calculating the potential $P$ for a cell $X$ (a.k.a. $P(X)$) we will look at the four neighbors of the cell $X$,
+ which we'll call $A$, $B$, $C$ and $D$, where $A$ and $B$ are on the same axis (i.e. above and below $X$) and $C$ and
+ $D$ are on the other axis.
+ * The cost of moving to a cell is the cost from the costmap, which we'll call $h$ (to match the paper's notation)
  * We assume, without loss of generality that
   * $P(A) <= P(B)$
   * $P(C) <= P(D)$
   * $P(A) <= P(C)$
  * If $P(C)$ is infinite, that is, not initialized yet, the new potential calculation is straightforwardly  $P(X) = P(A) + h$.
- * Otherwise, we want to find a value of `P(X)` that satisfies the equation $\Big(P(X) - P(A)\Big)^2 + \Big(P(X) - P(C)\Big)^2 = h^2$
+ * Otherwise, we want to find a value of $P(X)$ that satisfies the equation $\Big(P(X) - P(A)\Big)^2 + \Big(P(X) - P(C)\Big)^2 = h^2$
  * It's possible there are no real values that satisfy the equation if $P(C) - P(A) \geq h$ in which case the straightforward update is used.
  * Otherwise, through clever manipulation of the quadratic formula, we can solve the equation with the following:
    * $P(X) = \frac{-\beta + \sqrt{\beta^2 - 4 \gamma}}{2}$
