@@ -106,25 +106,25 @@ This package provides the `kernel_function` class for combining neighboring pote
 [A Light Formulation of the E Interpolated Path Replanner by Philippsen, Roland](https://www.research-collection.ethz.ch/bitstream/handle/20.500.11850/154503/eth-8428-01.pdf).
 Below, we provide a "brief" mathematical derivation of the calculation.
 
- * For calculating the potential `P` for a cell `X` (a.k.a. `P(X)`) we will look at the four neighbors of the cell `X`,
- which we'll call `A`, `B`, `C` and `D`, where `A` and `B` are on the same axis (i.e. above and below `X`) and `C` and
- `D` are on the other axis.
- * The cost of moving to a cell is the cost from the costmap, which we'll call `h` (to match the paper's notation)
+ * For calculating the potential $P$ for a cell $X$ (a.k.a. $P(X)$) we will look at the four neighbors of the cell $X$,
+ which we'll call $A$, $B$, $C$ and $D$, where $A$ and $B$ are on the same axis (i.e. above and below $X$) and $C$ and
+ $D$ are on the other axis.
+ * The cost of moving to a cell is the cost from the costmap, which we'll call $h$ (to match the paper's notation)
  * We assume, without loss of generality that
-  * ![P(A) <= P(B)](doc/PA__PB.gif)
-  * ![P(C) <= P(D)](doc/PC__PD.gif)
-  * ![P(A) <= P(C)](doc/PA__PC.gif)
- * If ![P(C)](doc/PC.gif) is infinite, that is, not initialized yet, the new potential calculation is straightforwardly  ![P(X) = P(A) + h](doc/PX_PA_h.gif).
- * Otherwise, we want to find a value of `P(X)` that satisfies the equation ![\Big(P(X) - P(A)\Big)^2 + \Big(P(X) - P(C)\Big)^2 = h^2](doc/BigPX_PABig_2_BigPX_PCBig_2_h_2.gif)
- * It's possible there are no real values that satisfy the equation if ![P(C) - P(A) \geq h](doc/PC_PAgeqh.gif) in which case the straightforward update is used.
+  * $P(A) <= P(B)$
+  * $P(C) <= P(D)$
+  * $P(A) <= P(C)$
+ * If $P(C)$ is infinite, that is, not initialized yet, the new potential calculation is straightforwardly  $P(X) = P(A) + h$.
+ * Otherwise, we want to find a value of $P(X)$ that satisfies the equation $\Big(P(X) - P(A)\Big)^2 + \Big(P(X) - P(C)\Big)^2 = h^2$
+ * It's possible there are no real values that satisfy the equation if $P(C) - P(A) \geq h$ in which case the straightforward update is used.
  * Otherwise, through clever manipulation of the quadratic formula, we can solve the equation with the following:
-   * ![P(X) = \frac{-\beta + \sqrt{\beta^2 - 4 \gamma}}{2}](doc/PX_frac_beta_sqrtbeta_2_4gamma2.gif)
-   * ![\beta = -\Big(P(A)+P(C)\Big)](doc/beta__BigPA_PCBig.gif)
-   * ![\gamma = \frac{P(A)^2 + P(C)^2 - h^2}{2}](doc/gamma_fracPA_2_PC_2_h_22.gif)
- * That all looks complicated, and computationally inefficient due to the square root operation. Hence, we reformulate the equation in terms of a new variable ![\delta](doc/delta.gif) and calculate a second-degree Taylor series approximation as
-  * ![\delta = \frac{P(C) - P(A)}{h}](doc/delta_fracPC_PAh.gif)
-  * ![P(X) = P(A) + \frac{h}{2} (\delta + \sqrt{2-\delta^2})](doc/PX_PA_frach2delta_sqrt2_delta_2.gif)
-  * ![P(X) \approx P(A) + h (c_2 \delta^2 + c_1\delta + c_0)](doc/PXapproxPA_hc_2delta_2_c_1delta_c_0.gif)
+   * $P(X) = \frac{-\beta + \sqrt{\beta^2 - 4 \gamma}}{2}$
+   * $\beta = -\Big(P(A)+P(C)\Big)$
+   * $\gamma = \frac{P(A)^2 + P(C)^2 - h^2}{2}$
+ * That all looks complicated, and computationally inefficient due to the square root operation. Hence, we reformulate the equation in terms of a new variable $\delta$ and calculate a second-degree Taylor series approximation as
+  * $\delta = \frac{P(C) - P(A)}{h}$
+  * $P(X) = P(A) + \frac{h}{2} (\delta + \sqrt{2-\delta^2})$
+  * $P(X) \approx P(A) + h (c_2 \delta^2 + c_1\delta + c_0)$
  * If you're really interested, you can look into the [full derivation](Derivation.md)
  * You can compare these equations on [this plot](https://www.desmos.com/calculator/p7x6d0kg6t)
 
