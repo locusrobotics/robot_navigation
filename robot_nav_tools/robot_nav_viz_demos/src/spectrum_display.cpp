@@ -33,7 +33,6 @@
  */
 
 #include <robot_nav_viz_demos/spectrum_display.h>
-#include <boost/bind.hpp>
 #include <color_util/blend.h>
 #include <color_util/convert.h>
 #include <algorithm>

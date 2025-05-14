@@ -31,7 +31,6 @@
 #include <robot_nav_rviz_plugins/path_display.h>
 #include <robot_nav_rviz_plugins/validate_floats.h>
 #include <nav_2d_utils/conversions.h>
-#include <boost/bind.hpp>
 
 #include <OgreSceneNode.h>
 #include <OgreSceneManager.h>

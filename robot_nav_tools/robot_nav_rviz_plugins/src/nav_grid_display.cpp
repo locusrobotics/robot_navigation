@@ -34,7 +34,6 @@
 
 #include <robot_nav_rviz_plugins/nav_grid_display.h>
 #include <robot_nav_rviz_plugins/validate_floats.h>
-#include <boost/bind.hpp>
 
 #include <OgreSharedPtr.h>
 #include <OgreVector3.h>

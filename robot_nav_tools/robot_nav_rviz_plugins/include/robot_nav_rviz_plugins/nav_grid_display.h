@@ -36,7 +36,6 @@
 #define ROBOT_NAV_RVIZ_PLUGINS_NAV_GRID_DISPLAY_H
 
 #ifndef Q_MOC_RUN
-#include <boost/thread/thread.hpp>
 #include <OgreTexture.h>
 #include <OgreMaterial.h>
 #include <OgreSharedPtr.h>

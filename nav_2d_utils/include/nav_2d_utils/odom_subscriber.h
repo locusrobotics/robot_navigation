@@ -39,7 +39,6 @@
 #include <nav_2d_utils/conversions.h>
 #include <nav_msgs/Odometry.h>
 #include <nav_2d_msgs/Twist2DStamped.h>
-#include <boost/thread/mutex.hpp>
 #include <string>
 
 namespace nav_2d_utils
