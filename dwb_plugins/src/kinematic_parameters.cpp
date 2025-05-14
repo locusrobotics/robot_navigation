@@ -87,7 +87,7 @@ void KinematicParameters::initialize(const ros::NodeHandle& nh)
   // the rest of the initial values are loaded through the dynamic reconfigure mechanisms
   dsrv_ = std::make_shared<dynamic_reconfigure::Server<KinematicParamsConfig> >(nh);
   dynamic_reconfigure::Server<KinematicParamsConfig>::CallbackType cb =
-    boost::bind(&KinematicParameters::reconfigureCB, this, _1, _2);
+    std::bind(&KinematicParameters::reconfigureCB, this, std::placeholders::_1, std::placeholders::_2);
   dsrv_->setCallback(cb);
 }
 
