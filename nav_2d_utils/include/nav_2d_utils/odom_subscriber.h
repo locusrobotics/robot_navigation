@@ -61,7 +61,9 @@ public:
   {
     std::string odom_topic;
     nh.param("odom_topic", odom_topic, default_topic);
-    odom_sub_ = nh.subscribe<nav_msgs::Odometry>(odom_topic, 1, std::bind(&OdomSubscriber::odomCallback, this, std::placeholders::_1));
+    odom_sub_ = nh.subscribe<nav_msgs::Odometry>(odom_topic, 1,
+                                                 std::bind(&OdomSubscriber::odomCallback, this,
+                                                           std::placeholders::_1));
   }
 
   inline nav_2d_msgs::Twist2D getTwist() { return odom_vel_.velocity; }
