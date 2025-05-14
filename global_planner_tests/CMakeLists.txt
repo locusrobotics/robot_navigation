@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.10.2)
 project(global_planner_tests)
-set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
+set_directory_properties(PROPERTIES COMPILE_OPTIONS "-Wall;-Werror")
+if(NOT "${CMAKE_CXX_STANDARD}")
+    set(CMAKE_CXX_STANDARD 14)
+endif()
 
 find_package(catkin REQUIRED COMPONENTS map_server nav_core2 roscpp nav_msgs pluginlib)
 

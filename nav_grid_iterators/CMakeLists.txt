@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.10.2)
 project(nav_grid_iterators)
-set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
+set_directory_properties(PROPERTIES COMPILE_OPTIONS "-Wall;-Werror")
+if(NOT "${CMAKE_CXX_STANDARD}")
+    set(CMAKE_CXX_STANDARD 14)
+endif()
 
 find_package(catkin REQUIRED COMPONENTS
   nav_grid nav_2d_msgs nav_2d_utils nav_msgs roscpp
