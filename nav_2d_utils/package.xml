@@ -9,6 +9,8 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>python3-setuptools</buildtool_depend>
+
   <depend>geometry_msgs</depend>
   <depend>nav_2d_msgs</depend>
   <depend>nav_core2</depend>

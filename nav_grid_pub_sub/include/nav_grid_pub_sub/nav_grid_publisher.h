@@ -139,11 +139,11 @@ public:
     publish_updates_ = publish_updates;
 
     createPublishers<NavGridOfX, NavGridOfXUpdate>(
-        nh, nav_grid_topic, boost::bind(&GenericGridPublisher::onNewSubscriptionNav, this, _1),
+        nh, nav_grid_topic, std::bind(&GenericGridPublisher::onNewSubscriptionNav, this, std::placeholders::_1),
         nav_pub_, nav_update_pub_, publish_updates);
 
     createPublishers<nav_msgs::OccupancyGrid, map_msgs::OccupancyGridUpdate>(
-        nh, occupancy_grid_topic, boost::bind(&GenericGridPublisher::onNewSubscriptionOcc, this, _1),
+        nh, occupancy_grid_topic, std::bind(&GenericGridPublisher::onNewSubscriptionOcc, this, std::placeholders::_1),
         occ_pub_, occ_update_pub_, publish_updates);
 
     if (update_area_topic.length() > 0)

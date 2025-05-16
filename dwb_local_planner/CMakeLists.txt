@@ -1,7 +1,10 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.10.2)
 project(dwb_local_planner)
 
-set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Werror")
+set_directory_properties(PROPERTIES COMPILE_OPTIONS "-Wall;-Werror")
+if(NOT "${CMAKE_CXX_STANDARD}")
+    set(CMAKE_CXX_STANDARD 14)
+endif()
 
 find_package(catkin REQUIRED COMPONENTS
   dwb_msgs

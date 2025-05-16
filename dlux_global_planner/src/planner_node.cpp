@@ -76,9 +76,9 @@ public:
 
     gp_.initialize(nh, "planner", tf_, costmap_);
     goal_sub_ = nh.subscribe<geometry_msgs::PoseStamped>("/move_base_simple/goal", 1,
-                                                         boost::bind(&PlannerNode::goalCB, this, _1));
+                                                         std::bind(&PlannerNode::goalCB, this, std::placeholders::_1));
     pose_sub_ = nh.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/initialpose", 1,
-                                                         boost::bind(&PlannerNode::poseCB, this, _1));
+                                                         std::bind(&PlannerNode::poseCB, this, std::placeholders::_1));
     nh.param("red", red_, 1.0);
     nh.param("green", green_, 1.0);
     nh.param("blue", blue_, 1.0);

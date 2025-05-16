@@ -201,7 +201,9 @@ LocoMoveBase::LocoMoveBase(const ros::NodeHandle& nh) :
   // they won't get any useful information back about its status, but this is useful for tools
   // like nav_view and rviz
   ros::NodeHandle simple_nh("move_base_simple");
-  goal_sub_ = simple_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, boost::bind(&LocoMoveBase::goalCB, this, _1));
+  goal_sub_ = simple_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1,
+                                                              std::bind(&LocoMoveBase::goalCB, this,
+                                                                        std::placeholders::_1));
 
   server_.registerGoalCallback(std::bind(&LocoMoveBase::executeCB, this));
   server_.registerPreemptCallback(std::bind(&LocoMoveBase::preemptCB, this));
