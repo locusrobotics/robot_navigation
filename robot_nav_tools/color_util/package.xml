@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>color_util</name>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <description>An almost dependency-less library for converting between color spaces</description>
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
   <license>BSD</license>

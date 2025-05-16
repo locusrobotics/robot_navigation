@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>rqt_dwb_plugin</name>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <description>View dwb_msgs/LocalPlanEvaluation information visually using rqt</description>
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
   <license>BSD</license>

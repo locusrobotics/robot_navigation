@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nav_grid_server</name>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <description>Customizable tools for publishing images as NavGrids or OccupancyGrids</description>
 
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>

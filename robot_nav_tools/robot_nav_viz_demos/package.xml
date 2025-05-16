@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>robot_nav_viz_demos</name>
-  <version>0.3.0</version>
+  <version>0.3.1</version>
   <description>Demos for testing/demonstrating the robot_nav_rviz_plugins and color_util packages</description>
   <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
   <license>BSD</license>
